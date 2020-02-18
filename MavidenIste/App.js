@@ -8,6 +8,10 @@ import {
 
 import SplashScreen from 'react-native-splash-screen'
 
+//Router
+import Router from './src/Router';
+
+
 const App: () => React$Node = () => {
 
     useEffect(() => {
@@ -16,10 +20,7 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-          <Text>asd</Text>
-      </SafeAreaView>
+      <Router />
     </>
   );
 };

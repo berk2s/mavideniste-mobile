@@ -19,6 +19,24 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* MavidenIsteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MavidenIsteTests.m */; };
 		608EAB6E2D7FA06877F6CFBF /* libPods-MavidenIste-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7AE0E31046430296DB2B811 /* libPods-MavidenIste-tvOS.a */; };
+		C0ED804D23FB500D004B56FE /* Muli-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803C23FB500A004B56FE /* Muli-Italic.ttf */; };
+		C0ED804E23FB500D004B56FE /* Muli-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803D23FB500A004B56FE /* Muli-LightItalic.ttf */; };
+		C0ED804F23FB500D004B56FE /* Muli-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803E23FB500B004B56FE /* Muli-Regular.ttf */; };
+		C0ED805023FB500D004B56FE /* Muli-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803F23FB500B004B56FE /* Muli-MediumItalic.ttf */; };
+		C0ED805123FB500D004B56FE /* Muli-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804023FB500B004B56FE /* Muli-ExtraBoldItalic.ttf */; };
+		C0ED805223FB500D004B56FE /* Muli-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804123FB500B004B56FE /* Muli-ExtraLightItalic.ttf */; };
+		C0ED805323FB500D004B56FE /* Muli-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804223FB500B004B56FE /* Muli-BoldItalic.ttf */; };
+		C0ED805423FB500D004B56FE /* Muli-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804323FB500B004B56FE /* Muli-Bold.ttf */; };
+		C0ED805523FB500D004B56FE /* Muli-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804423FB500B004B56FE /* Muli-SemiBoldItalic.ttf */; };
+		C0ED805623FB500D004B56FE /* Muli-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804523FB500C004B56FE /* Muli-Black.ttf */; };
+		C0ED805723FB500D004B56FE /* Muli-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804623FB500C004B56FE /* Muli-SemiBold.ttf */; };
+		C0ED805823FB500D004B56FE /* Muli-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804723FB500C004B56FE /* Muli-Medium.ttf */; };
+		C0ED805923FB500D004B56FE /* Muli-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804823FB500C004B56FE /* Muli-ExtraBold.ttf */; };
+		C0ED805A23FB500D004B56FE /* MavidenIste.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804923FB500C004B56FE /* MavidenIste.ttf */; };
+		C0ED805B23FB500D004B56FE /* Muli-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804A23FB500D004B56FE /* Muli-BlackItalic.ttf */; };
+		C0ED805C23FB500D004B56FE /* Muli-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804B23FB500D004B56FE /* Muli-ExtraLight.ttf */; };
+		C0ED805D23FB500D004B56FE /* Muli-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED804C23FB500D004B56FE /* Muli-Light.ttf */; };
+		C0ED805F23FB55F2004B56FE /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED805E23FB55F2004B56FE /* icomoon.ttf */; };
 		F8D4C36C9428B316F4F8426D /* libPods-MavidenIsteTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16ED513C7F5134745776C827 /* libPods-MavidenIsteTests.a */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +80,24 @@
 		B7AE0E31046430296DB2B811 /* libPods-MavidenIste-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MavidenIste-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD8F931AA0B6C7E8E6F77F8B /* libPods-MavidenIste.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MavidenIste.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1B5AAFDC3DD97B20F24E7A /* Pods-MavidenIste-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MavidenIste-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MavidenIste-tvOS/Pods-MavidenIste-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		C0ED803C23FB500A004B56FE /* Muli-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Italic.ttf"; sourceTree = "<group>"; };
+		C0ED803D23FB500A004B56FE /* Muli-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-LightItalic.ttf"; sourceTree = "<group>"; };
+		C0ED803E23FB500B004B56FE /* Muli-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Regular.ttf"; sourceTree = "<group>"; };
+		C0ED803F23FB500B004B56FE /* Muli-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-MediumItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804023FB500B004B56FE /* Muli-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804123FB500B004B56FE /* Muli-ExtraLightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804223FB500B004B56FE /* Muli-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-BoldItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804323FB500B004B56FE /* Muli-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Bold.ttf"; sourceTree = "<group>"; };
+		C0ED804423FB500B004B56FE /* Muli-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804523FB500C004B56FE /* Muli-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Black.ttf"; sourceTree = "<group>"; };
+		C0ED804623FB500C004B56FE /* Muli-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-SemiBold.ttf"; sourceTree = "<group>"; };
+		C0ED804723FB500C004B56FE /* Muli-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Medium.ttf"; sourceTree = "<group>"; };
+		C0ED804823FB500C004B56FE /* Muli-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-ExtraBold.ttf"; sourceTree = "<group>"; };
+		C0ED804923FB500C004B56FE /* MavidenIste.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MavidenIste.ttf; sourceTree = "<group>"; };
+		C0ED804A23FB500D004B56FE /* Muli-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-BlackItalic.ttf"; sourceTree = "<group>"; };
+		C0ED804B23FB500D004B56FE /* Muli-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-ExtraLight.ttf"; sourceTree = "<group>"; };
+		C0ED804C23FB500D004B56FE /* Muli-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Light.ttf"; sourceTree = "<group>"; };
+		C0ED805E23FB55F2004B56FE /* icomoon.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = icomoon.ttf; sourceTree = "<group>"; };
 		C227BD26241CCFE03B45D729 /* Pods-MavidenIste-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MavidenIste-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-MavidenIste-tvOSTests/Pods-MavidenIste-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CF431A2F594E40124734DCDD /* Pods-MavidenIste-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MavidenIste-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-MavidenIste-tvOS/Pods-MavidenIste-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -174,6 +210,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				C0ED803B23FB4FE5004B56FE /* fonts */,
 				13B07FAE1A68108700A75B9A /* MavidenIste */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* MavidenIsteTests */,
@@ -195,6 +232,31 @@
 				2D02E4901E0B4A5D006451C7 /* MavidenIste-tvOSTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C0ED803B23FB4FE5004B56FE /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				C0ED805E23FB55F2004B56FE /* icomoon.ttf */,
+				C0ED804923FB500C004B56FE /* MavidenIste.ttf */,
+				C0ED804523FB500C004B56FE /* Muli-Black.ttf */,
+				C0ED804A23FB500D004B56FE /* Muli-BlackItalic.ttf */,
+				C0ED804323FB500B004B56FE /* Muli-Bold.ttf */,
+				C0ED804223FB500B004B56FE /* Muli-BoldItalic.ttf */,
+				C0ED804823FB500C004B56FE /* Muli-ExtraBold.ttf */,
+				C0ED804023FB500B004B56FE /* Muli-ExtraBoldItalic.ttf */,
+				C0ED804B23FB500D004B56FE /* Muli-ExtraLight.ttf */,
+				C0ED804123FB500B004B56FE /* Muli-ExtraLightItalic.ttf */,
+				C0ED803C23FB500A004B56FE /* Muli-Italic.ttf */,
+				C0ED804C23FB500D004B56FE /* Muli-Light.ttf */,
+				C0ED803D23FB500A004B56FE /* Muli-LightItalic.ttf */,
+				C0ED804723FB500C004B56FE /* Muli-Medium.ttf */,
+				C0ED803F23FB500B004B56FE /* Muli-MediumItalic.ttf */,
+				C0ED803E23FB500B004B56FE /* Muli-Regular.ttf */,
+				C0ED804623FB500C004B56FE /* Muli-SemiBold.ttf */,
+				C0ED804423FB500B004B56FE /* Muli-SemiBoldItalic.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,6 +291,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				4F81866BC85551A1A18920DE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -339,8 +402,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0ED805023FB500D004B56FE /* Muli-MediumItalic.ttf in Resources */,
+				C0ED805123FB500D004B56FE /* Muli-ExtraBoldItalic.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				C0ED805323FB500D004B56FE /* Muli-BoldItalic.ttf in Resources */,
+				C0ED805A23FB500D004B56FE /* MavidenIste.ttf in Resources */,
+				C0ED805223FB500D004B56FE /* Muli-ExtraLightItalic.ttf in Resources */,
+				C0ED805923FB500D004B56FE /* Muli-ExtraBold.ttf in Resources */,
+				C0ED805523FB500D004B56FE /* Muli-SemiBoldItalic.ttf in Resources */,
+				C0ED804D23FB500D004B56FE /* Muli-Italic.ttf in Resources */,
+				C0ED805423FB500D004B56FE /* Muli-Bold.ttf in Resources */,
+				C0ED805723FB500D004B56FE /* Muli-SemiBold.ttf in Resources */,
+				C0ED804E23FB500D004B56FE /* Muli-LightItalic.ttf in Resources */,
+				C0ED805B23FB500D004B56FE /* Muli-BlackItalic.ttf in Resources */,
+				C0ED805D23FB500D004B56FE /* Muli-Light.ttf in Resources */,
+				C0ED805C23FB500D004B56FE /* Muli-ExtraLight.ttf in Resources */,
+				C0ED805F23FB55F2004B56FE /* icomoon.ttf in Resources */,
+				C0ED804F23FB500D004B56FE /* Muli-Regular.ttf in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				C0ED805823FB500D004B56FE /* Muli-Medium.ttf in Resources */,
+				C0ED805623FB500D004B56FE /* Muli-Black.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +470,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		4F81866BC85551A1A18920DE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MavidenIste/Pods-MavidenIste-resources.sh",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MavidenIste/Pods-MavidenIste-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		73D0994A9F01AD966759418D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
