@@ -25,6 +25,9 @@ import SwitcherScreen from './screens/bottomtab/switcher/Switcher';
 import ShopingCardScreen from './screens/bottomtab/shopingcart/ShopingCard';
 import ProfileScreen from './screens/bottomtab/profile/Profile';
 
+// for the product listing
+import ProductListScreen from './screens/product/Product';
+
 const a = true;
 
 const MainStack = createStackNavigator({
@@ -71,7 +74,16 @@ const MainStack = createStackNavigator({
 
 const bottomTabs = createBottomTabNavigator({
    Feed:{
-       screen:FeedScreen,
+       screen:createStackNavigator({
+           Category:{
+             screen:FeedScreen,
+           },
+           Product:{
+               screen:ProductListScreen,
+           }
+       }, {
+           headerMode:null
+       }),
        navigationOptions:{
            tabBarLabel: () => (null),
            tabBarIcon: ({tintColor}) => <CustomIcon name="home-fill" size={25} style={{color: tintColor}} />
@@ -104,7 +116,7 @@ const bottomTabs = createBottomTabNavigator({
             tabBarLabel: () => (null),
             tabBarIcon: ({tintColor}) => <CustomIcon name="person-fill" size={25} style={{color: tintColor}} />
         }
-    }
+    },
 },{
     tabBarOptions: {
         activeTintColor: '#003DFF',
@@ -127,4 +139,12 @@ const bottomTabs = createBottomTabNavigator({
 
 });
 
-export default createAppContainer(bottomTabs);
+
+const pages = createStackNavigator({
+    bottomTabs:bottomTabs,
+    MainStack:MainStack,
+}, {
+    headerMode:null
+});
+
+export default createAppContainer(pages);
