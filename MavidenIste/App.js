@@ -11,6 +11,8 @@ import SplashScreen from 'react-native-splash-screen'
 //Router
 import Router from './src/Router';
 
+import NavigationService from './src/NavigationService';
+
 
 const App: () => React$Node = () => {
 
@@ -20,7 +22,11 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      <Router />
+      <Router
+          ref={navigatorRef => {
+              NavigationService.setTopLevelNavigator(navigatorRef);
+          }}
+      />
     </>
   );
 };

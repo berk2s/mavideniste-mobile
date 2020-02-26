@@ -82,9 +82,10 @@ const bottomTabs = createBottomTabNavigator({
                screen:ProductListScreen,
            }
        }, {
-           headerMode:null
+           headerMode:null,
        }),
        navigationOptions:{
+           tabBarOnPress: ((obj) => obj.navigation.navigate('Feed')),
            tabBarLabel: () => (null),
            tabBarIcon: ({tintColor}) => <CustomIcon name="home-fill" size={25} style={{color: tintColor}} />
        }
@@ -92,6 +93,7 @@ const bottomTabs = createBottomTabNavigator({
     Campaign:{
        screen:CampaignScreen,
         navigationOptions:{
+            tabBarOnPress: ((obj) => obj.navigation.navigate('Campaign')),
             tabBarLabel: () => (null),
             tabBarIcon: ({tintColor}) => <CustomIcon name="star-fill" size={25} style={{color: tintColor}} />
         }
@@ -99,6 +101,7 @@ const bottomTabs = createBottomTabNavigator({
     Switcher:{
        screen:SwitcherScreen,
         navigationOptions:{
+            tabBarOnPress: ((obj) => obj.navigation.navigate('Switcher')),
             tabBarLabel: () => (null),
             tabBarIcon: ({tintColor}) => <CustomIcon name="us" size={38} style={{color: tintColor}} />
         }
@@ -106,6 +109,7 @@ const bottomTabs = createBottomTabNavigator({
     ShopingCard:{
        screen:ShopingCardScreen,
         navigationOptions:{
+            tabBarOnPress: ((obj) => obj.navigation.navigate('ShopingCard')),
             tabBarLabel: () => (null),
             tabBarIcon: ({tintColor}) => <CustomIcon name="shopping-cart-fill" size={25} style={{color: tintColor}} />
         }
@@ -113,11 +117,13 @@ const bottomTabs = createBottomTabNavigator({
     Profile:{
        screen:a ? FeedScreen : ProfileScreen,
         navigationOptions:{
+            tabBarOnPress: ((obj) => obj.navigation.navigate('Profile')),
             tabBarLabel: () => (null),
             tabBarIcon: ({tintColor}) => <CustomIcon name="person-fill" size={25} style={{color: tintColor}} />
         }
     },
 },{
+    backBehavior: 'history',
     tabBarOptions: {
         activeTintColor: '#003DFF',
         inactiveTintColor: '#304555',
@@ -144,7 +150,7 @@ const pages = createStackNavigator({
     bottomTabs:bottomTabs,
     MainStack:MainStack,
 }, {
-    headerMode:null
+    headerMode:null,
 });
 
 export default createAppContainer(pages);
