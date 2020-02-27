@@ -11,7 +11,12 @@ import SplashScreen from 'react-native-splash-screen'
 //Router
 import Router from './src/Router';
 
+import store from './src/store/index';
+
+import {Provider} from 'mobx-react';
+
 import NavigationService from './src/NavigationService';
+
 
 
 const App: () => React$Node = () => {
@@ -21,13 +26,13 @@ const App: () => React$Node = () => {
     }, []);
 
   return (
-    <>
+    <Provider {...store}>
       <Router
           ref={navigatorRef => {
               NavigationService.setTopLevelNavigator(navigatorRef);
           }}
       />
-    </>
+    </Provider>
   );
 };
 

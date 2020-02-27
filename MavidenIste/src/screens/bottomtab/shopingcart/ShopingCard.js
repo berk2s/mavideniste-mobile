@@ -1,18 +1,53 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import {Container, Header, Left, Body, Right, Button, Title, Content} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 
 import { NavigationActions } from 'react-navigation';
 
+import {observer, inject} from 'mobx-react';
+import {IMAGE_URL} from '../../../constants';
 
+@inject('BasketStore')
+@observer
 export default class ShopingCard extends Component {
 
-  componentDidMount() {
-    console.log(this.props)
-  }
+    state = {
+        fetched:false,
+        datas:[]
+    }
 
-  render() {
+    componentDidMount = async () => {
+        try{
+            await this.props.BasketStore.getBasketProducts()
+        }catch(e){
+            alert(e)
+        }
+    }
+
+    _handleBasketRemove = async () => {
+        try{
+            Alert.alert(
+                'Sepeti Temizle',
+                'Sepeti temizlemeye emin misiniz?',
+                [
+                    {
+                        text: 'Hayır',
+                        style: 'cancel',
+                    },
+                    {   text: 'Evet',
+                        onPress: async () => await this.props.BasketStore.deleteBasket()
+                    },
+                ]
+            );
+        }catch(e){
+            alert(e)
+        }
+    }
+
+    render () {
+
+
     return (
         <Container style={styles.container}>
           <Header transparent style={styles.header}>
@@ -26,7 +61,7 @@ export default class ShopingCard extends Component {
               <Title style={styles.bodyTitleText}>Sepetim</Title>
             </Body>
             <Right >
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => this._handleBasketRemove()}>
                 <View style={styles.removeBox}>
                     <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
                     <CustomIcon name="trash" size={18} color={'#FF0000'} />
@@ -35,244 +70,120 @@ export default class ShopingCard extends Component {
             </Right>
           </Header>
           <Content
-             style={{display:'flex', flex:1}}
+             style={{display:'flex', flex:1,}}
              padder>
 
               <View style={styles.basketArea}>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
+                  {
+                          this.props.BasketStore.getProducts.map(e => {
+                              const uri = IMAGE_URL+e.product_image;
+                              return <View key={e.id} style={styles.basket}>
+                                  <View style={styles.imageArea}>
+                                      <Image
+                                          source={{uri : uri}}
+                                          style={styles.image}
+                                      />
                                   </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
+                                  <View style={styles.infoArea}>
+                                      <View style={styles.infoHead}>
+                                          <Text style={styles.infoProductNameText}>{e.product_name}</Text>
+                                          <TouchableOpacity>
+                                              <CustomIcon name="trash" size={20} color={'#FF0000'} />
+                                          </TouchableOpacity>
+                                      </View>
+                                      <View style={styles.infoBottom}>
+                                          <View style={styles.priceArea}>
+                                              <Text style={styles.priceAreaText}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
+                                          </View>
+                                          <View style={styles.priceCountArea}>
+                                              <TouchableOpacity>
+                                                  <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
+                                              </TouchableOpacity>
+                                              <View style={styles.count}>
+                                                  <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
+                                              </View>
+                                              <TouchableOpacity>
+                                                  <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
+                                              </TouchableOpacity>
+                                          </View>
+                                      </View>
                                   </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
                               </View>
+                          })
+
+
+
+                  }
+
+              </View>
+
+
+              <View style={styles.actionArea}>
+                  <TouchableOpacity style={{width:'55%'}}>
+                      <View style={styles.resumeShopingBtn}>
+                          <Text style={styles.actionText}>Alışverişe devam</Text>
+                      </View>
+                  </TouchableOpacity>
+
+                  <View style={{width:'32%'}}>
+                      <Text style={styles.resultCountPrice}>45 TL</Text>
+                      <TouchableOpacity>
+                          <View style={styles.paymentBtn}>
+                              <Text style={styles.actionText}>Onayla</Text>
                           </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                  </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                  </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                  </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                          />
-                      </View>
-                      <View style={styles.infoArea}>
-                          <View style={styles.infoHead}>
-                              <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                              <TouchableOpacity>
-                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                              </TouchableOpacity>
-                          </View>
-                          <View style={styles.infoBottom}>
-                              <View style={styles.priceArea}>
-                                  <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                              </View>
-                              <View style={styles.priceCountArea}>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                  </TouchableOpacity>
-                                  <View style={styles.count}>
-                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                  </View>
-                                  <TouchableOpacity>
-                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                  </TouchableOpacity>
-                              </View>
-                          </View>
-                      </View>
-                  </View>
-                  <View style={styles.basket}>
-                      <View style={styles.imageArea}>
-                          <Image
-                              source={{uri :'http://127.0.0.1:8000/mod/img/product/1582609305.jpeg'}}
-                              style={styles.image}
-                              />
-                      </View>
-                      <View style={styles.infoArea}>
-                            <View style={styles.infoHead}>
-                                <Text style={styles.infoProductNameText}>Basyazici dana eti adss sucuk 500g</Text>
-                                <TouchableOpacity>
-                                    <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.infoBottom}>
-                                 <View style={styles.priceArea}>
-                                     <Text style={styles.priceAreaText}>43<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                                 </View>
-                                <View style={styles.priceCountArea}>
-                                    <TouchableOpacity>
-                                        <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                    </TouchableOpacity>
-                                    <View style={styles.count}>
-                                        <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                    </View>
-                                    <TouchableOpacity>
-                                        <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                      </View>
+                      </TouchableOpacity>
                   </View>
               </View>
 
           </Content>
+
         </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+    resultCountPrice:{
+      position:'absolute',
+        top:-35,
+        right:5,
+        fontFamily:'Muli-Light',
+        color:'#304555',
+        fontSize:22
+    },
+    paymentBtn:{
+        backgroundColor:'#003DFF',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        width:'100%',
+        height:38,
+        borderRadius:18,
+
+    },
+    actionText:{
+        fontFamily:'Muli-Bold',
+        color:'#fff',
+        fontSize:18
+    },
+    resumeShopingBtn:{
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#1BD4FE',
+        width:'100%',
+        height:38,
+        borderRadius:18
+    },
+    actionArea:{
+      display:'flex',
+      flexDirection:'row',
+      justifyContent:'space-between',
+        width:'100%',
+        marginVertical:22
+    },
     basketArea:{
+        minHeight:'83%'
     },
     count:{
         width:23,

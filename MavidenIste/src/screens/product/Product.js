@@ -8,7 +8,10 @@ import FastImage from 'react-native-fast-image';
 import Loading from '../components/Loading';
 import CustomIcon from '../../font/CustomIcon';
 
+import {observer, inject} from 'mobx-react'
 
+@inject('BasketStore')
+@observer
 export default class ProductList extends Component {
 
     state = {
@@ -30,6 +33,14 @@ export default class ProductList extends Component {
             }, 1000)
         }catch(e){
             console.log(e);
+        }
+    }
+
+    handleProductClick = async (product_id) => {
+        try{
+            await this.props.BasketStore.setBasketProduct(product_id);
+        }catch(e){
+            alert(e);
         }
     }
 
@@ -63,8 +74,7 @@ export default class ProductList extends Component {
                                 {
                                     this.state.datas.map(e => {
                                         const uri = IMAGE_URL+e.product_image;
-                                        return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('MainStack', {category_id: e._id})}>
-                                            <View style={styles.card} >
+                                        return <View  key={e._id} style={styles.card} >
                                                 <View style={styles.cardWhiteArea}>
                                                     <FastImage
                                                         source={{uri: uri}}
@@ -90,10 +100,13 @@ export default class ProductList extends Component {
                                                             }
                                                                </View>
                                                     </View>
-                                                    <View style={styles.addToBasketArea}>
-                                                        <CustomIcon name="add" size={25} style={{color:'#00CFFF'}} />
-                                                        <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete Ekle</Text>
-                                                    </View>
+                                                    <TouchableOpacity onPress={() => this.handleProductClick(e._id)}>
+                                                        <View style={styles.addToBasketArea}>
+                                                            <CustomIcon name="add" size={25} style={{color:'#00CFFF'}} />
+                                                            <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', position:'absolute', top:3, right:10}}>+</Text>
+                                                            <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete Ekle</Text>
+                                                        </View>
+                                                    </TouchableOpacity>
                                                 </View>
                                                 {
                                                     e.product_discount != null
@@ -106,7 +119,7 @@ export default class ProductList extends Component {
                                                 }
 
                                             </View>
-                                        </TouchableOpacity>
+
                                     })
                                 }
 
