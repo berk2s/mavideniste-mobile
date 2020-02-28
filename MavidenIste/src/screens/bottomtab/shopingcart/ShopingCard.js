@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions} from 'react-native';
 import {Container, Header, Left, Body, Right, Button, Title, Content} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
+import FastImage from 'react-native-fast-image';
 
 import { NavigationActions } from 'react-navigation';
 
 import {observer, inject} from 'mobx-react';
 import {IMAGE_URL} from '../../../constants';
+
+import EmptyIMG from '../../../img/empty.png'
+import Spinner from 'react-native-loading-spinner-overlay';
+
 
 @inject('BasketStore')
 @observer
@@ -14,7 +19,8 @@ export default class ShopingCard extends Component {
 
     state = {
         fetched:false,
-        datas:[]
+        datas:[],
+        loading: false,
     }
 
     componentDidMount = async () => {
@@ -36,12 +42,77 @@ export default class ShopingCard extends Component {
                         style: 'cancel',
                     },
                     {   text: 'Evet',
-                        onPress: async () => await this.props.BasketStore.deleteBasket()
+                        onPress: async () => {
+                            this.setState({
+                                loading:true,
+                            });
+
+                            setTimeout(async () => {
+                                await this.props.BasketStore.deleteBasket()
+                                this.setState({
+                                    loading:false,
+                                });
+
+                            }, 600);
+                        }
                     },
                 ]
             );
         }catch(e){
             alert(e)
+        }
+    }
+
+    _handleProductRemove = async (id) => {
+        try{
+            this.setState({
+                loading:true,
+            });
+            setTimeout(async () => {
+                await this.props.BasketStore.deleteBasketProduct(id);
+
+                this.setState({
+                    loading:false,
+                });
+            }, 600)
+        }catch(e){
+            alert(e);
+        }
+    }
+
+    _handleProductDecrement = async (id, count) => {
+        try{
+            if(count > 1) {
+                this.setState({
+                    loading: true,
+                });
+                setTimeout(async () => {
+                    await this.props.BasketStore.setBasketProductDecrement(id);
+
+                    this.setState({
+                        loading: false,
+                    });
+                }, 600);
+            }
+        }catch(e){
+            alert(e);
+        }
+    }
+
+    _handleProductIncrement = async (id) => {
+        try{
+            this.setState({
+                loading:true,
+            });
+            setTimeout(async () => {
+                await this.props.BasketStore.setBasketProductIncrement(id);
+
+                this.setState({
+                    loading:false,
+                });
+            }, 600)
+        }catch(e){
+            alert(e);
         }
     }
 
@@ -60,56 +131,76 @@ export default class ShopingCard extends Component {
             <Body style={styles.body}>
               <Title style={styles.bodyTitleText}>Sepetim</Title>
             </Body>
-            <Right >
-                <TouchableOpacity onPress={() => this._handleBasketRemove()}>
-                <View style={styles.removeBox}>
-                    <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
-                    <CustomIcon name="trash" size={18} color={'#FF0000'} />
-                </View>
-                </TouchableOpacity>
+            <Right>
+                {
+                    this.props.BasketStore.getProducts.length == 0
+                        ?
+                        <></>
+                        :
+                        <TouchableOpacity onPress={() => this._handleBasketRemove()}>
+                            <View style={styles.removeBox}>
+                                <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
+                                <CustomIcon name="trash" size={18} color={'#FF0000'} />
+                            </View>
+                        </TouchableOpacity>
+                }
             </Right>
           </Header>
           <Content
              style={{display:'flex', flex:1,}}
              padder>
+              <Spinner
+                  visible={this.state.loading}
+                  animation={'fade'}
+                  size={'small'}
+              />
+              <View style={[styles.basketArea, {minHeight: Dimensions.get('window').height-245}]}>
 
-              <View style={styles.basketArea}>
                   {
-                          this.props.BasketStore.getProducts.map(e => {
-                              const uri = IMAGE_URL+e.product_image;
-                              return <View key={e.id} style={styles.basket}>
-                                  <View style={styles.imageArea}>
-                                      <Image
-                                          source={{uri : uri}}
-                                          style={styles.image}
-                                      />
-                                  </View>
-                                  <View style={styles.infoArea}>
-                                      <View style={styles.infoHead}>
-                                          <Text style={styles.infoProductNameText}>{e.product_name}</Text>
-                                          <TouchableOpacity>
-                                              <CustomIcon name="trash" size={20} color={'#FF0000'} />
-                                          </TouchableOpacity>
-                                      </View>
-                                      <View style={styles.infoBottom}>
-                                          <View style={styles.priceArea}>
-                                              <Text style={styles.priceAreaText}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                                          </View>
-                                          <View style={styles.priceCountArea}>
-                                              <TouchableOpacity>
-                                                  <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
-                                              </TouchableOpacity>
-                                              <View style={styles.count}>
-                                                  <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>1</Text>
-                                              </View>
-                                              <TouchableOpacity>
-                                                  <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
-                                              </TouchableOpacity>
-                                          </View>
-                                      </View>
-                                  </View>
+                      this.props.BasketStore.getProducts.length == 0
+                          ?
+                              <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
+                                  <Image source={EmptyIMG} style={{width:80, height:80}}/>
+                                  <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Hiç ürün yok</Text>
+                                  <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>maviden iste, ayağına gelsin.</Text>
                               </View>
-                          })
+                          :
+                              this.props.BasketStore.getProducts.map(e => {
+                                  const uri = IMAGE_URL+e.product_image;
+                                  return <View key={e.id} style={styles.basket}>
+                                      <View style={styles.imageArea}>
+                                          <FastImage
+                                              source={{uri : uri}}
+                                              style={styles.image}
+                                          />
+                                      </View>
+                                      <View style={styles.infoArea}>
+                                          <View style={styles.infoHead}>
+                                              <Text style={styles.infoProductNameText}>{e.product_name}</Text>
+                                              <TouchableOpacity onPress={() => this._handleProductRemove(e.id)}>
+                                                  <CustomIcon name="trash" size={20} color={'#FF0000'} />
+                                              </TouchableOpacity>
+                                          </View>
+                                          <View style={styles.infoBottom}>
+                                              <View style={styles.priceArea}>
+                                                  <Text style={styles.priceAreaText}>
+                                                      {e.product_discount == null ? e.product_list_price : e.product_discount_price} <Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
+                                              </View>
+                                              <View style={styles.priceCountArea}>
+                                                  <TouchableOpacity onPress={() => this._handleProductDecrement(e.id, e.count)}>
+                                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>-</Text>
+                                                  </TouchableOpacity>
+                                                  <View style={styles.count}>
+                                                      <Text style={{fontFamily:'Muli-Bold', fontSize:13, color:'#fff'}}>{e.count}</Text>
+                                                  </View>
+                                                  <TouchableOpacity onPress={() => this._handleProductIncrement(e.id)}>
+                                                      <Text style={{fontFamily:'Muli-SemiBold', fontSize:29, color:'#304555'}}>+</Text>
+                                                  </TouchableOpacity>
+                                              </View>
+                                          </View>
+                                      </View>
+                                  </View>
+                              })
 
 
 
@@ -117,23 +208,29 @@ export default class ShopingCard extends Component {
 
               </View>
 
+              {
+                  this.props.BasketStore.getProducts.length == 0
+                      ?
+                      <></>
+                      :
+                      <View style={styles.actionArea}>
+                          <TouchableOpacity style={{width:'55%'}} onPress={() => this.props.navigation.navigate('Feed')}>
+                              <View style={styles.resumeShopingBtn}>
+                                  <Text style={styles.actionText}>Alışverişe devam</Text>
+                              </View>
+                          </TouchableOpacity>
 
-              <View style={styles.actionArea}>
-                  <TouchableOpacity style={{width:'55%'}}>
-                      <View style={styles.resumeShopingBtn}>
-                          <Text style={styles.actionText}>Alışverişe devam</Text>
-                      </View>
-                  </TouchableOpacity>
-
-                  <View style={{width:'32%'}}>
-                      <Text style={styles.resultCountPrice}>45 TL</Text>
-                      <TouchableOpacity>
-                          <View style={styles.paymentBtn}>
-                              <Text style={styles.actionText}>Onayla</Text>
+                          <View style={{width:'32%'}}>
+                              <Text style={styles.resultCountPrice}>{this.props.BasketStore.getTotalPrice} TL</Text>
+                              <TouchableOpacity>
+                                  <View style={styles.paymentBtn}>
+                                      <Text style={styles.actionText}>Onayla</Text>
+                                  </View>
+                              </TouchableOpacity>
                           </View>
-                      </TouchableOpacity>
-                  </View>
-              </View>
+                      </View>
+              }
+
 
           </Content>
 
@@ -180,10 +277,10 @@ const styles = StyleSheet.create({
       flexDirection:'row',
       justifyContent:'space-between',
         width:'100%',
-        marginVertical:22
+        marginTop:52
     },
     basketArea:{
-        minHeight:'83%'
+       // minHeight:'80%'
     },
     count:{
         width:23,

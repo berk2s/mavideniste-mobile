@@ -9,23 +9,23 @@ import Loading from '../components/Loading';
 import CustomIcon from '../../font/CustomIcon';
 
 import {observer, inject} from 'mobx-react'
+import Spinner from 'react-native-loading-spinner-overlay';
 
-@inject('BasketStore')
+@inject('BasketStore', 'ProductStore')
 @observer
 export default class ProductList extends Component {
 
     state = {
         loadingHeight: Dimensions.get('window').height-160,
         datas: [],
-        fetched: false
+        fetched: false,
+        loading: false
     }
 
     componentDidMount = async () => {
         try{
             const category_id = this.props.navigation.getParam('category_id');
-            const products = await API.get(`/api/product/get/${BRANCH_ID}/${category_id}`);
-            console.log(products)
-            this.state.datas = [...products.data.data];
+            await this.props.ProductStore.fetchProducts(category_id, BRANCH_ID);
             setTimeout(() => {
                 this.setState({
                     fetched: true,
@@ -38,7 +38,20 @@ export default class ProductList extends Component {
 
     handleProductClick = async (product_id) => {
         try{
-            await this.props.BasketStore.setBasketProduct(product_id);
+            this.setState({
+                loading:true,
+            });
+
+            setTimeout(async () => {
+                await this.props.BasketStore.setBasketProduct(product_id);
+             //   const index = this.state.datas.map(e => e._id).indexOf(product_id);
+             //   this.state.datas[index].isInTheBasket = true;
+                this.setState({
+                    loading:false,
+                });
+
+            }, 500);
+
         }catch(e){
             alert(e);
         }
@@ -56,6 +69,11 @@ export default class ProductList extends Component {
                 style={{display:'flex', flex:1}}
                 padder>
                 <View style={styles.content}>
+                    <Spinner
+                        visible={this.state.loading}
+                        animation={'fade'}
+                        size={'small'}
+                    />
                     {this.state.fetched
                         ?
                         <>
@@ -72,7 +90,7 @@ export default class ProductList extends Component {
                             </View>
                             <View style={styles.cardArea}>
                                 {
-                                    this.state.datas.map(e => {
+                                    this.props.ProductStore.getProducts.map(e => {
                                         const uri = IMAGE_URL+e.product_image;
                                         return <View  key={e._id} style={styles.card} >
                                                 <View style={styles.cardWhiteArea}>
@@ -104,7 +122,15 @@ export default class ProductList extends Component {
                                                         <View style={styles.addToBasketArea}>
                                                             <CustomIcon name="add" size={25} style={{color:'#00CFFF'}} />
                                                             <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', position:'absolute', top:3, right:10}}>+</Text>
-                                                            <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete Ekle</Text>
+                                                            {
+                                                                e.isInTheBasket == true
+                                                                    ?
+                                                                    <Text style={{fontFamily:'Muli-SemiBold', color:'#FF0000', fontSize:5}}>Sepetten cikar</Text>
+                                                                    :
+                                                                    <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete ekle</Text>
+
+                                                            }
+
                                                         </View>
                                                     </TouchableOpacity>
                                                 </View>
