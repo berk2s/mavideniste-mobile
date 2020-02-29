@@ -4,92 +4,178 @@ import {Form, Input, Item} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 import LinearGradient from "react-native-linear-gradient";
 
+import {Formik} from 'formik';
+
+import { TextInputMask } from 'react-native-masked-text'
+
 export default class RegisterForm extends Component {
   render() {
     return (
       <View>
-          <Form>
               <View style={styles.inputsArea}>
-                  <Item style={[styles.inputAreaFirst, styles.inputArea]}>
-                      <View>
-                          <Text style={styles.accIcon}>
-                              <CustomIcon
-                                  name="at"
-                                  size={20}
-                                  style={{color: '#616D7B'}}
-                              />
-                          </Text>
-                      </View>
-                      <Input
-                          style={styles.input}
-                          placeholder="E-Mail adresi"
-                          placeholderTextColor={'#B4B4B4'}
-                      />
-                  </Item>
-                  <Item style={[styles.inputAreaLast, styles.inputArea]}>
-                      <Text style={styles.passIcon}>
-                          <CustomIcon
-                              name="unlock"
-                              size={20}
-                              style={{color: '#616D7B'}}
-                          />
-                      </Text>
-                      <Input
-                          style={styles.input}
-                          placeholder="Şifre"
-                          placeholderTextColor={'#B4B4B4'}
-                          secureTextEntry
-                      />
-                  </Item>
 
-                  <Item style={[styles.inputAreaLast, styles.inputArea]}>
-                      <Text style={styles.passIcon}>
-                          <CustomIcon
-                              name="unlock"
-                              size={20}
-                              style={{color: '#616D7B'}}
-                          />
-                      </Text>
-                      <Input
-                          style={styles.input}
-                          placeholder="Şifre tekrarı"
-                          placeholderTextColor={'#B4B4B4'}
-                          secureTextEntry
-                      />
-                  </Item>
+                  <Formik
+                    initialValues={{
+                        nameSurname:'',
+                        emailAddress:'',
+                        password:'',
+                        passwordConfirm:'',
+                        phoneNumber:'',
+                    }}
+                  >
+                      {({values, handleChange}) => (
+                        <>
+                            <Item style={[styles.inputAreaFirst, styles.inputArea]}>
+                                <Text style={styles.passIcon}>
+                                    <CustomIcon
+                                        name="person"
+                                        size={20}
+                                        style={{color: '#616D7B'}}
+                                    />
+                                </Text>
+                                <Input
+                                    style={styles.input}
+                                    placeholder="Adın soyadın"
+                                    placeholderTextColor={'#B4B4B4'}
+                                    autoCorrect={false}
+                                    returnKeyType={'next'}
 
-                  <Item style={[styles.inputAreaLast1, styles.inputArea]}>
-                      <Text style={styles.passIcon}>
-                          <CustomIcon
-                              name="phone"
-                              size={20}
-                              style={{color: '#616D7B'}}
-                          />
-                      </Text>
-                      <Input
-                          style={styles.input}
-                          placeholder="Telefon numarası"
-                          placeholderTextColor={'#B4B4B4'}
-                          secureTextEntry
-                      />
-                  </Item>
+                                    value={values.nameSurname}
+                                    onChangeText={handleChange('nameSurname')}
+                                    onSubmitEditing={() => this.emailAddress._root.focus()}
+                                />
+                            </Item>
+
+                            <Item style={[styles.inputAreaLast, styles.inputArea]}>
+                                <View>
+                                    <Text style={styles.accIcon}>
+                                        <CustomIcon
+                                            name="at"
+                                            size={20}
+                                            style={{color: '#616D7B'}}
+                                        />
+                                    </Text>
+                                </View>
+                                <Input
+                                    style={styles.input}
+                                    placeholder="E-Mail adresi"
+                                    placeholderTextColor={'#B4B4B4'}
+                                    returnKeyType={'next'}
+                                    keyboardType={'email-address'}
+                                    autoCapitalize={false}
+
+                                    value={values.emailAddress}
+                                    onChangeText={handleChange('emailAddress')}
+                                    onSubmitEditing={() => this.phoneNumber.getElement().focus()}
+
+                                    ref={(ref) => this.emailAddress = ref}
+                                />
+                            </Item>
+
+                            <Item style={[styles.inputAreaLast, styles.inputArea]}>
+                                <Text style={styles.passIcon}>
+                                    <CustomIcon
+                                        name="phone"
+                                        size={20}
+                                        style={{color: '#616D7B'}}
+                                    />
+                                </Text>
+                                <TextInputMask
+                                    style={styles.input}
+                                    placeholder="Telefon numarası"
+                                    placeholderTextColor={'#B4B4B4'}
+                                    autoCorrect={false}
+                                    returnKeyType={'next'}
+
+                                    type={'custom'}
+                                    options={{
+                                        mask: '0 (999) 999 9999',
+                                        getRawValue: function(value, settings) {
+                                            return value.replace(/\D/g,'');
+                                        },
+                                    }}
+
+                                    value={values.phoneNumber}
+                                    onChangeText={handleChange('phoneNumber')}
+                                    onSubmitEditing={() => this.password._root.focus()}
+
+                                    ref={(ref) => this.phoneNumber = ref}
+                                />
+                            </Item>
+
+                            <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+
+                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]}>
+                                    <Text style={styles.passIcon}>
+                                        <CustomIcon
+                                            name="unlock"
+                                            size={20}
+                                            style={{color: '#616D7B'}}
+                                        />
+                                    </Text>
+                                    <Input
+                                        style={styles.input}
+                                        placeholder="Şifre"
+                                        placeholderTextColor={'#B4B4B4'}
+                                        secureTextEntry
+                                        returnKeyType={'next'}
+                                        autoCapitalize={false}
+                                        autoCorrect={false}
+
+                                        value={values.password}
+                                        onChangeText={handleChange('password')}
+                                        onSubmitEditing={() => this.passwordConfirm._root.focus()}
+
+                                        ref={(ref) => this.password = ref}
+                                    />
+                                </Item>
+
+                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]}>
+                                    <Text style={styles.passIcon}>
+                                        <CustomIcon
+                                            name="unlock"
+                                            size={20}
+                                            style={{color: '#616D7B'}}
+                                        />
+                                    </Text>
+                                    <Input
+                                        style={styles.input}
+                                        placeholder="Şifre Tekrarı"
+                                        placeholderTextColor={'#B4B4B4'}
+                                        secureTextEntry
+                                        returnKeyType={'go'}
+                                        autoCapitalize={false}
+                                        autoCorrect={false}
+
+                                        value={values.passwordConfirm}
+                                        onChangeText={handleChange('passwordConfirm')}
+
+                                        ref={ref => this.passwordConfirm = ref}
+                                    />
+                                </Item>
+
+                            </View>
 
 
-                  <View style={styles.btnArea}>
-                      <TouchableOpacity
-                          style={styles.btn}
-                      >
-                          <LinearGradient
-                              start={{x: 0, y: 0}} end={{x: 1, y: 0}}
-                              colors={['#1100FF', '#4855FF', '#0077FF']} style={styles.btn}>
 
-                              <Text style={{color:'#fff'}}>
-                                  Kayıt
-                              </Text>
-                          </LinearGradient>
-                      </TouchableOpacity>
-                  </View>
+                            <View style={styles.btnArea}>
+                                <TouchableOpacity
+                                    style={styles.btn}
+                                >
+                                    <LinearGradient
+                                        start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                                        colors={['#1100FF', '#4855FF', '#0077FF']} style={styles.btn}>
 
+                                        <Text style={{color:'#fff'}}>
+                                            Kayıt
+                                        </Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            </View>
+                        </>
+                      )}
+
+                  </Formik>
                   <View style={styles.helperTextArea}>
 
                       <Text style={styles.helperText1}>Zaten hesabınız var mı? </Text>
@@ -98,7 +184,6 @@ export default class RegisterForm extends Component {
                       </TouchableOpacity>
                   </View>
               </View>
-          </Form>
       </View>
     );
   }
@@ -183,7 +268,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         paddingLeft: 15,
         fontFamily: 'Muli-SemiBold',
-        color: '#B4B4B4',
+        color: '#304555',
     },
     inputAreaFirst: {
         marginTop: 30,

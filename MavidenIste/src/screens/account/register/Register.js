@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingVertical: '10%',
   },
   logoArea: {
-    marginVertical: 65,
+    marginVertical: 45,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

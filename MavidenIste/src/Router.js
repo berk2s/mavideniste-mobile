@@ -36,48 +36,6 @@ let tintColorIndex = 0;
 
 import SwitcherStore from './store/SwitcherStore';
 
-const MainStack = createStackNavigator({
-    Login:{
-        screen:LoginScreen,
-        navigationOptions:{
-            headerShown:false
-        }
-    },
-    Register:{
-        screen:RegisterScreen,
-        navigationOptions:{
-            headerShown: false
-        }
-    },
-    PhoneVerifaction:{
-        screen:PhoneVerifactionScreen,
-        navigationOptions:{
-            headerShown:false
-        }
-    },
-    Onboarding:{
-        screen:OnboardingScreen,
-        navigationOptions:{
-            headerShown:false
-        }
-    },
-    ForgotPassStep1:{
-        screen:ForgotPassStep1Screen,
-        navigationOptions:{
-            headerShown:false
-        }
-    },
-    ForgotPassStep2:{
-        screen:ForgotPassStep2Screen,
-        navigationOptions:{
-            headerShown:false
-        }
-    }
-},
-    {
-        initialRouteName:'Login'
-    });
-
 const bottomTabs = createBottomTabNavigator({
    Feed:{
        screen:createStackNavigator({
@@ -127,7 +85,31 @@ const bottomTabs = createBottomTabNavigator({
         }
     },
     Profile:{
-       screen:ProfileUnauthticatedScreen,
+       screen:createStackNavigator({
+           ProfileUnauthticated:{
+               screen:ProfileUnauthticatedScreen,
+           },
+           Register:{
+               screen:RegisterScreen,
+           },
+           Login:{
+               screen:LoginScreen,
+           },
+           PhoneVerifaction:{
+               screen:PhoneVerifactionScreen,
+           },
+           Onboarding:{
+               screen:OnboardingScreen,
+           },
+           ForgotPassStep1:{
+               screen:ForgotPassStep1Screen,
+           },
+           ForgotPassStep2:{
+               screen:ForgotPassStep2Screen,
+           }
+       }, {
+           headerMode:null,
+       }),
         navigationOptions:{
             tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(4); obj.navigation.navigate('Profile')}),
             tabBarLabel: () => (null),
@@ -161,7 +143,6 @@ const bottomTabs = createBottomTabNavigator({
 
 const pages = createStackNavigator({
     bottomTabs:bottomTabs,
-    MainStack:MainStack,
 }, {
     headerMode:null,
 });
