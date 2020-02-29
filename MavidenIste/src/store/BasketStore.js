@@ -1,6 +1,6 @@
 import {observable, action, runInAction, computed, configure} from 'mobx';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import ProductStore from './ProductStore';
 import API from '../api'
 
 configure({
@@ -71,14 +71,16 @@ class BasketStore {
 
     @action validateIfProductInBasket = async (product_id) => {
         try{
-            let result = false;
             const products_ = await AsyncStorage.getItem('products');
-            const products = JSON.parse(products_);
-            const inStorage = [];
-            const findIndex = products.map(e => e.id).indexOf(product_id);
-            return findIndex;
+            if(products_ != null) {
+                const products = JSON.parse(products_);
+                const findIndex = products.map(e => e.id).indexOf(product_id);
+                return findIndex;
+            }else{
+                return -1;
+            }
         }catch(e){
-            return inStorage;
+            alert(e)
         }
     }
 
@@ -131,6 +133,7 @@ class BasketStore {
                 });
             }
             await AsyncStorage.setItem('products', JSON.stringify(this.products));
+            await ProductStore.addTheBasket(product_id);
             this.fetchProducts()
         }catch(e){
             alert(e);
@@ -146,6 +149,7 @@ class BasketStore {
                     this.products.splice(index, 1);
                 });
                 await AsyncStorage.setItem('products', JSON.stringify(this.products));
+                await ProductStore.outOfTheBasket(product_id);
                 this.fetchProducts()
             }
         }catch(e){
@@ -157,9 +161,11 @@ class BasketStore {
         try{
             await AsyncStorage.removeItem('products');
             runInAction(() => {
-                this.products = [],
-                this.clearProducts = []
-            })
+                this.products = [];
+                this.clearProducts = [];
+                this.totalPrice = 0
+            });
+            await ProductStore.outOfTheAllProducts();
             this.fetchProducts()
         }catch(e){
             alert(e);

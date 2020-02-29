@@ -4,18 +4,22 @@ import {Container, Header, Left, Body, Right, Button, Title, Content} from 'nati
 import CustomIcon from '../../../font/CustomIcon';
 import FastImage from 'react-native-fast-image';
 
-import { NavigationActions } from 'react-navigation';
+import {NavigationActions, NavigationEvents} from 'react-navigation';
 
 import {observer, inject} from 'mobx-react';
 import {IMAGE_URL} from '../../../constants';
 
 import EmptyIMG from '../../../img/empty.png'
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import SwitcherStore from '../../../store/SwitcherStore';
+import Switcher from '../switcher/Switcher';
 
 @inject('BasketStore')
 @observer
 export default class ShopingCard extends Component {
+
+
+
 
     state = {
         fetched:false,
@@ -116,6 +120,26 @@ export default class ShopingCard extends Component {
         }
     }
 
+    _handleCurrierClick = () => {
+        this.setState({
+            loading:true,
+        });
+
+        setTimeout(() => {
+            if(SwitcherStore.whichSwitcher == 0) {
+                this.props.navigation.navigate('Currier');
+                SwitcherStore.setWhichSwitcher(1);
+            }else {
+                this.props.navigation.navigate('Category');
+                SwitcherStore.setWhichSwitcher(0);
+            }
+            this.setState({
+                loading:false,
+            });
+
+        }, 300)
+    }
+
     render () {
 
 
@@ -146,6 +170,16 @@ export default class ShopingCard extends Component {
                 }
             </Right>
           </Header>
+            {
+                SwitcherStore.isSwitcherClicked
+                    ?
+                    <Switcher
+                        clickEvent={this._handleCurrierClick}
+                    />
+                    :
+                    <></>
+            }
+
           <Content
              style={{display:'flex', flex:1,}}
              padder>
@@ -154,6 +188,7 @@ export default class ShopingCard extends Component {
                   animation={'fade'}
                   size={'small'}
               />
+
               <View style={[styles.basketArea, {minHeight: Dimensions.get('window').height-245}]}>
 
                   {

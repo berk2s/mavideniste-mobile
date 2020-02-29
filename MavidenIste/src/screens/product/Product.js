@@ -10,6 +10,9 @@ import CustomIcon from '../../font/CustomIcon';
 
 import {observer, inject} from 'mobx-react'
 import Spinner from 'react-native-loading-spinner-overlay';
+import {NavigationEvents} from 'react-navigation';
+import SwitcherStore from '../../store/SwitcherStore';
+import Switcher from '../bottomtab/switcher/Switcher';
 
 @inject('BasketStore', 'ProductStore')
 @observer
@@ -36,7 +39,7 @@ export default class ProductList extends Component {
         }
     }
 
-    handleProductClick = async (product_id) => {
+    _handleProductAddToBasketClick = async (product_id) => {
         try{
             this.setState({
                 loading:true,
@@ -44,12 +47,9 @@ export default class ProductList extends Component {
 
             setTimeout(async () => {
                 await this.props.BasketStore.setBasketProduct(product_id);
-             //   const index = this.state.datas.map(e => e._id).indexOf(product_id);
-             //   this.state.datas[index].isInTheBasket = true;
                 this.setState({
                     loading:false,
                 });
-
             }, 500);
 
         }catch(e){
@@ -57,109 +57,163 @@ export default class ProductList extends Component {
         }
     }
 
+    _handleProductOutOfTHeBasketClick = async (product_id) => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            setTimeout(async () => {
+                await this.props.BasketStore.deleteBasketProduct(product_id);
+                this.setState({
+                    loading:false,
+                });
+            }, 500);
+
+        }catch(e){
+            alert(e);
+        }
+    }
+
+    _clickEvent = () => {
+        this.setState({
+            loading:true,
+        });
+
+        setTimeout(() => {
+            if(SwitcherStore.whichSwitcher == 0) {
+                this.props.navigation.navigate('Currier');
+                SwitcherStore.setWhichSwitcher(1);
+            }else {
+                this.props.navigation.navigate('Category');
+                SwitcherStore.setWhichSwitcher(0);
+            }
+            this.setState({
+                loading:false,
+            });
+
+        }, 300)
+    }
+
     render() {
-    return (
-        <Container style={styles.container}>
-            <HeaderWithSearch
-                subView={true}
-                navigation={this.props.navigation}
-            />
+        return (
+            <Container style={styles.container}>
+                <HeaderWithSearch
+                    subView={true}
+                    navigation={this.props.navigation}
+                />
 
-            <Content
-                style={{display:'flex', flex:1}}
-                padder>
-                <View style={styles.content}>
-                    <Spinner
-                        visible={this.state.loading}
-                        animation={'fade'}
-                        size={'small'}
-                    />
-                    {this.state.fetched
-                        ?
-                        <>
-                            <View style={styles.basketInfoArea}>
-                                <TouchableOpacity>
-                                    <View style={styles.basketInfoBox}>
-                                        <View style={{position:'absolute', left:-10}}>
-                                            <CustomIcon name="add" size={30} style={{color:'#00CFFF'}} />
-                                        </View>
-                                        <Text style={styles.basketText}>145<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <Text style={styles.allCountText}>Toplam Tutar</Text>
+                <View style={styles.basketInfoArea}>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('ShopingCard')}>
+                        <View style={styles.basketInfoBox}>
+                            <View style={{position:'absolute', left:-10}}>
+                                <CustomIcon name="add" size={30} style={{color:'#00CFFF'}} />
                             </View>
-                            <View style={styles.cardArea}>
-                                {
-                                    this.props.ProductStore.getProducts.map(e => {
-                                        const uri = IMAGE_URL+e.product_image;
-                                        return <View  key={e._id} style={styles.card} >
-                                                <View style={styles.cardWhiteArea}>
-                                                    <FastImage
-                                                        source={{uri: uri}}
-                                                        style={styles.cardImage}
-                                                    />
-                                                </View>
-                                                <View style={styles.cardTextArea}>
-                                                    <View style={styles.cardTextAreaInfoArea}>
-                                                        <View style={styles.infoAboutName}>
-                                                            <Text style={styles.cardProductName}>{e.product_name}</Text>
-                                                        </View>
-                                                        <View style={styles.infoAboutPricing}>
-                                                            {
-                                                                e.product_discount != null
-                                                                    ?
-                                                                    <>
-                                                                        <Text style={styles.cardAboutDiscountOldPrice}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:4}}>₺</Text></Text>
-                                                                        <Text style={styles.cardAboutPricing}>{e.product_discount_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
-                                                                    </>
-                                                                    :
-                                                                    <Text style={styles.cardAboutPricing}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
-
-                                                            }
-                                                               </View>
-                                                    </View>
-                                                    <TouchableOpacity onPress={() => this.handleProductClick(e._id)}>
-                                                        <View style={styles.addToBasketArea}>
-                                                            <CustomIcon name="add" size={25} style={{color:'#00CFFF'}} />
-                                                            <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', position:'absolute', top:3, right:10}}>+</Text>
-                                                            {
-                                                                e.isInTheBasket == true
-                                                                    ?
-                                                                    <Text style={{fontFamily:'Muli-SemiBold', color:'#FF0000', fontSize:5}}>Sepetten cikar</Text>
-                                                                    :
-                                                                    <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete ekle</Text>
-
-                                                            }
-
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-                                                {
-                                                    e.product_discount != null
-                                                    ?
-                                                        <View style={styles.discountPercentage}>
-                                                            <Text style={styles.discountText}>{parseInt(e.product_discount).toFixed(0)}%</Text>
-                                                        </View>
-                                                        :
-                                                        <></>
-                                                }
-
-                                            </View>
-
-                                    })
-                                }
-
-                            </View>
-                        </>
-                        :
-                        <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
-                            <Loading />
+                            <Text style={styles.basketText}>{this.props.BasketStore.getTotalPrice}<Text style={{fontFamily:'Arial', fontSize:11}}>₺</Text></Text>
                         </View>
-                    }
+                    </TouchableOpacity>
+                    <Text style={styles.allCountText}>Toplam Tutar</Text>
                 </View>
-            </Content>
-        </Container>
-    );
+                {
+                    SwitcherStore.isSwitcherClicked
+                        ?
+                        <Switcher
+                            clickEvent={this._clickEvent}
+                        />
+                        :
+                        <></>
+                }
+                <Content
+                    style={{display:'flex', flex:1}}
+                    padder>
+
+                    <View style={styles.content}>
+                        <Spinner
+                            visible={this.state.loading}
+                            animation={'fade'}
+                            size={'small'}
+                        />
+                        {this.state.fetched
+                            ?
+                            <>
+
+                                <View style={styles.cardArea}>
+                                    {
+                                        this.props.ProductStore.getProducts.map(e => {
+                                            const uri = IMAGE_URL+e.product_image;
+                                            return <View  key={e._id} style={styles.card} >
+                                                    <View style={styles.cardWhiteArea}>
+                                                        <FastImage
+                                                            source={{uri: uri}}
+                                                            style={styles.cardImage}
+                                                        />
+                                                    </View>
+                                                    <View style={styles.cardTextArea}>
+                                                        <View style={styles.cardTextAreaInfoArea}>
+                                                            <View style={styles.infoAboutName}>
+                                                                <Text style={styles.cardProductName}>{e.product_name}</Text>
+                                                            </View>
+                                                            <View style={styles.infoAboutPricing}>
+                                                                {
+                                                                    e.product_discount != null
+                                                                        ?
+                                                                        <>
+                                                                            <Text style={styles.cardAboutDiscountOldPrice}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:4}}>₺</Text></Text>
+                                                                            <Text style={styles.cardAboutPricing}>{e.product_discount_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
+                                                                        </>
+                                                                        :
+                                                                        <Text style={styles.cardAboutPricing}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
+
+                                                                }
+                                                                   </View>
+                                                        </View>
+                                                        {
+                                                            e.isInTheBasket == true
+                                                                ?
+                                                                <TouchableOpacity onPress={() => this._handleProductOutOfTHeBasketClick(e._id)}>
+                                                                    <View style={styles.addToBasketArea}>
+                                                                        <CustomIcon name="add" size={25} style={{color:'#FF0000'}} />
+                                                                        <Text style={{fontFamily:'Muli-SemiBold', color:'#EEFF00', fontSize:20, position:'absolute', top:-1, right:10}}>-</Text>
+                                                                        <Text style={{fontFamily:'Muli-SemiBold', color:'#FF0000', fontSize:5}}>Sepetten çıkar</Text>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                                :
+                                                                <TouchableOpacity onPress={() => this._handleProductAddToBasketClick(e._id)}>
+                                                                    <View style={styles.addToBasketArea}>
+                                                                        <CustomIcon name="add" size={25} style={{color:'#00CFFF'}} />
+                                                                        <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', position:'absolute', top:3, right:10}}>+</Text>
+                                                                        <Text style={{fontFamily:'Muli-SemiBold', color:'#003DFF', fontSize:5}}>Sepete ekle</Text>
+                                                                    </View>
+                                                                </TouchableOpacity>
+                                                        }
+
+                                                    </View>
+                                                    {
+                                                        e.product_discount != null
+                                                        ?
+                                                            <View style={styles.discountPercentage}>
+                                                                <Text style={styles.discountText}>{parseInt(e.product_discount).toFixed(0)}%</Text>
+                                                            </View>
+                                                            :
+                                                            <></>
+                                                    }
+
+                                                </View>
+
+                                        })
+                                    }
+
+                                </View>
+                            </>
+                            :
+                            <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
+                                <Loading />
+                            </View>
+                        }
+                    </View>
+                </Content>
+            </Container>
+        );
   }
 }
 
@@ -180,7 +234,11 @@ const styles = StyleSheet.create({
     basketInfoArea:{
       display:'flex',
         flexDirection:'column',
-        alignItems:'flex-end'
+        alignItems:'flex-end',
+        position:'absolute',
+        right:10,
+        top:70,
+        zIndex:9999
     },
     basketInfoBox:{
         width:87,
@@ -295,7 +353,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         flexWrap:'wrap',
-        paddingTop: 15
+        paddingTop: 50
     },
     card:{
         width:162,

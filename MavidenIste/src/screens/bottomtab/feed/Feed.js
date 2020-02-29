@@ -5,6 +5,8 @@ import { Container, Header, Button, Content, } from "native-base";
 // API
 import API from '../../../api'
 
+import {observer} from 'mobx-react';
+
 //brach fake
 import {BRANCH_ID, IMAGE_URL} from '../../../constants'
 
@@ -14,13 +16,19 @@ import Loading from '../../components/Loading';
 import CategoryCard from './components/CategoryCard';
 
 import FastImage from 'react-native-fast-image'
+import { NavigationEvents } from "react-navigation";
+import Switcher from '../switcher/Switcher';
+import SwitcherStore from '../../../store/SwitcherStore';
+import Spinner from 'react-native-loading-spinner-overlay';
 
+@observer
 export default class Feed extends Component {
 
     state = {
         loadingHeight: Dimensions.get('window').height-160,
         fetched:false,
-        datas: []
+        datas: [],
+        loading :false,
     }
 
     componentDidMount = async () => {
@@ -45,13 +53,56 @@ export default class Feed extends Component {
     }
 
 
+    _handleCurrierClick = () => {
+        this.setState({
+            loading:true,
+        });
+
+        setTimeout(() => {
+            if(SwitcherStore.whichSwitcher == 0) {
+                this.props.navigation.navigate('Currier');
+                SwitcherStore.setWhichSwitcher(1);
+            }else {
+                this.props.navigation.navigate('Category');
+                SwitcherStore.setWhichSwitcher(0);
+            }
+            this.setState({
+                loading:false,
+            });
+
+        }, 300)
+    }
+
     render() {
     return (
         <Container style={styles.container}>
             <HeaderWithSearch />
+
+            {
+                SwitcherStore.isSwitcherClicked
+                    ?
+                    <Switcher
+                        clickEvent={this._handleCurrierClick}
+                    />
+                    :
+                    <></>
+            }
+
+            <Spinner
+                visible={this.state.loading}
+                animation={'fade'}
+                size={'small'}
+            />
           <Content
               style={{display:'flex', flex:1}}
               padder>
+              <NavigationEvents
+                  onWillBlur={payload => {
+                    //  console.log(payload);
+                  }}
+                  />
+
+
               <View style={styles.content}>
                   {this.state.fetched
                       ?
@@ -140,6 +191,13 @@ const styles = StyleSheet.create({
     container:{
         backgroundColor:'#F6F6F6',
         flex:1,
-        display:'flex'
+        display:'flex',
+    },
+    absolute: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0
     }
 });

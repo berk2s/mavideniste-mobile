@@ -24,11 +24,17 @@ import CampaignScreen from './screens/bottomtab/campaign/Campaign';
 import SwitcherScreen from './screens/bottomtab/switcher/Switcher';
 import ShopingCardScreen from './screens/bottomtab/shopingcart/ShopingCard';
 import ProfileScreen from './screens/bottomtab/profile/Profile';
+import ProfileUnauthticatedScreen from './screens/bottomtab/profile/Unauthenticated';
+import BottomTab from './screens/bottomtab/BottomTab';
+import Currier from './screens/bottomtab/currier/Currier';
+
 
 // for the product listing
 import ProductListScreen from './screens/product/Product';
 
-const a = true;
+let tintColorIndex = 0;
+
+import SwitcherStore from './store/SwitcherStore';
 
 const MainStack = createStackNavigator({
     Login:{
@@ -69,7 +75,7 @@ const MainStack = createStackNavigator({
     }
 },
     {
-        initialRouteName:'ForgotPassStep2'
+        initialRouteName:'Login'
     });
 
 const bottomTabs = createBottomTabNavigator({
@@ -80,50 +86,58 @@ const bottomTabs = createBottomTabNavigator({
            },
            Product:{
                screen:ProductListScreen,
+           },
+           Currier:{
+               screen:Currier,
+               navigationOptions:{
+                   gestureEnabled: false,
+               }
            }
        }, {
            headerMode:null,
        }),
        navigationOptions:{
-           tabBarOnPress: ((obj) => obj.navigation.navigate('Feed')),
+           tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(0); obj.navigation.navigate('Feed')}),
            tabBarLabel: () => (null),
-           tabBarIcon: ({tintColor}) => <CustomIcon name="home-fill" size={25} style={{color: tintColor}} />
+           tabBarIcon: ({focused}) => <CustomIcon name="home-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
        }
    },
     Campaign:{
        screen:CampaignScreen,
         navigationOptions:{
-            tabBarOnPress: ((obj) => obj.navigation.navigate('Campaign')),
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(1); obj.navigation.navigate('Campaign')}),
             tabBarLabel: () => (null),
-            tabBarIcon: ({tintColor}) => <CustomIcon name="star-fill" size={25} style={{color: tintColor}} />
+            tabBarIcon: ({focused}) => <CustomIcon name="star-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
         }
     },
     Switcher:{
-       screen:SwitcherScreen,
+        screen:Currier,
         navigationOptions:{
-            tabBarOnPress: ((obj) => obj.navigation.navigate('Switcher')),
+            tabBarOnPress: ((obj) => {obj.navigation.navigate('Switcher')}),
             tabBarLabel: () => (null),
-            tabBarIcon: ({tintColor}) => <CustomIcon name="us" size={38} style={{color: tintColor}} />
+            tabBarIcon: ({focused}) => <CustomIcon name="us" size={38} style={{color: focused ? '#003DFF' : '#304555'}} />
         }
     },
     ShopingCard:{
        screen:ShopingCardScreen,
         navigationOptions:{
-            tabBarOnPress: ((obj) => obj.navigation.navigate('ShopingCard')),
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(3); obj.navigation.navigate('ShopingCard')}),
             tabBarLabel: () => (null),
-            tabBarIcon: ({tintColor}) => <CustomIcon name="shopping-cart-fill" size={25} style={{color: tintColor}} />
+            tabBarIcon: ({focused}) => <CustomIcon name="shopping-cart-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
         }
     },
     Profile:{
-       screen:a ? FeedScreen : ProfileScreen,
+       screen:ProfileUnauthticatedScreen,
         navigationOptions:{
-            tabBarOnPress: ((obj) => obj.navigation.navigate('Profile')),
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(4); obj.navigation.navigate('Profile')}),
             tabBarLabel: () => (null),
-            tabBarIcon: ({tintColor}) => <CustomIcon name="person-fill" size={25} style={{color: tintColor}} />
+            tabBarIcon: ({focused}) => <CustomIcon name="person-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
         }
     },
 },{
+    lazyLoad: false,
     backBehavior: 'history',
+    tabBarComponent:BottomTab,
     tabBarOptions: {
         activeTintColor: '#003DFF',
         inactiveTintColor: '#304555',
@@ -144,7 +158,6 @@ const bottomTabs = createBottomTabNavigator({
     },
 
 });
-
 
 const pages = createStackNavigator({
     bottomTabs:bottomTabs,
