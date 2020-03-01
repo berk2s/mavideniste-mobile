@@ -28,6 +28,7 @@ import ProfileUnauthticatedScreen from './screens/bottomtab/profile/Unauthentica
 import BottomTab from './screens/bottomtab/BottomTab';
 import Currier from './screens/bottomtab/currier/Currier';
 
+import AuthSwitcher from './screens/switch/AuthSwitcher';
 
 // for the product listing
 import ProductListScreen from './screens/product/Product';
@@ -36,7 +37,43 @@ let tintColorIndex = 0;
 
 import SwitcherStore from './store/SwitcherStore';
 
-const bottomTabs = createBottomTabNavigator({
+import AuthStore from './store/AuthStore';
+
+const unAuthticatedProfileStack = createStackNavigator({
+    ProfileUnauthticated:{
+        screen:ProfileUnauthticatedScreen,
+    },
+    Register:{
+        screen:RegisterScreen,
+    },
+    Login:{
+        screen:LoginScreen,
+    },
+    PhoneVerifaction:{
+        screen:PhoneVerifactionScreen,
+    },
+    Onboarding:{
+        screen:OnboardingScreen,
+    },
+    ForgotPassStep1:{
+        screen:ForgotPassStep1Screen,
+    },
+    ForgotPassStep2:{
+        screen:ForgotPassStep2Screen,
+    }
+}, {
+    headerMode:null,
+});
+
+const authticatedProfileStack = createStackNavigator({
+    Profile:{
+        screen: ProfileScreen
+    }
+}, {
+    headerMode: null
+})
+
+const unAuthticatedBottomScreens = createBottomTabNavigator({
    Feed:{
        screen:createStackNavigator({
            Category:{
@@ -85,31 +122,7 @@ const bottomTabs = createBottomTabNavigator({
         }
     },
     Profile:{
-       screen:createStackNavigator({
-           ProfileUnauthticated:{
-               screen:ProfileUnauthticatedScreen,
-           },
-           Register:{
-               screen:RegisterScreen,
-           },
-           Login:{
-               screen:LoginScreen,
-           },
-           PhoneVerifaction:{
-               screen:PhoneVerifactionScreen,
-           },
-           Onboarding:{
-               screen:OnboardingScreen,
-           },
-           ForgotPassStep1:{
-               screen:ForgotPassStep1Screen,
-           },
-           ForgotPassStep2:{
-               screen:ForgotPassStep2Screen,
-           }
-       }, {
-           headerMode:null,
-       }),
+       screen:unAuthticatedProfileStack,
         navigationOptions:{
             tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(4); obj.navigation.navigate('Profile')}),
             tabBarLabel: () => (null),
@@ -141,8 +154,91 @@ const bottomTabs = createBottomTabNavigator({
 
 });
 
-const pages = createStackNavigator({
-    bottomTabs:bottomTabs,
+const authticatedBottomScreens = createBottomTabNavigator({
+    Feed:{
+        screen:createStackNavigator({
+            Category:{
+                screen:FeedScreen,
+            },
+            Product:{
+                screen:ProductListScreen,
+            },
+            Currier:{
+                screen:Currier,
+                navigationOptions:{
+                    gestureEnabled: false,
+                }
+            }
+        }, {
+            headerMode:null,
+        }),
+        navigationOptions:{
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(0); obj.navigation.navigate('Feed')}),
+            tabBarLabel: () => (null),
+            tabBarIcon: ({focused}) => <CustomIcon name="home-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
+        }
+    },
+    Campaign:{
+        screen:CampaignScreen,
+        navigationOptions:{
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(1); obj.navigation.navigate('Campaign')}),
+            tabBarLabel: () => (null),
+            tabBarIcon: ({focused}) => <CustomIcon name="star-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
+        }
+    },
+    Switcher:{
+        screen:Currier,
+        navigationOptions:{
+            tabBarOnPress: ((obj) => {obj.navigation.navigate('Switcher')}),
+            tabBarLabel: () => (null),
+            tabBarIcon: ({focused}) => <CustomIcon name="us" size={38} style={{color: focused ? '#003DFF' : '#304555'}} />
+        }
+    },
+    ShopingCard:{
+        screen:ShopingCardScreen,
+        navigationOptions:{
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(3); obj.navigation.navigate('ShopingCard')}),
+            tabBarLabel: () => (null),
+            tabBarIcon: ({focused}) => <CustomIcon name="shopping-cart-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
+        }
+    },
+    Profile:{
+        screen:authticatedProfileStack,
+        navigationOptions:{
+            tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(4); obj.navigation.navigate('Profile')}),
+            tabBarLabel: () => (null),
+            tabBarIcon: ({focused}) => <CustomIcon name="person-fill" size={25} style={{color: focused ? '#003DFF' : '#304555'}} />
+        }
+    },
+},{
+    lazyLoad: false,
+    backBehavior: 'history',
+    tabBarComponent:BottomTab,
+    tabBarOptions: {
+        activeTintColor: '#003DFF',
+        inactiveTintColor: '#304555',
+        style: {
+            shadowColor: '#000',
+            shadowOpacity:0.15,
+            shadowRadius: 9,
+            shadowOffset: {
+                height: 0,
+            },
+            elevation:8,
+            backgroundColor: 'white',
+            height: 55,
+            borderTopColor: 'transparent',
+            borderTopLeftRadius:25,
+            borderTopRightRadius:25
+        }
+    },
+
+});
+
+const pages = createSwitchNavigator({
+    AuthSwitcher:AuthSwitcher,
+    unAuthticatedBottomScreens:unAuthticatedBottomScreens,
+    authticatedBottomScreens:authticatedBottomScreens
 }, {
     headerMode:null,
 });

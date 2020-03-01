@@ -15,7 +15,7 @@ export default class extends Component {
           <View style={styles.textArea}>
             <Text style={styles.text}>Kayıt olun</Text>
           </View>
-          <RegisterForm />
+          <RegisterForm {...this.props} />
         </Content>
       </Container>
     );

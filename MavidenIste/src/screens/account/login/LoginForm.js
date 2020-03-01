@@ -1,79 +1,176 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Form, Input, Item} from 'native-base';
+import {Keyboard, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Form, Input, Item, Spinner} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 import LinearGradient from "react-native-linear-gradient";
 
+import { TextInputMask } from 'react-native-masked-text'
+
+import {Formik} from 'formik';
+import validationSchema from './validations';
+import API from '../../../api';
+import Snackbar from 'react-native-snackbar';
+
+import {observer} from 'mobx-react';
+
+import AuthStore from '../../../store/AuthStore';
+
+@observer
 export default class LoginForm extends Component {
+
+    _handleSubmit = async (values, bag) => {
+        Keyboard.dismiss();
+        try {
+            const phoneNumber = this.phoneNumber.getRawValue();
+            const {password} = values;
+            const {data} = await API.post(`/api/user/authenticate`,
+                {
+                    phone_number: phoneNumber,
+                    password:password,
+                }
+            );
+            if(data.status.code == 'A0'){
+                bag.setErrors({phoneNumber:'!'})
+                Snackbar.show({
+                    text: 'Geçersiz telefon numarası',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                    action: {
+                        text: 'Kayıt ol',
+                        fontFamily:'Muli-ExtraBold',
+                        textColor: '#fdd835',
+                        onPress: () => { /* Do something. */ },
+                    },
+                });
+            }else if(data.status.code == 'A1') {
+                bag.setErrors({password:'!'})
+                Snackbar.show({
+                    text: 'Hatalı Şifre',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                    action: {
+                        text: 'Şifremi unuttum',
+                        fontFamily:'Muli-ExtraBold',
+                        textColor: '#fdd835',
+                        onPress: () => { /* Do something. */ },
+                    },
+                });
+            }else if(data.status.code == 'A2'){
+                const token = data.status.token;
+                const user_id = data.status.user_id;
+
+                await AuthStore.saveToken(user_id, token);
+            }
+        }catch(e){
+            console.log(e)
+        }
+    }
+
+
+
   render() {
     return (
       <View>
-          <Form>
-              <View style={styles.inputsArea}>
-                  <Item style={[styles.inputAreaFirst, styles.inputArea]}>
-                      <View>
-                          <Text style={styles.accIcon}>
+          <Formik
+            initialValues={{
+                phoneNumber:'',
+                password:''
+            }}
+            validationSchema={validationSchema}
+            onSubmit={this._handleSubmit}
+          >
+              {({values, handleChange, setFieldTouched, handleSubmit, errors, touched, isSubmitting}) => (
+                  <View style={styles.inputsArea}>
+                      <Item style={[styles.inputAreaFirst, styles.inputArea]} error={errors.phoneNumber && touched.phoneNumber}>
+                          <View>
+                              <Text style={styles.accIcon}>
+                                  <CustomIcon
+                                      name="person"
+                                      size={20}
+                                      style={{color: '#616D7B'}}
+                                  />
+                              </Text>
+                          </View>
+                          <TextInputMask
+                              style={styles.input}
+                              placeholder="Telefon numaranız"
+                              placeholderTextColor={'#B4B4B4'}
+                              autoCorrect={false}
+                              returnKeyType={'next'}
+
+                              type={'custom'}
+                              options={{
+                                  mask: '0 (999) 999 9999',
+                                  getRawValue: function(value, settings) {
+                                      return value.replace(/\D/g,'');
+                                  },
+                              }}
+
+                              value={values.phoneNumber}
+                              onChangeText={handleChange('phoneNumber')}
+                              onSubmitEditing={() => this.password._root.focus()}
+                              onBlur={() => setFieldTouched('phoneNumber')}
+                              ref={(ref) => this.phoneNumber = ref}
+                          />
+                      </Item>
+                      <Item style={[styles.inputAreaLast, styles.inputArea]} error={errors.password && touched.password}>
+                          <Text style={styles.passIcon}>
                               <CustomIcon
-                                  name="person"
+                                  name="unlock"
                                   size={20}
                                   style={{color: '#616D7B'}}
                               />
                           </Text>
-                      </View>
-                      <Input
-                          style={styles.input}
-                          placeholder="E-Mail adresi"
-                          placeholderTextColor={'#B4B4B4'}
-                      />
-                  </Item>
-                  <Item style={[styles.inputAreaLast, styles.inputArea]}>
-                      <Text style={styles.passIcon}>
-                          <CustomIcon
-                              name="unlock"
-                              size={20}
-                              style={{color: '#616D7B'}}
+                          <Input
+                              style={styles.input}
+                              placeholder="Şifre"
+                              placeholderTextColor={'#B4B4B4'}
+                              returnKeyType={'go'}
+                              secureTextEntry
+
+                              value={values.password}
+                              onChangeText={handleChange('password')}
+                              onBlur={() => setFieldTouched('password')}
+
+                              ref={(ref) => this.password = ref}
                           />
-                      </Text>
-                      <Input
-                          style={styles.input}
-                          placeholder="Şifre"
-                          placeholderTextColor={'#B4B4B4'}
-                          secureTextEntry
-                      />
-                  </Item>
+                      </Item>
 
-                  <View style={styles.forgotPassArea}>
+                      <View style={styles.forgotPassArea}>
 
-                      <TouchableOpacity>
-                          <Text style={styles.forgotPassText}>Şifremi Unuttum</Text>
-                      </TouchableOpacity>
+                          <TouchableOpacity>
+                              <Text style={styles.forgotPassText}>Şifremi Unuttum</Text>
+                          </TouchableOpacity>
 
+                      </View>
+
+                      <View style={styles.btnArea}>
+                          <TouchableOpacity
+                              style={styles.btn}
+                              onPress={handleSubmit}
+                          >
+                              <LinearGradient
+                                  start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                                  colors={['#1100FF', '#4855FF', '#0077FF']} style={styles.btn}>
+
+                                  {isSubmitting && <Spinner size={'small'} color={'#fff'} />}
+                                  {!isSubmitting && <Text style={{color:'#fff'}}>Giriş</Text>}
+                              </LinearGradient>
+                          </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.helperTextArea}>
+
+                          <Text style={styles.helperText1}>Hesabınız yok mu? </Text>
+                          <TouchableOpacity>
+                              <Text style={styles.helperText2}>Hemen kayıt olun.</Text>
+                          </TouchableOpacity>
+                      </View>
                   </View>
-
-                  <View style={styles.btnArea}>
-                      <TouchableOpacity
-                          style={styles.btn}
-                      >
-                          <LinearGradient
-                              start={{x: 0, y: 0}} end={{x: 1, y: 0}}
-                              colors={['#1100FF', '#4855FF', '#0077FF']} style={styles.btn}>
-
-                              <Text style={{color:'#fff'}}>
-                                  Giriş
-                              </Text>
-                          </LinearGradient>
-                      </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.helperTextArea}>
-
-                      <Text style={styles.helperText1}>Hesabınız yok mu? </Text>
-                      <TouchableOpacity>
-                          <Text style={styles.helperText2}>Hemen kayıt olun.</Text>
-                      </TouchableOpacity>
-                  </View>
-              </View>
-          </Form>
+              )}
+          </Formik>
       </View>
     );
   }
@@ -85,7 +182,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent:'center',
         alignItems:'center',
-        marginTop:32
+        marginTop:32,
+        marginBottom:50
     },
     helperText1:{
         fontFamily:'Muli-Bold',
@@ -131,7 +229,7 @@ const styles = StyleSheet.create({
         paddingVertical: '10%',
     },
     logoArea: {
-        marginVertical: 65,
+        marginVertical: 45,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -157,7 +255,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         paddingLeft: 15,
         fontFamily: 'Muli-SemiBold',
-        color: '#B4B4B4',
+        color: '#304555',
     },
     inputAreaFirst: {
         marginTop: 30,

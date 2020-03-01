@@ -1,14 +1,109 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Form, Input, Item} from 'native-base';
+import {StyleSheet, Text, TouchableOpacity, View, Linking, Keyboard, Platform} from 'react-native';
+import {Form, Input, Item, Spinner} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 import LinearGradient from "react-native-linear-gradient";
 
 import {Formik} from 'formik';
-
+import validationSchema from './validations'
 import { TextInputMask } from 'react-native-masked-text'
 
+import CheckBox from 'react-native-check-box'
+import Snackbar from 'react-native-snackbar';
+
+
+import {TERMSOFUSE_URL} from '../../../constants'
+import API from '../../../api';
+
+
 export default class RegisterForm extends Component {
+
+    state={
+        isChecked:false,
+    }
+
+    _handleSubmit = async (values, bag) => {
+        Keyboard.dismiss();
+        if(!this.state.isChecked){
+            Snackbar.show({
+                text: 'Lütfen kullanım koşullarını kabul edin.',
+                duration: 7000,
+                backgroundColor:'#bf360c',
+                fontFamily:'Muli-Bold',
+                textColor:'white',
+            });
+            return false
+        }
+
+        try{
+            values.phoneNumber = this.phoneNumber.getRawValue();
+            const {nameSurname, emailAddress, phoneNumber, password } = values;
+            const {data} = await API.post(`/api/user`,
+                {
+                    name_surname: nameSurname,
+                    email_address: emailAddress,
+                    phone_number: phoneNumber,
+                    password:password,
+                    which_platform: Platform.OS
+                }
+            );
+            if (data.status.code == 'R0' && data.status.whichOne == 'both') {
+                    bag.setErrors({emailAddress: '!', phoneNumber:'!'})
+                    Snackbar.show({
+                        text: 'Böyle bir kullanıcı mevcut',
+                        duration: Snackbar.LENGTH_LONG,
+                        backgroundColor:'#d32f2f',
+                        textColor:'white',
+                        action: {
+                            text: 'Şifremi Unuttum',
+                            fontFamily:'Muli-ExtraBold',
+                            textColor: '#fdd835',
+                            onPress: () => { /* Do something. */ },
+                        },
+                    });
+                return false;
+            }else if(data.status.code == 'R0' && data.status.whichOne == 'phone'){
+                    bag.setErrors({phoneNumber:'!'})
+                    Snackbar.show({
+                        text: 'Böyle bir numara mevcut',
+                        duration: Snackbar.LENGTH_LONG,
+                        backgroundColor:'#d32f2f',
+                        textColor:'white',
+                        action: {
+                            text: 'Şifremi Unuttum',
+                            fontFamily:'Muli-ExtraBold',
+                            textColor: '#fdd835',
+                            onPress: () => { /* Do something. */ },
+                        },
+                    });
+                return false
+            }else if (data.status.code == 'R0' && data.status.whichOne == 'email'){
+                    bag.setErrors({emailAddress:'!'})
+                    Snackbar.show({
+                        text: 'Böyle bir e-posta mevcut',
+                        duration: Snackbar.LENGTH_LONG,
+                        backgroundColor:'#d32f2f',
+                        textColor:'white',
+                        action: {
+                            text: 'Şifremi Unuttum',
+                            fontFamily:'Muli-ExtraBold',
+                            textColor: '#fdd835',
+                            onPress: () => { /* Do something. */ },
+                        },
+                    });
+                return false
+            }else if(data.status.code == 'R1'){
+                /*
+                    it will be a sms verication area
+                 */
+                this.props.navigation.navigate('Login')
+            }
+        }catch(e){
+            console.log(e);
+        }
+
+    }
+
   render() {
     return (
       <View>
@@ -21,11 +116,14 @@ export default class RegisterForm extends Component {
                         password:'',
                         passwordConfirm:'',
                         phoneNumber:'',
+                        termsOfUse:''
                     }}
+                    validationSchema={validationSchema}
+                    onSubmit={this._handleSubmit}
                   >
-                      {({values, handleChange}) => (
+                      {({values, handleChange, setFieldTouched, handleSubmit, errors, touched, isSubmitting}) => (
                         <>
-                            <Item style={[styles.inputAreaFirst, styles.inputArea]}>
+                            <Item style={[styles.inputAreaFirst, styles.inputArea]} error={errors.nameSurname && touched.nameSurname}>
                                 <Text style={styles.passIcon}>
                                     <CustomIcon
                                         name="person"
@@ -43,10 +141,11 @@ export default class RegisterForm extends Component {
                                     value={values.nameSurname}
                                     onChangeText={handleChange('nameSurname')}
                                     onSubmitEditing={() => this.emailAddress._root.focus()}
+                                    onBlur={() => setFieldTouched('nameSurname')}
                                 />
                             </Item>
 
-                            <Item style={[styles.inputAreaLast, styles.inputArea]}>
+                            <Item style={[styles.inputAreaLast, styles.inputArea]} error={errors.emailAddress && touched.emailAddress}>
                                 <View>
                                     <Text style={styles.accIcon}>
                                         <CustomIcon
@@ -62,17 +161,19 @@ export default class RegisterForm extends Component {
                                     placeholderTextColor={'#B4B4B4'}
                                     returnKeyType={'next'}
                                     keyboardType={'email-address'}
-                                    autoCapitalize={false}
+                                    autoCapitalize={'none'}
 
                                     value={values.emailAddress}
                                     onChangeText={handleChange('emailAddress')}
                                     onSubmitEditing={() => this.phoneNumber.getElement().focus()}
+                                    onBlur={() => setFieldTouched('emailAddress')}
 
                                     ref={(ref) => this.emailAddress = ref}
                                 />
                             </Item>
 
-                            <Item style={[styles.inputAreaLast, styles.inputArea]}>
+                            <Item style={[styles.inputAreaLast, styles.inputArea]} error={errors.phoneNumber && touched.phoneNumber}>
+
                                 <Text style={styles.passIcon}>
                                     <CustomIcon
                                         name="phone"
@@ -98,14 +199,14 @@ export default class RegisterForm extends Component {
                                     value={values.phoneNumber}
                                     onChangeText={handleChange('phoneNumber')}
                                     onSubmitEditing={() => this.password._root.focus()}
+                                    onBlur={() => setFieldTouched('phoneNumber')}
 
                                     ref={(ref) => this.phoneNumber = ref}
                                 />
                             </Item>
-
                             <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
 
-                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]}>
+                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]} error={errors.password && touched.password}>
                                     <Text style={styles.passIcon}>
                                         <CustomIcon
                                             name="unlock"
@@ -119,18 +220,19 @@ export default class RegisterForm extends Component {
                                         placeholderTextColor={'#B4B4B4'}
                                         secureTextEntry
                                         returnKeyType={'next'}
-                                        autoCapitalize={false}
+                                        autoCapitalize={'none'}
                                         autoCorrect={false}
 
                                         value={values.password}
                                         onChangeText={handleChange('password')}
                                         onSubmitEditing={() => this.passwordConfirm._root.focus()}
+                                        onBlur={() => setFieldTouched('password')}
 
                                         ref={(ref) => this.password = ref}
                                     />
                                 </Item>
 
-                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]}>
+                                <Item style={[styles.inputAreaLast, styles.inputArea, {width:'45%'}]} error={errors.passwordConfirm && touched.passwordConfirm}>
                                     <Text style={styles.passIcon}>
                                         <CustomIcon
                                             name="unlock"
@@ -144,11 +246,12 @@ export default class RegisterForm extends Component {
                                         placeholderTextColor={'#B4B4B4'}
                                         secureTextEntry
                                         returnKeyType={'go'}
-                                        autoCapitalize={false}
+                                        autoCapitalize={'none'}
                                         autoCorrect={false}
 
                                         value={values.passwordConfirm}
                                         onChangeText={handleChange('passwordConfirm')}
+                                        onBlur={() => setFieldTouched('passwordConfirm')}
 
                                         ref={ref => this.passwordConfirm = ref}
                                     />
@@ -156,22 +259,33 @@ export default class RegisterForm extends Component {
 
                             </View>
 
-
+                            <CheckBox
+                                style={{flex: 1,}}
+                                onClick={()=>{
+                                    this.setState({
+                                        isChecked:!this.state.isChecked
+                                    })
+                                }}
+                                isChecked={this.state.isChecked}
+                                checkBoxColor={'#616D7B'}
+                                rightText={<><Text onPress={() => Linking.openURL(TERMSOFUSE_URL)} style={{color:'blue', fontFamily:'Muli-Regular'}}>Kullanım koşulları</Text><Text style={{color:'#616D7B', fontFamily:'Muli-Regular'}}>'nı okudum.</Text></>}
+                            />
 
                             <View style={styles.btnArea}>
                                 <TouchableOpacity
                                     style={styles.btn}
+                                    onPress={handleSubmit}
                                 >
                                     <LinearGradient
                                         start={{x: 0, y: 0}} end={{x: 1, y: 0}}
                                         colors={['#1100FF', '#4855FF', '#0077FF']} style={styles.btn}>
 
-                                        <Text style={{color:'#fff'}}>
-                                            Kayıt
-                                        </Text>
+                                        {isSubmitting && <Spinner size={'small'} color={'#fff'} />}
+                                        {!isSubmitting && <Text style={{color:'#fff'}}>Kayıt</Text>}
                                     </LinearGradient>
                                 </TouchableOpacity>
                             </View>
+
                         </>
                       )}
 

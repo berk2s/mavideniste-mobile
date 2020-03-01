@@ -25,7 +25,7 @@ export default class Login extends Component {
           <View style={styles.textArea}>
             <Text style={styles.text}>Giriş yapın</Text>
           </View>
-          <LoginForm />
+          <LoginForm {...this.props} />
         </Content>
       </Container>
     );
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    height:'100%'
   },
   subContainer: {
     display: 'flex',

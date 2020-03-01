@@ -47,7 +47,7 @@ export default class Unauthticated extends Component {
                 <Header transparent style={styles.header}>
                     <Left style={styles.leftArea}>
 
-                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
+                        <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
                             <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
                         </TouchableOpacity>
                     </Left>

@@ -45,7 +45,11 @@ const styles = StyleSheet.create({
         justifyContent:'space-around',
         alignItems:'center',
         height: 55,
-        width:'100%'
+        width:'100%',
+        borderTopLeftRadius:20,
+        borderTopRightRadius:20,
+        backgroundColor: 'white',
+        elevation:5,
     },
     tab:{
         shadowColor: '#000',
@@ -54,11 +58,11 @@ const styles = StyleSheet.create({
         shadowOffset: {
             height: 0,
         },
-        elevation:8,
+        elevation:5,
         backgroundColor: 'white',
 
         borderTopColor: 'transparent',
-        borderTopLeftRadius:25,
-        borderTopRightRadius:25,
+        borderTopLeftRadius:20,
+        borderTopRightRadius:20,
     }
 });
