@@ -2,6 +2,7 @@ import {observable, configure, action, runInAction, computed} from 'mobx';
 import * as Keychain from 'react-native-keychain';
 
 import NavigationService from '../NavigationService';
+import API from '../api';
 
 configure({
     enforceActions:'observed'
@@ -10,13 +11,15 @@ configure({
 class AuthStore {
     @observable token = null;
     @observable user_id = null;
+    @observable name_surname = null;
 
-    @action saveToken = async (user_id, token) => {
+    @action saveToken = async (user_id, token, name_surname) => {
         try{
             await Keychain.setGenericPassword(user_id, token);
             runInAction(() => {
                 this.token = token;
                 this.user_id = user_id;
+                this.name_surname = name_surname;
             });
             await this.authSync();
         }catch(e){
@@ -29,15 +32,24 @@ class AuthStore {
             const getToken = await this.getTokenFromRepo();
             const getUserId = await this.getUserIdFromRepo();
             if(getToken != null && getUserId != null){
+
+                const user_information = await API.get(`/api/user/detail/${getUserId}`, {
+                    headers:{
+                        'x-access-token': getToken
+                    }
+                });
+
                 runInAction(() => {
                     this.token = getToken;
                     this.user_id = getUserId;
+                    this.name_surname = user_information.data.data.name_surname;
                 });
                 NavigationService.navigate('authticatedBottomScreens');
             }else{
                 runInAction(() => {
                     this.token = null;
-                    this.user_id = null
+                    this.user_id = null;
+                    this.name_surname = null;
                 })
                 NavigationService.navigate('unAuthticatedBottomScreens');
             }
@@ -78,11 +90,20 @@ class AuthStore {
             runInAction(() => {
                 this.token = null;
                 this.user_id = null;
+                this.name_surname = null;
             })
             await this.authSync();
         }catch(e){
             alert(e);
         }
+    }
+
+    @action async setNameSurname(name_surname){
+        this.name_surname = name_surname;
+    }
+
+    @computed get getNameSurname(){
+        return this.name_surname;
     }
 
     @computed get getToken(){
@@ -92,6 +113,7 @@ class AuthStore {
     @computed get getUserID(){
         return this.user_id;
     }
+
 }
 
 export default new AuthStore();

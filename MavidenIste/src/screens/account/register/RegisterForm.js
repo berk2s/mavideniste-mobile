@@ -38,7 +38,7 @@ export default class RegisterForm extends Component {
         try{
             values.phoneNumber = this.phoneNumber.getRawValue();
             const {nameSurname, emailAddress, phoneNumber, password } = values;
-            const {data} = await API.post(`/api/user`,
+            const {data} = await API.post(`/register`,
                 {
                     name_surname: nameSurname,
                     email_address: emailAddress,

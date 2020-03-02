@@ -23,10 +23,14 @@ import FeedScreen from './screens/bottomtab/feed/Feed';
 import CampaignScreen from './screens/bottomtab/campaign/Campaign';
 import SwitcherScreen from './screens/bottomtab/switcher/Switcher';
 import ShopingCardScreen from './screens/bottomtab/shopingcart/ShopingCard';
-import ProfileScreen from './screens/bottomtab/profile/Profile';
+import ProfileScreen from './screens/bottomtab/profile/authenticated/Profile';
 import ProfileUnauthticatedScreen from './screens/bottomtab/profile/Unauthenticated';
 import BottomTab from './screens/bottomtab/BottomTab';
 import Currier from './screens/bottomtab/currier/Currier';
+
+import ProfileSettingsScreen from './screens/bottomtab/profile/authenticated/profilesettings/ProfileSettings';
+import AddressManagementScreen from './screens/bottomtab/profile/authenticated/addressmanagement/AddressManagement';
+import AddAddress from './screens/bottomtab/profile/authenticated/addressmanagement/add_address/AddAddress';
 
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
@@ -68,6 +72,17 @@ const unAuthticatedProfileStack = createStackNavigator({
 const authticatedProfileStack = createStackNavigator({
     Profile:{
         screen: ProfileScreen
+    },
+    ProfileSettings:{
+        screen:ProfileSettingsScreen,
+    },
+    AddressManagement:{
+        screen:createStackNavigator({
+            AddressList:AddressManagementScreen,
+            AddAddress:AddAddress,
+        },{
+            headerMode: null
+        }),
     }
 }, {
     headerMode: null
@@ -130,6 +145,7 @@ const unAuthticatedBottomScreens = createBottomTabNavigator({
         }
     },
 },{
+    keyboardHidesTabBar:true,
     lazyLoad: false,
     backBehavior: 'history',
     tabBarComponent:BottomTab,

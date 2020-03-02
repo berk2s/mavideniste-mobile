@@ -1,0 +1,284 @@
+import React, { Component } from 'react';
+import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {Body, Container, Content, Header, Left, Title, Fab} from 'native-base';
+import CustomIcon from '../../../../../font/CustomIcon';
+import SwitcherStore from '../../../../../store/SwitcherStore';
+import Switcher from '../../../switcher/Switcher';
+import Spinner from 'react-native-loading-spinner-overlay';
+import AuthStore from '../../../../../store/AuthStore';
+import {observer} from 'mobx-react';
+
+import LocationIMG from '../../../../../img/location.png'
+import DeleteLocImg from '../../../../../img/deletelocation.png'
+import AddLocImg from '../../../../../img/addlocation.png'
+
+@observer
+export default class AddresManagement extends Component {
+
+    state = {
+        loading:false,
+        active:false
+    }
+
+    _clickEvent = () => {
+        this.setState({
+            loading:true,
+        });
+
+        setTimeout(() => {
+            if(SwitcherStore.whichSwitcher == 0) {
+                this.props.navigation.navigate('Currier');
+                SwitcherStore.setWhichSwitcher(1);
+            }else {
+                this.props.navigation.navigate('Category');
+                SwitcherStore.setWhichSwitcher(0);
+            }
+            this.setState({
+                loading:false,
+            });
+
+        }, 300)
+    }
+
+  render() {
+
+
+      return (
+        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
+            <Header transparent style={styles.header}>
+                <Left style={styles.leftArea}>
+
+                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+                    </TouchableOpacity>
+                </Left>
+                <Body style={styles.body}>
+                    <Title style={styles.bodyTitleText}>Adreslerim</Title>
+                </Body>
+
+            </Header>
+
+            {
+                SwitcherStore.isSwitcherClicked
+                    ?
+                    <Switcher
+                        clickEvent={this._clickEvent}
+                    />
+                    :
+                    <></>
+            }
+
+
+            <Spinner
+                visible={this.state.loading}
+                animation={'fade'}
+                size={'small'}
+            />
+
+            <TouchableOpacity style={styles.fabAdd} onPress={() => this.props.navigation.navigate('AddAddress')}>
+                <Image
+                    source={AddLocImg}
+                    style={{width:28, height:28}}
+                />
+            </TouchableOpacity>
+
+            <Content
+                style={{display:'flex', flex:1,}}
+                padder>
+                <View style={styles.addressListArea}>
+
+                    <TouchableOpacity style={styles.addressCard}>
+                        <View style={styles.addressCardHeader}>
+                            <Image source={LocationIMG} style={{width:17, height:17}}/>
+                            <Text style={styles.infoText}>Ev</Text>
+                            <Text style={styles.infoText2}>(Serdivan, Kemalpasa Mahallesi)</Text>
+                            <TouchableOpacity style={{position:'absolute', right:-6, top:-8}}>
+                                <Image source={DeleteLocImg} style={{width:30, height:30}} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.addressCardBody}>
+                            <Text style={styles.descText}>
+                                1625. ada D Blok Daire 5 15 Temmuz Camili Mahallesi
+                            </Text>
+                            <Text style={styles.descText}>
+                                (Yunus marketin arkasindaki sari binalar)
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+
+                </View>
+
+
+            </Content>
+
+        </Container>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+    fabAdd:{
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        position:'absolute',
+        bottom:0,
+        right:15,
+        backgroundColor:'#EAE7E7',
+        width:50,
+        height:50,
+        borderRadius:50,
+        shadowColor: "#000000",
+        marginBottom:20,
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+        elevation: 3,
+        zIndex:9999,
+    },
+
+    infoText2:{
+      fontFamily:'Muli-Light',
+        fontSize:12,
+
+    },
+    adressBodyProvince:{
+      display:'flex',
+      flexDirection:'row'
+    },
+    descText:{
+      fontFamily:'Muli-Regular',
+        fontSize:13
+
+    },
+    addressCardBody:{
+      display:'flex',
+        paddingVertical: 5
+    },
+    infoText:{
+      paddingHorizontal:5,
+        fontFamily:'Muli-Bold'
+    },
+    addressCardHeader:{
+      display:'flex',
+      flexDirection:'row',
+        flexWrap:'wrap',
+        alignItems:'flex-end'
+    },
+    addressCard:{
+        width:'100%',
+        backgroundColor:'#fff',
+        paddingVertical:10,
+        paddingHorizontal: 10,
+        borderRadius:6,
+        zIndex:99,
+        shadowColor: "#000000",
+        marginBottom:20,
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 3,
+    },
+    addressListArea:{
+        //height:'100%'
+    },
+    inputs:{
+        marginBottom:10
+    },
+    inputInfoArea:{
+        fontFamily:'Muli-Light',
+        fontSize: 14,
+        marginHorizontal:2,
+        marginVertical: 10
+    },
+    accIcon:{
+        marginLeft: 10,
+        marginRight: 5,
+        marginTop:1
+    },
+    input:{
+        fontFamily:'Muli-SemiBold',
+        fontSize:13,
+        paddingLeft:15,
+    },
+    inputArea:{
+        borderColor:'#fff',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        height:40,
+        backgroundColor:'#fff',
+        borderRadius:10,
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.16,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    inputFormArea:{
+        marginVertical:15
+    },
+    profileIntoTextArea:{
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center',
+        paddingHorizontal:15,
+        width:'70%',
+    },
+    profileCircle:{
+        width:50,
+        height:50,
+        borderRadius:50,
+        backgroundColor:'#8394CB',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+        shadowColor: '#000',
+        shadowOpacity:0.15,
+        shadowRadius: 9,
+        shadowOffset: {
+            height: 0,
+        },
+        elevation:5,
+
+        borderTopColor: 'transparent',
+
+    },
+    profileInfo:{
+        display:'flex',
+        flexDirection:'row',
+    },
+    profileArea:{
+        marginTop:15,
+    },
+    rightArea:{
+        maxWidth:'65%'
+    },
+    bodyTitleText:{
+        fontFamily:'Muli-ExtraBold',
+        color:'#003DFF'
+    },
+    leftArea:{
+        maxWidth:'15%'
+    },
+    backBtn:{
+        display:'flex',
+        justifyContent:'flex-end',
+        alignItems:'flex-end'
+    },
+    body:{
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'flex-start',
+        maxWidth:'84.9%'
+    },
+});

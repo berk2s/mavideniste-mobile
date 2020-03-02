@@ -23,7 +23,7 @@ export default class LoginForm extends Component {
         try {
             const phoneNumber = this.phoneNumber.getRawValue();
             const {password} = values;
-            const {data} = await API.post(`/api/user/authenticate`,
+            const {data} = await API.post(`/authenticate`,
                 {
                     phone_number: phoneNumber,
                     password:password,
@@ -60,8 +60,9 @@ export default class LoginForm extends Component {
             }else if(data.status.code == 'A2'){
                 const token = data.status.token;
                 const user_id = data.status.user_id;
+                const name_surname = data.status.name_surname;
 
-                await AuthStore.saveToken(user_id, token);
+                await AuthStore.saveToken(user_id, token, name_surname);
             }
         }catch(e){
             console.log(e)

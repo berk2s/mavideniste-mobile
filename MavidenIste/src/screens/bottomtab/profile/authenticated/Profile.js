@@ -3,20 +3,97 @@ import {StyleSheet, Text, View, Button, SafeAreaView, TouchableOpacity, Dimensio
 
 import {observer} from 'mobx-react';
 
-import AuthStore from '../../../store/AuthStore';
+import AuthStore from '../../../../store/AuthStore';
 
 import {Body, Container, Content, Header, Left, Title, Card, CardItem, Icon, Right} from 'native-base';
-import CustomIcon from '../../../font/CustomIcon';
-import SwitcherStore from '../../../store/SwitcherStore';
-import Switcher from '../switcher/Switcher';
+import CustomIcon from '../../../../font/CustomIcon';
+import SwitcherStore from '../../../../store/SwitcherStore';
+import Switcher from '../../switcher/Switcher';
 import Spinner from 'react-native-loading-spinner-overlay';
-import LoginIMG from '../../../img/login.png';
+import LoginIMG from '../../../../img/login.png';
+import API from '../../../../apitoken';
 
 @observer
 export default class Profile extends Component {
 
     state = {
         loading:false
+    }
+
+    _clickEvent = () => {
+        this.setState({
+            loading:true,
+        });
+
+        setTimeout(() => {
+            if(SwitcherStore.whichSwitcher == 0) {
+                this.props.navigation.navigate('Currier');
+                SwitcherStore.setWhichSwitcher(1);
+            }else {
+                this.props.navigation.navigate('Category');
+                SwitcherStore.setWhichSwitcher(0);
+            }
+            this.setState({
+                loading:false,
+            });
+
+        }, 300)
+    }
+
+    _handleProfileSettingsClick = async () => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            const token = AuthStore.getToken;
+            const user_id = AuthStore.getUserID;
+
+            const user_information = await API.get(`/api/user/detail/${user_id}`);
+
+            this.setState({
+                loading:false,
+            });
+
+            console.log(user_information.data.data)
+
+            this.props.navigation.navigate('ProfileSettings', {userInfo: user_information.data.data})
+        }catch(e){
+            alert(e);
+        }
+    }
+
+    _handleLogout = async () => {
+        try{
+            this.setState({
+                loading:true,
+            });
+            await AuthStore.deleteUser();
+            this.setState({
+                loading:false,
+            });
+
+        }catch{
+            console.log(e);
+        }
+    }
+
+    _handleAddressClick = async () => {
+        try{
+
+            this.setState({
+                loading:true,
+            });
+            //await AuthStore.deleteUser();
+            this.setState({
+                loading:false,
+            });
+
+            this.props.navigation.navigate('AddressManagement')
+
+        }catch{
+            console.log(e);
+        }
     }
 
   render() {
@@ -67,27 +144,31 @@ export default class Profile extends Component {
                         </View>
 
                         <View style={styles.profileIntoTextArea}>
-                            <Text style={{fontFamily:'Muli-ExtraBold', color:'#304555', fontSize:17}}>Berk Topcu</Text>
+                            <Text style={{fontFamily:'Muli-ExtraBold', color:'#304555', fontSize:17}}>{AuthStore.getNameSurname}</Text>
                         </View>
 
-                        <View style={styles.profileCircle}>
-                            <CustomIcon
-                                name="edit-2"
-                                size={25}
-                                style={{color: '#fff'}}
-                            />
-                        </View>
+                        <TouchableOpacity onPress={this._handleProfileSettingsClick}>
+                            <View style={styles.profileCircle}>
+                                <CustomIcon
+                                    name="edit-2"
+                                    size={25}
+                                    style={{color: '#fff'}}
+                                />
+                            </View>
+                        </TouchableOpacity>
                     </View>
 
                     <View style={[styles.cardListArea, {borderRadius:15}]}>
                         <Card style={styles.card_}>
-                            <CardItem style={styles.card}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Adreslerim</Text>
-                                <Right>
+                            <TouchableOpacity onPress={this._handleAddressClick}>
+                                <CardItem style={styles.card}>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
+                                    <Text style={styles.cardText}>Adreslerim</Text>
+                                    <Right>
+                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    </Right>
+                                </CardItem>
+                            </TouchableOpacity>
                             <CardItem style={styles.card}>
                                 <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                 <Text style={styles.cardText}>Siparişlerim</Text>
@@ -125,13 +206,15 @@ export default class Profile extends Component {
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                 </Right>
                             </CardItem>
-                            <CardItem style={{borderRadius:15}}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Çıkış yap</Text>
-                                <Right>
+                            <TouchableOpacity onPress={this._handleLogout}>
+                                <CardItem style={{borderRadius:15}}>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
+                                    <Text style={styles.cardText}>Çıkış yap</Text>
+                                    <Right>
+                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    </Right>
+                                </CardItem>
+                            </TouchableOpacity>
                         </Card>
                     </View>
 
