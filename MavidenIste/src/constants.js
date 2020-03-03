@@ -1,7 +1,9 @@
 module.exports = {
-    API_URL: 'http://127.0.0.1:3000',
+    API_URL: 'http://192.168.1.8:3000',
+    LOCATION_API_URL: 'http://192.168.1.8:5000',
     API_KEY: 'c7da07af-9c40-4125-9a88-e4a5b59f5305',
-    IMAGE_URL: 'http://127.0.0.1:8000',
+    LOCATION_API_KEY: 'c7da07af-9c40-4125-9a88-e4a5b59f5305',
+    IMAGE_URL: 'http://192.168.1.8:5000',
     TERMSOFUSE_URL: 'http://www.google.com',
     BRANCH_ID: 54,
 }

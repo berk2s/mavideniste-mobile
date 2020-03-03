@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Image, Dimensions} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Alert} from 'react-native';
 import {Body, Container, Content, Header, Left, Title, Fab} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
 import SwitcherStore from '../../../../../store/SwitcherStore';
@@ -13,13 +13,31 @@ import DeleteLocImg from '../../../../../img/deletelocation.png'
 import AddLocImg from '../../../../../img/addlocation.png'
 import EmptyIMG from '../../../../../img/road.png';
 
+import LocationAPI from '../../../../../locationapi'
+import API from '../../../../../api'
+
+import Ripple from 'react-native-material-ripple';
+
+
 @observer
 export default class AddresManagement extends Component {
 
     state = {
         loading:false,
-        active:false
+        active:false,
+        getData: []
     }
+
+    componentDidMount() {
+        this.setState({
+            getData: [],
+        });
+
+        this.setState({
+            getData:this.props.navigation.getParam('address'),
+        });
+    }
+
 
     _clickEvent = () => {
         this.setState({
@@ -39,6 +57,75 @@ export default class AddresManagement extends Component {
             });
 
         }, 300)
+    }
+
+    _handleAddLocationClick = async() => {
+
+        try{
+
+            this.setState({
+                loading:true,
+            });
+
+
+            const datas = await LocationAPI.get('/api/location/province');
+
+           // console.log(datas.data)
+
+            this.props.navigation.navigate('AddAddress', {provinces: datas.data});
+            this.setState({
+                loading:false,
+            });
+
+        }catch(e){
+            alert(e)
+        }
+    }
+
+    _handleRemoveAddress = async (id) => {
+        try{
+            Alert.alert(
+                'Adresi sil',
+                'Adresi silmeye emin misin?',
+                [
+                    {
+                        text: 'Hayır',
+                        style: 'cancel',
+                    },
+                    {   text: 'Evet',
+                        onPress: async () => {
+                            this.setState({
+                                loading:true,
+                            });
+
+                            const getToken = AuthStore.getToken;
+                            const getUserId = AuthStore.getUserID;
+
+                            const deleteit = await API.delete(`/api/user/address/${getUserId}/${id}`, {
+                                headers:{
+                                    'x-access-token': getToken
+                                }
+                            });
+
+                            this.setState({
+                                getData: [],
+                            });
+
+                            this.state.getData = [...deleteit.data.data]
+
+                            this.props.navigation.navigate('AddressList', {address: deleteit.data.data})
+
+                            this.setState({
+                                loading:false,
+                            });
+
+                        }
+                    },
+                ]
+            );
+        }catch(e){
+            console.log(e);
+        }
     }
 
   render() {
@@ -76,19 +163,19 @@ export default class AddresManagement extends Component {
                 size={'small'}
             />
 
-            <TouchableOpacity style={styles.fabAdd} onPress={() => this.props.navigation.navigate('AddAddress')}>
+            <Ripple rippleSize={60} style={styles.fabAdd} onPress={this._handleAddLocationClick}>
                 <Image
                     source={AddLocImg}
                     style={{width:28, height:28}}
                 />
-            </TouchableOpacity>
+            </Ripple>
 
             <Content
                 style={{display:'flex', flex:1,}}
                 padder>
                 <View style={styles.addressListArea}>
 
-                    {this.props.navigation.getParam('address').length == 0
+                    {this.state.getData.length == 0
                     ?
                         <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
                             <Image source={EmptyIMG} style={{width:90, height:90}}/>
@@ -96,25 +183,26 @@ export default class AddresManagement extends Component {
                             <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>zaman kazanmak için adres ekleyebilirsin</Text>
                         </View>
                     :
-                        <TouchableOpacity style={styles.addressCard}>
-                            <View style={styles.addressCardHeader}>
-                                <Image source={LocationIMG} style={{width:17, height:17}}/>
-                                <Text style={styles.infoText}>Ev</Text>
-                                <Text style={styles.infoText2}>(Serdivan, Kemalpasa Mahallesi)</Text>
-                                <TouchableOpacity style={{position:'absolute', right:-6, top:-8}}>
-                                    <Image source={DeleteLocImg} style={{width:30, height:30}} />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.addressCardBody}>
-                                <Text style={styles.descText}>
-                                    1625. ada D Blok Daire 5 15 Temmuz Camili Mahallesi
-                                </Text>
-                                <Text style={styles.descText}>
-                                    (Yunus marketin arkasindaki sari binalar)
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-
+                        this.props.navigation.getParam('address').map((e, key) => {
+                            return <TouchableOpacity ob style={styles.addressCard} key={key}>
+                                <View style={styles.addressCardHeader}>
+                                    <Image source={LocationIMG} style={{width:17, height:17}}/>
+                                    <Text style={styles.infoText}>{e.address_title}</Text>
+                                    <Text style={styles.infoText2}>({e.address_province.text}, {e.address_county.text})</Text>
+                                    <Ripple onPress={() => this._handleRemoveAddress(e._id)} style={{position:'absolute', right:-6, top:-8, zIndex:999}}>
+                                        <Image source={DeleteLocImg} style={{width:30, height:30}} />
+                                    </Ripple>
+                                </View>
+                                <View style={styles.addressCardBody}>
+                                    <Text style={styles.descText}>
+                                        {e.address}
+                                    </Text>
+                                    <Text style={styles.descText}>
+                                        {e.address_direction.trim() != '' ? <Text>({e.address_direction})</Text>: <></>}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        })
 
                     }
 

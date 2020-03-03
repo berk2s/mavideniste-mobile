@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.16,
         shadowRadius: 5,
-        elevation: 5,
+        elevation: 1,
     },
     inputFormArea:{
         marginVertical:15

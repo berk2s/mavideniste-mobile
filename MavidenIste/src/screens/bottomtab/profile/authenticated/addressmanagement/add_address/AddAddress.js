@@ -72,7 +72,7 @@ export default class AddAddress extends Component {
                 style={{display:'flex', flex:1,}}
                 padder>
 
-                <AddAddressForm />
+                <AddAddressForm {...this.props} />
 
             </Content>
         </Container>
