@@ -5,10 +5,12 @@ import {Body, Input, Item, Left, ListItem, Right, Switch} from 'native-base';
 
 import {Formik} from 'formik'
 import Spinner from 'react-native-loading-spinner-overlay';
-import API from '../../../../../apitoken';
+import API from '../../../../../api';
 import AuthStore from '../../../../../store/AuthStore';
 import Snackbar from 'react-native-snackbar';
+import {observer} from 'mobx-react';
 
+@observer
 export default class ProfileSettingsForm extends Component {
 
     state = {
@@ -35,6 +37,10 @@ export default class ProfileSettingsForm extends Component {
             const update = await API.put(`/api/user/name`, {
                 name_surname: name_surname,
                 user_id: AuthStore.getUserID
+            },{
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
             });
 
             await AuthStore.setNameSurname(name_surname);
@@ -57,6 +63,10 @@ export default class ProfileSettingsForm extends Component {
             const update = await API.put(`/api/user/permission/email`, {
                 value: value,
                 user_id: AuthStore.getUserID
+            }, {
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
             });
 
             this.setState({
@@ -76,6 +86,10 @@ export default class ProfileSettingsForm extends Component {
             const update = await API.put(`/api/user/permission/sms`, {
                 value: value,
                 user_id: AuthStore.getUserID
+            },{
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
             });
 
             this.setState({

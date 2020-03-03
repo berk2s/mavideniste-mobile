@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Picker } from 'react-native';
 
 import {Body, Input, Item, Left, ListItem, Right, Textarea, Button} from 'native-base';
 
@@ -13,6 +13,7 @@ export default class AddAddressForm extends Component {
 
     state = {
         loading: false,
+        language:'java'
     }
 
     _handleBlurNameSurname = async (value) => {
@@ -131,13 +132,17 @@ export default class AddAddressForm extends Component {
                                 <Text style={styles.inputInfoArea}>İl <Text style={{color:'red'}}>*</Text></Text>
                                 <Item
                                     style={styles.inputArea}>
-                                    <Input
+                                    <Picker
+                                        selectedValue={this.state.language}
                                         style={[styles.input, {zIndex:9}]}
-                                        value={values.phone_number}
-                                        editable={false}
-                                    />
-
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            this.setState({language: itemValue})
+                                        }>
+                                        <Picker.Item label="Java" value="java" />
+                                        <Picker.Item label="JavaScript" value="js" />
+                                    </Picker>
                                 </Item>
+
                             </View>
 
                             <View style={styles.inputs}>
@@ -236,9 +241,9 @@ const styles = StyleSheet.create({
             width: 0,
             height: 0,
         },
-        shadowOpacity: 0.16,
+        shadowOpacity: 0.08,
         shadowRadius: 5,
-        elevation: 5,
+        elevation: 3,
     },
     inputFormArea:{
         width:'100%',

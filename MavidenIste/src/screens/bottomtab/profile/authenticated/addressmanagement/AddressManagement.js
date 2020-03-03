@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image, Dimensions} from 'react-native';
 import {Body, Container, Content, Header, Left, Title, Fab} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
 import SwitcherStore from '../../../../../store/SwitcherStore';
@@ -11,6 +11,7 @@ import {observer} from 'mobx-react';
 import LocationIMG from '../../../../../img/location.png'
 import DeleteLocImg from '../../../../../img/deletelocation.png'
 import AddLocImg from '../../../../../img/addlocation.png'
+import EmptyIMG from '../../../../../img/road.png';
 
 @observer
 export default class AddresManagement extends Component {
@@ -87,24 +88,35 @@ export default class AddresManagement extends Component {
                 padder>
                 <View style={styles.addressListArea}>
 
-                    <TouchableOpacity style={styles.addressCard}>
-                        <View style={styles.addressCardHeader}>
-                            <Image source={LocationIMG} style={{width:17, height:17}}/>
-                            <Text style={styles.infoText}>Ev</Text>
-                            <Text style={styles.infoText2}>(Serdivan, Kemalpasa Mahallesi)</Text>
-                            <TouchableOpacity style={{position:'absolute', right:-6, top:-8}}>
-                                <Image source={DeleteLocImg} style={{width:30, height:30}} />
-                            </TouchableOpacity>
+                    {this.props.navigation.getParam('address').length == 0
+                    ?
+                        <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
+                            <Image source={EmptyIMG} style={{width:90, height:90}}/>
+                            <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Kayıtlı adresin yok</Text>
+                            <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>zaman kazanmak için adres ekleyebilirsin</Text>
                         </View>
-                        <View style={styles.addressCardBody}>
-                            <Text style={styles.descText}>
-                                1625. ada D Blok Daire 5 15 Temmuz Camili Mahallesi
-                            </Text>
-                            <Text style={styles.descText}>
-                                (Yunus marketin arkasindaki sari binalar)
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
+                    :
+                        <TouchableOpacity style={styles.addressCard}>
+                            <View style={styles.addressCardHeader}>
+                                <Image source={LocationIMG} style={{width:17, height:17}}/>
+                                <Text style={styles.infoText}>Ev</Text>
+                                <Text style={styles.infoText2}>(Serdivan, Kemalpasa Mahallesi)</Text>
+                                <TouchableOpacity style={{position:'absolute', right:-6, top:-8}}>
+                                    <Image source={DeleteLocImg} style={{width:30, height:30}} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.addressCardBody}>
+                                <Text style={styles.descText}>
+                                    1625. ada D Blok Daire 5 15 Temmuz Camili Mahallesi
+                                </Text>
+                                <Text style={styles.descText}>
+                                    (Yunus marketin arkasindaki sari binalar)
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+
+
+                    }
 
                 </View>
 
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
         position:'absolute',
         bottom:0,
         right:15,
-        backgroundColor:'#EAE7E7',
+        backgroundColor:'#F5F5F5',
         width:50,
         height:50,
         borderRadius:50,
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
             width: 0,
             height: 0,
         },
-        shadowOpacity: 0.25,
+        shadowOpacity: 0.15,
         shadowRadius: 5,
         elevation: 3,
         zIndex:9999,

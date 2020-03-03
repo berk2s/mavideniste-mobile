@@ -3,6 +3,8 @@ import * as Keychain from 'react-native-keychain';
 
 import NavigationService from '../NavigationService';
 import API from '../api';
+import axios from 'axios';
+import {API_KEY, API_URL} from '../constants';
 
 configure({
     enforceActions:'observed'
@@ -31,6 +33,13 @@ class AuthStore {
         try{
             const getToken = await this.getTokenFromRepo();
             const getUserId = await this.getUserIdFromRepo();
+
+            console.log('===============')
+            console.log(getToken)
+            console.log(getUserId)
+            console.log(getUserId)
+            console.log('===============')
+
             if(getToken != null && getUserId != null){
 
                 const user_information = await API.get(`/api/user/detail/${getUserId}`, {
@@ -44,6 +53,9 @@ class AuthStore {
                     this.user_id = getUserId;
                     this.name_surname = user_information.data.data.name_surname;
                 });
+
+
+
                 NavigationService.navigate('authticatedBottomScreens');
             }else{
                 runInAction(() => {
@@ -62,8 +74,14 @@ class AuthStore {
         try{
             const credentials = await Keychain.getGenericPassword();
             if (credentials) {
+                runInAction(() => {
+                    this.token = credentials.password;
+                });
                 return credentials.password;
             } else {
+                runInAction(() => {
+                    this.token = null;
+                });
                 return null;
             }
         }catch(e){
@@ -75,8 +93,14 @@ class AuthStore {
         try{
             const credentials = await Keychain.getGenericPassword();
             if (credentials) {
+                runInAction(() => {
+                    this.user_id = credentials.username;
+                });
                 return credentials.username;
             } else {
+                runInAction(() => {
+                    this.user_id = null;
+                });
                 return null;
             }
         }catch(e){

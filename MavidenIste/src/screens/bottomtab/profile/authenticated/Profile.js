@@ -11,7 +11,7 @@ import SwitcherStore from '../../../../store/SwitcherStore';
 import Switcher from '../../switcher/Switcher';
 import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../../img/login.png';
-import API from '../../../../apitoken';
+import API from '../../../../api';
 
 @observer
 export default class Profile extends Component {
@@ -49,13 +49,19 @@ export default class Profile extends Component {
             const token = AuthStore.getToken;
             const user_id = AuthStore.getUserID;
 
-            const user_information = await API.get(`/api/user/detail/${user_id}`);
+            const user_information = await API.get(`/api/user/detail/${user_id}`, {
+                headers:{
+                    'x-access-token': token
+                }
+            });
 
             this.setState({
                 loading:false,
             });
 
-            console.log(user_information.data.data)
+            console.log('-=====================-')
+            console.log(user_information.data)
+            console.log('-=====================-')
 
             this.props.navigation.navigate('ProfileSettings', {userInfo: user_information.data.data})
         }catch(e){
@@ -85,11 +91,18 @@ export default class Profile extends Component {
                 loading:true,
             });
             //await AuthStore.deleteUser();
+
+            const address = await API.get(`/api/user/address/${AuthStore.getUserID}`, {
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
+            });
+
             this.setState({
                 loading:false,
             });
 
-            this.props.navigation.navigate('AddressManagement')
+            this.props.navigation.navigate('AddressManagement', {address: address.data.data})
 
         }catch{
             console.log(e);
