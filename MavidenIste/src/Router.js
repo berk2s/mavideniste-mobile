@@ -31,6 +31,8 @@ import Currier from './screens/bottomtab/currier/Currier';
 import ProfileSettingsScreen from './screens/bottomtab/profile/authenticated/profilesettings/ProfileSettings';
 import AddressManagementScreen from './screens/bottomtab/profile/authenticated/addressmanagement/AddressManagement';
 import AddAddress from './screens/bottomtab/profile/authenticated/addressmanagement/add_address/AddAddress';
+import EditAddress from './screens/bottomtab/profile/authenticated/addressmanagement/edit_address/EditAddress';
+import FindLocation from './screens/bottomtab/profile/authenticated/addressmanagement/find_location/FindLocation';
 
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
@@ -80,6 +82,8 @@ const authticatedProfileStack = createStackNavigator({
         screen:createStackNavigator({
             AddressList:AddressManagementScreen,
             AddAddress:AddAddress,
+            EditAddress:EditAddress,
+            FindLocation:FindLocation
         },{
             headerMode: null
         }),

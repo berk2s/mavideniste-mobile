@@ -12,6 +12,7 @@ import Switcher from '../../switcher/Switcher';
 import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../../img/login.png';
 import API from '../../../../api';
+import LocationAPI from '../../../../locationapi';
 
 @observer
 export default class Profile extends Component {
@@ -98,11 +99,13 @@ export default class Profile extends Component {
                 }
             });
 
+            const datas = await LocationAPI.get('/api/location/province');
+
             this.setState({
                 loading:false,
             });
 
-            this.props.navigation.navigate('AddressManagement', {address: address.data.data})
+            this.props.navigation.navigate('AddressManagement', {address: address.data.data, provinces:datas.data})
 
         }catch{
             console.log(e);

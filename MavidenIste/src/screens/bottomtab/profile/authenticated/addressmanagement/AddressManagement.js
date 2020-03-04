@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Alert} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Image,
+    Dimensions,
+    Alert,
+    Linking,
+    PermissionsAndroid,
+} from 'react-native';
 import {Body, Container, Content, Header, Left, Title, Fab} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
 import SwitcherStore from '../../../../../store/SwitcherStore';
@@ -17,6 +27,7 @@ import LocationAPI from '../../../../../locationapi'
 import API from '../../../../../api'
 
 import Ripple from 'react-native-material-ripple';
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 
 @observer
@@ -25,15 +36,18 @@ export default class AddresManagement extends Component {
     state = {
         loading:false,
         active:false,
-        getData: []
+        getData: [],
+        provincies: []
     }
 
-    componentDidMount() {
+    componentDidMount = async () => {
         this.setState({
             getData: [],
         });
 
+
         this.setState({
+            provincies: this.props.navigation.getParam('provinces'),
             getData:this.props.navigation.getParam('address'),
         });
     }
@@ -59,23 +73,51 @@ export default class AddresManagement extends Component {
         }, 300)
     }
 
+
     _handleAddLocationClick = async() => {
 
         try{
 
-            this.setState({
-                loading:true,
-            });
+            if(Platform.OS === "ios"){
+                const chek = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
 
+                if(chek == RESULTS.GRANTED){
+                    this.props.navigation.navigate('FindLocation', {provinces: this.state.provincies});
+                }else{
 
-            const datas = await LocationAPI.get('/api/location/province');
+                    Alert.alert(
+                        'Harita Kullanımı',
+                        'Konumunuzu kullanmak için izin verin',
+                        [
+                            {
+                                text: 'İptal',
+                                onPress: () => console.log('iptal'),
+                                style: 'cancel',
+                            },
+                            {text: 'Ayarlara git', onPress: () => Linking.openURL('app-settings:')},
+                        ],
+
+                    );
+
+                }
+            }else{
+                try {
+                    const granted = await PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                    )
+                    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                        this.props.navigation.navigate('FindLocation', {provinces: this.state.provincies});
+                    } else {
+                        alert("Location permission denied")
+                    }
+                } catch (err) {
+                    alert(err)
+                }
+            }
 
            // console.log(datas.data)
 
-            this.props.navigation.navigate('AddAddress', {provinces: datas.data});
-            this.setState({
-                loading:false,
-            });
+           // this.props.navigation.navigate('AddAddress', {provinces: this.state.provincies});
 
         }catch(e){
             alert(e)
@@ -184,7 +226,7 @@ export default class AddresManagement extends Component {
                         </View>
                     :
                         this.props.navigation.getParam('address').map((e, key) => {
-                            return <TouchableOpacity ob style={styles.addressCard} key={key}>
+                            return <TouchableOpacity ob style={styles.addressCard} onPress={() => this.props.navigation.navigate('EditAddress' , {provinces: this.state.provincies, id: e._id,address_title: e.address_title, address_province:e.address_province, address_county:e.address_county, address:e.address, address_direction:e.address_direction})} key={key}>
                                 <View style={styles.addressCardHeader}>
                                     <Image source={LocationIMG} style={{width:17, height:17}}/>
                                     <Text style={styles.infoText}>{e.address_title}</Text>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import {StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, PermissionsAndroid, Linking, Alert} from 'react-native';
 
 import {Body, Input, Item, Left, ListItem, Right, Button} from 'native-base';
 
@@ -16,6 +16,10 @@ import API from '../../../../../../api';
 
 import validationSchema from './validation'
 import AuthStore from '../../../../../../store/AuthStore';
+import Geolocation from '@react-native-community/geolocation';
+
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
+
 
 @observer
 export default class AddAddressForm extends Component {
@@ -95,7 +99,7 @@ export default class AddAddressForm extends Component {
         try{
             const  { title_address,address,desc_address,province,county } = values;
             const userid = await AuthStore.getUserIdFromRepo();
-            const postit = await API.post(`/api/user/address`, {address_title:title_address,address:address,address_direction:desc_address,address_province:province,address_county:county, user_id:userid}, {
+            const postit = await API.post(`/api/user/address`, {address_ltd:this.props.navigation.getParam('selected_ltd'),address_lng:this.props.navigation.getParam('selected_lng'),address_title:title_address,address:address,address_direction:desc_address,address_province:province,address_county:county, user_id:userid}, {
                 headers:{
                     'x-access-token': AuthStore.getToken
                 }
@@ -184,7 +188,9 @@ export default class AddAddressForm extends Component {
                             </View>
 
                             <View style={styles.inputs}>
-                                <Text style={styles.inputInfoArea}>Adres {(errors.address && touched.address) ? <Text style={{color:'red'}}>*</Text> : <></>}</Text>
+                                <View style={{display:'flex', flexDirection: 'row', justifyContent:'space-between', alignItems:'center'}}>
+                                    <Text style={styles.inputInfoArea}>Adres {(errors.address && touched.address) ? <Text style={{color:'red'}}>*</Text> : <></>}</Text>
+                                </View>
                                 <Item
                                     style={[styles.inputArea, {height:100}]}>
                                     <Input
