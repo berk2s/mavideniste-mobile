@@ -170,6 +170,14 @@ export default class AddresManagement extends Component {
         }
     }
 
+    _handleEditAddress = async (e) => {
+        try{
+
+        }catch{
+            console.log(e);
+        }
+    }
+
   render() {
 
 
@@ -226,7 +234,21 @@ export default class AddresManagement extends Component {
                         </View>
                     :
                         this.props.navigation.getParam('address').map((e, key) => {
-                            return <TouchableOpacity ob style={styles.addressCard} onPress={() => this.props.navigation.navigate('EditAddress' , {provinces: this.state.provincies, id: e._id,address_title: e.address_title, address_province:e.address_province, address_county:e.address_county, address:e.address, address_direction:e.address_direction})} key={key}>
+                            return <TouchableOpacity ob style={styles.addressCard} onPress={() => {
+
+                                this.setState({
+                                    loading:true,
+                                });
+
+                                setTimeout(() => {
+                                    this.props.navigation.navigate('EditAddress' , {provinces: this.state.provincies, id: e._id,address_title: e.address_title, address_province:e.address_province, address_county:e.address_county, address:e.address, address_direction:e.address_direction})
+                                    this.setState({
+                                        loading:false,
+                                    });
+
+                                }, 300)
+
+                            }} key={key}>
                                 <View style={styles.addressCardHeader}>
                                     <Image source={LocationIMG} style={{width:17, height:17}}/>
                                     <Text style={styles.infoText}>{e.address_title}</Text>

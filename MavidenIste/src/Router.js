@@ -34,6 +34,9 @@ import AddAddress from './screens/bottomtab/profile/authenticated/addressmanagem
 import EditAddress from './screens/bottomtab/profile/authenticated/addressmanagement/edit_address/EditAddress';
 import FindLocation from './screens/bottomtab/profile/authenticated/addressmanagement/find_location/FindLocation';
 
+import OrderList from './screens/bottomtab/profile/authenticated/ordermanagement/OrderList';
+import OrderDetail from './screens/bottomtab/profile/authenticated/ordermanagement/order_detail/OrderDetail';
+
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
 // for the product listing
@@ -87,6 +90,14 @@ const authticatedProfileStack = createStackNavigator({
         },{
             headerMode: null
         }),
+    },
+    Orders:{
+        screen:createStackNavigator({
+            OrderList:OrderList,
+            OrderDetail:OrderDetail,
+        },{
+            headerMode:null
+        })
     }
 }, {
     headerMode: null

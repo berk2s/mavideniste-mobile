@@ -13,6 +13,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../../img/login.png';
 import API from '../../../../api';
 import LocationAPI from '../../../../locationapi';
+import Ripple from 'react-native-material-ripple';
 
 @observer
 export default class Profile extends Component {
@@ -87,7 +88,6 @@ export default class Profile extends Component {
 
     _handleAddressClick = async () => {
         try{
-
             this.setState({
                 loading:true,
             });
@@ -106,6 +106,32 @@ export default class Profile extends Component {
             });
 
             this.props.navigation.navigate('AddressManagement', {address: address.data.data, provinces:datas.data})
+
+        }catch{
+            console.log(e);
+        }
+    }
+
+    _handleOrdersClick = async () => {
+        try{
+            this.setState({
+                loading:true,
+            });
+            //await AuthStore.deleteUser();
+
+            const address = await API.get(`/api/user/address/${AuthStore.getUserID}`, {
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
+            });
+
+            const datas = await LocationAPI.get('/api/location/province');
+
+            this.setState({
+                loading:false,
+            });
+
+            this.props.navigation.navigate('Orders', {address: address.data.data, provinces:datas.data})
 
         }catch{
             console.log(e);
@@ -176,7 +202,7 @@ export default class Profile extends Component {
 
                     <View style={[styles.cardListArea, {borderRadius:15}]}>
                         <Card style={styles.card_}>
-                            <TouchableOpacity onPress={this._handleAddressClick}>
+                            <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={this._handleAddressClick}>
                                 <CardItem style={styles.card}>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                     <Text style={styles.cardText}>Adreslerim</Text>
@@ -184,14 +210,16 @@ export default class Profile extends Component {
                                         <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                     </Right>
                                 </CardItem>
-                            </TouchableOpacity>
-                            <CardItem style={styles.card}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Siparişlerim</Text>
-                                <Right>
+                            </Ripple>
+                            <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={this._handleOrdersClick}>
+                                <CardItem style={styles.card}>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
+                                    <Text style={styles.cardText}>Siparişlerim</Text>
+                                    <Right>
+                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    </Right>
+                                </CardItem>
+                            </Ripple>
 
                             <CardItem style={styles.card}>
                                 <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />

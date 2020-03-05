@@ -181,7 +181,6 @@ export default class AddAddressForm extends Component {
                                         items={this.state.counties}
                                         placeholder={{label: 'Bir ilçe seçin'}}
                                         onDonePress={this._handleCountyDone}
-                                        useNativeAndroidPickerStyle={true}
                                         ref={ref => this.countySelect = ref}
                                     />
                                 </Item>
