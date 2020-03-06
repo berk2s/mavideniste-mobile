@@ -19,6 +19,7 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* MavidenIsteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* MavidenIsteTests.m */; };
 		608EAB6E2D7FA06877F6CFBF /* libPods-MavidenIste-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7AE0E31046430296DB2B811 /* libPods-MavidenIste-tvOS.a */; };
+		C0D7C7CE24127EA6005C3A34 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C0D7C7CD24127EA6005C3A34 /* GoogleService-Info.plist */; };
 		C0ED804D23FB500D004B56FE /* Muli-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803C23FB500A004B56FE /* Muli-Italic.ttf */; };
 		C0ED804E23FB500D004B56FE /* Muli-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803D23FB500A004B56FE /* Muli-LightItalic.ttf */; };
 		C0ED804F23FB500D004B56FE /* Muli-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0ED803E23FB500B004B56FE /* Muli-Regular.ttf */; };
@@ -80,6 +81,8 @@
 		B7AE0E31046430296DB2B811 /* libPods-MavidenIste-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MavidenIste-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD8F931AA0B6C7E8E6F77F8B /* libPods-MavidenIste.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MavidenIste.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1B5AAFDC3DD97B20F24E7A /* Pods-MavidenIste-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MavidenIste-tvOS.release.xcconfig"; path = "Target Support Files/Pods-MavidenIste-tvOS/Pods-MavidenIste-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		C0D7C7CC24126245005C3A34 /* MavidenIste.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MavidenIste.entitlements; path = MavidenIste/MavidenIste.entitlements; sourceTree = "<group>"; };
+		C0D7C7CD24127EA6005C3A34 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C0ED803C23FB500A004B56FE /* Muli-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Italic.ttf"; sourceTree = "<group>"; };
 		C0ED803D23FB500A004B56FE /* Muli-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-LightItalic.ttf"; sourceTree = "<group>"; };
 		C0ED803E23FB500B004B56FE /* Muli-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Muli-Regular.ttf"; sourceTree = "<group>"; };
@@ -161,6 +164,8 @@
 		13B07FAE1A68108700A75B9A /* MavidenIste */ = {
 			isa = PBXGroup;
 			children = (
+				C0D7C7CD24127EA6005C3A34 /* GoogleService-Info.plist */,
+				C0D7C7CC24126245005C3A34 /* MavidenIste.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -352,10 +357,12 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 3A48L57FCX;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = D6RQ82FWG8;
+						DevelopmentTeam = 3A48L57FCX;
+						ProvisioningStyle = Manual;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -422,6 +429,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				C0ED805823FB500D004B56FE /* Muli-Medium.ttf in Resources */,
 				C0ED805623FB500D004B56FE /* Muli-Black.ttf in Resources */,
+				C0D7C7CE24127EA6005C3A34 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -715,6 +723,7 @@
 			baseConfigurationReference = 6C17EC3C8273E1159F1B37D9 /* Pods-MavidenIsteTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 3A48L57FCX;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -739,6 +748,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 3A48L57FCX;
 				INFOPLIST_FILE = MavidenIsteTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -758,9 +768,11 @@
 			baseConfigurationReference = 8E4AE8C7253099F97BBFD34F /* Pods-MavidenIste.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MavidenIste/MavidenIste.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = D6RQ82FWG8;
+				DEVELOPMENT_TEAM = 3A48L57FCX;
 				INFOPLIST_FILE = MavidenIste/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -768,8 +780,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MavidenIsteApp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.MavidenIsteApp;
 				PRODUCT_NAME = MavidenIste;
+				PROVISIONING_PROFILE_SPECIFIER = "MavidenIste Push iOS Dev";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -779,8 +792,10 @@
 			baseConfigurationReference = FBE8FE6D7E64FC5D906BE1C6 /* Pods-MavidenIste.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MavidenIste/MavidenIste.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = D6RQ82FWG8;
+				DEVELOPMENT_TEAM = 3A48L57FCX;
 				INFOPLIST_FILE = MavidenIste/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -788,8 +803,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.reactjs.native.example.MavidenIsteApp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.MavidenIsteApp;
 				PRODUCT_NAME = MavidenIste;
+				PROVISIONING_PROFILE_SPECIFIER = "MavidenIste Push iOS Dev";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
