@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98899191986",
+    "firebase_url": "https://mavideniste-ios-push.firebaseio.com",
+    "project_id": "mavideniste-ios-push",
+    "storage_bucket": "mavideniste-ios-push.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98899191986:android:0e1d04d20e9fa9f3e301ab",
+        "android_client_info": {
+          "package_name": "com.mavideniste"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98899191986-o0fhuc6b5q3eoa396illalreo0no3f6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOsEzqOvMbjD3DHifyA9jGs3xD-HS6Cdg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98899191986-o0fhuc6b5q3eoa396illalreo0no3f6m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "98899191986-jfli6sufl2mt3pvnlqquidrbn32se16t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.MavidenIsteApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
