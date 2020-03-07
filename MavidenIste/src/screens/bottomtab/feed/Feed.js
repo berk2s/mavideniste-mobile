@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Container, Header, Button, Content, } from "native-base";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
@@ -86,8 +86,7 @@ export default class Feed extends Component {
 
     render() {
     return (
-        <Container style={styles.container}>
-            <HeaderWithSearch />
+        <View style={styles.container}>
 
             {
                 SwitcherStore.isSwitcherClicked
@@ -145,7 +144,7 @@ export default class Feed extends Component {
                   }
               </View>
           </Content>
-        </Container>
+        </View>
     );
   }
 }
@@ -220,7 +219,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         flexWrap:'wrap',
-        paddingTop: 25
+        //paddingTop: 25
     },
     card:{
         width:110,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Animated, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Animated, Dimensions, SafeAreaView } from 'react-native';
 import {Header, Input, Item, Left, Right} from 'native-base';
 
 import InputBg from '../../img/inputbg.png';
@@ -80,9 +80,9 @@ export default class HeaderWithSearch extends Component {
       header = {
         display:'flex',
         flexDirection:'row',
-        justifyContent:'space-between',
+        justifyContent:'space-around',
         alignItems:'center',
-
+        marginVertical:10,
       }
       inputArea = {
         borderColor:'#fff',
@@ -136,8 +136,10 @@ export default class HeaderWithSearch extends Component {
       };
       header =  {
         display:'flex',
-        justifyContent:'space-between',
+        flexDirection:'row',
+        justifyContent:'space-around',
         alignItems:'center',
+        marginVertical:10,
       }
       inputArea = {
         borderColor:'#fff',
@@ -193,7 +195,7 @@ export default class HeaderWithSearch extends Component {
 
 
     return (
-        <Header transparent style={header}>
+        <SafeAreaView transparent style={header}>
 
           {this.props.subView
               ?
@@ -245,7 +247,7 @@ export default class HeaderWithSearch extends Component {
                      style={logo}
                  />
                </View>
-        </Header>
+        </SafeAreaView>
     );
   }
 }

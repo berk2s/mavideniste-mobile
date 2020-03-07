@@ -15,6 +15,8 @@ import API from '../../../../api';
 import LocationAPI from '../../../../locationapi';
 import Ripple from 'react-native-material-ripple';
 
+import { Badge } from 'react-native-elements'
+
 @observer
 export default class Profile extends Component {
 
@@ -221,9 +223,18 @@ export default class Profile extends Component {
                                 </CardItem>
                             </Ripple>
 
-                            <CardItem style={styles.card}>
+                            <CardItem style={[styles.card]}>
                                 <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Alışveriş listem</Text>
+                                <View>
+                                <Text style={styles.cardText}>Bildirimler</Text>
+
+                                    <Badge
+                                        status="success"
+                                        containerStyle={{ position: 'absolute', right:-13, top:6}}
+                                    />
+
+                                </View>
+
                                 <Right>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                 </Right>

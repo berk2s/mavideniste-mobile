@@ -98,10 +98,6 @@ export default class ProductList extends Component {
     render() {
         return (
             <Container style={styles.container}>
-                <HeaderWithSearch
-                    subView={true}
-                    navigation={this.props.navigation}
-                />
 
                 <View style={styles.basketInfoArea}>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('ShopingCard')}>
@@ -353,7 +349,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         flexWrap:'wrap',
-        paddingTop: 50
+     //   paddingTop: 50
     },
     card:{
         width:162,
