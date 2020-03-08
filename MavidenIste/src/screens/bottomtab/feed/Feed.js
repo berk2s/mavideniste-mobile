@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
 import { Container, Header, Button, Content, } from "native-base";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
@@ -23,6 +23,9 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 import PushNotification from 'react-native-push-notification'
 import firebase from 'react-native-firebase';
+
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 @observer
 export default class Feed extends Component {
@@ -155,7 +158,16 @@ messaging.hasPermission()
     .then((enabled) => {
         if (enabled) {
             messaging.getToken()
-                .then(token => { console.log('token'); console.log(token); console.log('token') })
+                .then(async token => {
+
+                    const postToken = await API.post(`/api/notification/token`, {
+                        token:token,
+                        platform: Platform.OS
+                    });
+
+                    await AsyncStorage.setItem('token', token);
+
+                 })
                 .catch(error => { /* handle error */ });
         } else {
             messaging.requestPermission()
@@ -164,8 +176,10 @@ messaging.hasPermission()
         }
     })
     .catch(error => { /* handle error */ });
+
 firebase.notifications().onNotification((notification) => {
     const { title, body } = notification;
+    console.log(notification)
     PushNotification.localNotification({
         title: title,
         message: body, // (required)
@@ -185,6 +199,11 @@ PushNotification.configure({
 
         // process the notification
         alert('x')
+        alert('x')
+        alert('x');
+
+        console.log('notification')
+        console.log(notification)
         // required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/react-native-push-notification-ios)
         notification.finish(PushNotificationIOS.FetchResult.NoData);
     },

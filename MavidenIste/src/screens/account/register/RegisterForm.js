@@ -96,7 +96,7 @@ export default class RegisterForm extends Component {
                 /*
                     it will be a sms verication area
                  */
-                this.props.navigation.navigate('Login')
+                this.props.navigation.navigate('Login');
             }
         }catch(e){
             console.log(e);

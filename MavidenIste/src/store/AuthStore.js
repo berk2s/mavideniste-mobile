@@ -5,6 +5,7 @@ import NavigationService from '../NavigationService';
 import API from '../api';
 import axios from 'axios';
 import {API_KEY, API_URL} from '../constants';
+import AsyncStorage from '@react-native-community/async-storage';
 
 configure({
     enforceActions:'observed'
@@ -23,6 +24,18 @@ class AuthStore {
                 this.user_id = user_id;
                 this.name_surname = name_surname;
             });
+
+            const notification_token = await AsyncStorage.getItem('token');
+
+            await API.put('/api/user/token', {
+                token:notification_token,
+                user_id: this.user_id
+            }, {
+                headers:{
+                    'x-access-token': this.token
+                }
+            });
+
             await this.authSync();
         }catch(e){
             alert(e);
@@ -115,7 +128,11 @@ class AuthStore {
                 this.token = null;
                 this.user_id = null;
                 this.name_surname = null;
-            })
+            });
+            await API.put('/api/user/token', {
+                token:null,
+                user_id: this.user_id
+            });
             await this.authSync();
         }catch(e){
             alert(e);
