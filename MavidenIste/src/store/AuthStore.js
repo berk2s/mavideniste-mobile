@@ -123,15 +123,19 @@ class AuthStore {
 
     @action deleteUser = async () => {
         try{
-            await Keychain.resetGenericPassword();
-            runInAction(() => {
-                this.token = null;
-                this.user_id = null;
-                this.name_surname = null;
-            });
             await API.put('/api/user/token', {
                 token:null,
                 user_id: this.user_id
+            },{
+                headers:{
+                    'x-access-token': this.token
+                }
+            });
+            await Keychain.resetGenericPassword();
+            runInAction(() => {
+               this.token = null;
+               this.user_id = null;
+               this.name_surname = null;
             });
             await this.authSync();
         }catch(e){

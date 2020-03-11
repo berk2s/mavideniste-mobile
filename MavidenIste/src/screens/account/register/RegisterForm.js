@@ -268,7 +268,6 @@ export default class RegisterForm extends Component {
                                 }}
                                 isChecked={this.state.isChecked}
                                 checkBoxColor={'#616D7B'}
-                                rightText={<><Text onPress={() => Linking.openURL(TERMSOFUSE_URL)} style={{color:'blue', fontFamily:'Muli-Regular'}}>Kullanım koşulları</Text><Text style={{color:'#616D7B', fontFamily:'Muli-Regular'}}>'nı okudum.</Text></>}
                             />
 
                             <View style={styles.btnArea}>

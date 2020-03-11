@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
-import { Container, Header, Button, Content, } from "native-base";
+import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
 import API from '../../../api'
@@ -26,6 +26,13 @@ import firebase from 'react-native-firebase';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
+import AuthStore from '../../../store/AuthStore';
+const messaging = firebase.messaging();
+import type { RemoteMessage, NotificationOpen } from "react-native-firebase";
+import CustomIcon from '../../../font/CustomIcon';
+
+import HeaderForFeed from '../../components/HeaderForFeed';
+
 
 @observer
 export default class Feed extends Component {
@@ -35,7 +42,10 @@ export default class Feed extends Component {
         fetched:false,
         datas: [],
         loading :false,
+        yPos: 0,
+        gizleme:true
     }
+
 
     componentDidMount = async () => {
         try{
@@ -54,12 +64,6 @@ export default class Feed extends Component {
             }, 1000)
 
             console.log(categories.data.data);
-
-          //  PushNotification.localNotification({
-                /* iOS and Android properties */
-          //      title: "İndirim günü!", // (optional)
-          //      message: "7 Mart 03:00'e kadar yapacağınız alışverişlerde yüzde 20 indirim!", // (required)
-          //  });
 
         }catch(e){
             console.log(e)
@@ -87,9 +91,25 @@ export default class Feed extends Component {
         }, 300)
     }
 
+    _handleSearchChange = (val) => {
+        this.setState({
+            loading:false,
+        });
+
+    }
+
     render() {
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            {this.state.fetched
+                ?
+                   <HeaderForFeed
+                       onChange={this._handleSearchChange}
+
+                   />
+                :
+                    <></>
+            }
 
             {
                 SwitcherStore.isSwitcherClicked
@@ -106,14 +126,18 @@ export default class Feed extends Component {
                 animation={'fade'}
                 size={'small'}
             />
+
+
           <Content
               style={{display:'flex', flex:1}}
               padder>
+
               <NavigationEvents
                   onWillBlur={payload => {
                     //  console.log(payload);
                   }}
                   />
+
 
 
               <View style={styles.content}>
@@ -146,13 +170,12 @@ export default class Feed extends Component {
                       </View>
                   }
               </View>
-          </Content>
-        </View>
+              </Content>
+
+        </SafeAreaView>
     );
   }
 }
-
-const messaging = firebase.messaging();
 
 messaging.hasPermission()
     .then((enabled) => {
@@ -179,13 +202,15 @@ messaging.hasPermission()
 
 firebase.notifications().onNotification((notification) => {
     const { title, body } = notification;
-    console.log(notification)
-    PushNotification.localNotification({
-        title: title,
-        message: body, // (required)
-    });
-});
 
+
+        PushNotification.localNotification({
+            title: title,
+            message: body, // (required),
+        });
+
+
+});
 
 PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
@@ -194,20 +219,9 @@ PushNotification.configure({
     },
 
     // (required) Called when a remote or local notification is opened or received
-    onNotification: function(notification) {
-        console.log("NOTIFICATION:", notification);
-
-        // process the notification
-        alert('x')
-        alert('x')
-        alert('x');
-
-        console.log('notification')
-        console.log(notification)
-        // required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/react-native-push-notification-ios)
+    onNotification: notification => {
         notification.finish(PushNotificationIOS.FetchResult.NoData);
     },
-
     // ANDROID ONLY: GCM or FCM Sender ID (product_number) (optional - not required for local notifications, but is need to receive remote push notifications)
    senderID: "98899191986",
 
@@ -232,6 +246,45 @@ PushNotification.configure({
 
 
 const styles = StyleSheet.create({
+    headerArea:{
+      paddingHorizontal:15,
+        paddingVertical:20,
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+    inputInfoArea:{
+        fontFamily:'Muli-Light',
+        fontSize: 14,
+        marginHorizontal:2,
+        marginVertical: 10
+    },
+    accIcon:{
+        marginLeft: 10,
+        marginRight: 5,
+        marginTop:1
+    },
+    input:{
+        fontFamily:'Muli-SemiBold',
+        fontSize:13,
+    },
+    inputArea:{
+        borderColor:'#fff',
+        display:'flex',
+        marginLeft:-2,
+        height:28,
+        width:'50%',
+        backgroundColor:'#fff',
+        borderRadius:20,
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.16,
+        shadowRadius: 5,
+        elevation: 1,
+    },
     cardArea:{
         display:'flex',
         flex:1,

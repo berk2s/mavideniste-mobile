@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View, SafeAreaView} from 'react-native';
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
@@ -97,7 +97,7 @@ export default class ProductList extends Component {
 
     render() {
         return (
-            <Container style={styles.container}>
+            <SafeAreaView style={styles.container}>
 
                 <View style={styles.basketInfoArea}>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('ShopingCard')}>
@@ -208,7 +208,7 @@ export default class ProductList extends Component {
                         }
                     </View>
                 </Content>
-            </Container>
+            </SafeAreaView>
         );
   }
 }

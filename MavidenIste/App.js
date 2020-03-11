@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  StatusBar,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    StatusBar, Platform,
 } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen'
@@ -16,7 +16,6 @@ import store from './src/store/index';
 import {Provider} from 'mobx-react';
 
 import NavigationService from './src/NavigationService';
-
 
 
 const App: () => React$Node = () => {
@@ -35,6 +34,10 @@ const App: () => React$Node = () => {
     </Provider>
   );
 };
+
+
+
+
 
 
 
