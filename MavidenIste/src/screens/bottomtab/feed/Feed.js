@@ -5,7 +5,7 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
 import API from '../../../api'
 
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 //brach fake
 import {BRANCH_ID, IMAGE_URL} from '../../../constants'
@@ -33,8 +33,11 @@ import CustomIcon from '../../../font/CustomIcon';
 
 import HeaderForFeed from '../../components/HeaderForFeed';
 
+import ProductCard from '../../components/ProductCard';
 
+@inject('BasketStore', 'ProductStore')
 @observer
+
 export default class Feed extends Component {
 
     state = {
@@ -42,8 +45,9 @@ export default class Feed extends Component {
         fetched:false,
         datas: [],
         loading :false,
-        yPos: 0,
-        gizleme:true
+        headerSeacrh:false,
+        searchKey:null,
+        searchResults:[]
     }
 
 
@@ -98,6 +102,45 @@ export default class Feed extends Component {
 
     }
 
+    _handleOnBlur = async (val) => {
+        try{
+            if(val == null){
+                this.setState({
+                    loading: true
+                });
+
+                setTimeout(() => {
+                    this.setState({
+                        loading: false,
+                        headerSearch: false,
+                        searchResults:[]
+                    });
+
+                }, 500)
+            }else {
+                this.setState({
+                    headerSearch: true,
+                    loading: true,
+                    searchKey:val
+                });
+
+                const results = await API.get(`/api/product/search/${val}`);
+
+                this.state.searchResults = [...results.data.data]
+
+                console.log(results.data)
+
+                this.setState({
+                    loading:false,
+                });
+
+
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     render() {
     return (
         <SafeAreaView style={styles.container}>
@@ -105,7 +148,7 @@ export default class Feed extends Component {
                 ?
                    <HeaderForFeed
                        onChange={this._handleSearchChange}
-
+                       onBlur={this._handleOnBlur}
                    />
                 :
                     <></>
@@ -143,27 +186,45 @@ export default class Feed extends Component {
               <View style={styles.content}>
                   {this.state.fetched
                       ?
-                        <View style={styles.cardArea}>
-                            {
-                                this.state.datas.map(e => {
-                                    const uri = IMAGE_URL+e.category_image;
-                                    return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('Product', {category_id: e._id})}>
-                                    <View style={styles.card} >
-                                        <View style={styles.cardWhiteArea}>
-                                            <FastImage
-                                                source={{uri: uri}}
-                                                style={styles.cardImage}
-                                            />
-                                        </View>
-                                        <View style={styles.cardTextArea}>
-                                            <Text style={styles.cardText}>{e.category_name}</Text>
-                                        </View>
-                                    </View>
-                                        </TouchableOpacity>
-                                })
-                            }
+                        this.state.headerSearch
+                            ?
+                            <>
 
-                        </View>
+                                <View style={styles.searchResultArea}>
+                                    <View style={styles.searchInfoArea}>
+                                        <Text style={styles.infoTexts}>Tüm ürünlerde <Text style={styles.infoSearchText}>{this.state.searchKey}</Text> için sonuçlar</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.cardArea2}>
+                                    {this.state.searchResults.map(e => {
+                                        return <ProductCard e={e} {...this.props} />
+                                    })}
+                                </View>
+
+
+                            </>
+                            :
+                            <View style={styles.cardArea}>
+                                {
+                                    this.state.datas.map(e => {
+                                        const uri = IMAGE_URL+e.category_image;
+                                        return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('Product', {category_id: e._id})}>
+                                            <View style={styles.card} >
+                                                <View style={styles.cardWhiteArea}>
+                                                    <FastImage
+                                                        source={{uri: uri}}
+                                                        style={styles.cardImage}
+                                                    />
+                                                </View>
+                                                <View style={styles.cardTextArea}>
+                                                    <Text style={styles.cardText}>{e.category_name}</Text>
+                                                </View>
+                                            </View>
+                                        </TouchableOpacity>
+                                    })
+                                }
+                            </View>
                       :
                       <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
                           <Loading />
@@ -246,6 +307,31 @@ PushNotification.configure({
 
 
 const styles = StyleSheet.create({
+    cardArea2:{
+        display:'flex',
+        flex:1,
+        flexDirection:'row',
+        justifyContent:'space-between',
+        flexWrap:'wrap',
+         paddingTop: 25
+    },
+    infoSearchText:{
+      fontFamily:'Muli-Bold',
+        color:'#00CFFF'
+    },
+    infoTexts:{
+      fontFamily:'Muli-ExtraBold',
+      fontSize:20,
+      color:'#003DFF'
+    },
+    searchInfoArea:{
+      display:'flex',
+        flexDirection:'row',
+       // justifyContent:'center'
+    },
+    searchResultArea:{
+      display:'flex',
+    },
     headerArea:{
       paddingHorizontal:15,
         paddingVertical:20,
@@ -295,7 +381,9 @@ const styles = StyleSheet.create({
     },
     card:{
         width:110,
-        marginBottom:25
+        marginBottom:25,
+
+
     },
     cardWhiteArea:{
         backgroundColor: '#fff',

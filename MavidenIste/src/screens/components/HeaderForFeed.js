@@ -18,7 +18,7 @@ export default class HeaderForFeed extends Component {
             })
             .start();
 
-        this.props.onFocus()
+      //  this.props.onFocus()
     }
 
     _handleInputBlur = () => {
@@ -30,8 +30,11 @@ export default class HeaderForFeed extends Component {
             .start();
 
         if(this.state.text != null){
-            alert('ara')
+            this.props.onBlur(this.state.text);
+        }else{
+            this.props.onBlur(null);
         }
+
     }
 
   render() {
@@ -97,7 +100,7 @@ export default class HeaderForFeed extends Component {
 const styles = StyleSheet.create({
     headerArea:{
         paddingHorizontal:15,
-        paddingVertical:25,
+        paddingVertical:15,
         display:'flex',
         flexDirection:'row',
         justifyContent:'space-between'
