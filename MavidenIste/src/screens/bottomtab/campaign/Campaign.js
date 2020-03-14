@@ -39,7 +39,7 @@ export default class Campaign extends Component {
 
   render() {
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
+        <View style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
           <Header transparent style={styles.header}>
             <Left style={styles.leftArea}>
 
@@ -136,7 +136,7 @@ export default class Campaign extends Component {
 
           </Content>
 
-        </Container>
+        </View>
     );
   }
 }

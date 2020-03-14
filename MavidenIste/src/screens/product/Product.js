@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View, SafeAreaView} from 'react-native';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Image} from 'react-native';
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
@@ -15,6 +15,8 @@ import SwitcherStore from '../../store/SwitcherStore';
 import Switcher from '../bottomtab/switcher/Switcher';
 
 import ProductCard from '../components/ProductCard';
+import HeaderForProducts from '../components/HeaderForProducts';
+import EmptyIMG from '../../img/search_result.png';
 
 @inject('BasketStore', 'ProductStore')
 @observer
@@ -24,7 +26,11 @@ export default class ProductList extends Component {
         loadingHeight: Dimensions.get('window').height-160,
         datas: [],
         fetched: false,
-        loading: false
+        loading: false,
+        headerSeacrh:false,
+        headerSearch:false,
+        searchKey:null,
+        searchResults:[]
     }
 
     componentDidMount = async () => {
@@ -62,10 +68,69 @@ export default class ProductList extends Component {
         }, 300)
     }
 
+    _handleSearchChange = (val) => {
+        this.setState({
+            loading:false,
+        });
+
+    }
+
+    _handleOnBlur = async (val) => {
+        try{
+            if(val == null){
+                this.setState({
+                    loading: true
+                });
+
+                setTimeout(() => {
+                    this.setState({
+                        loading: false,
+                        headerSearch: false,
+                        searchResults:[]
+                    });
+
+                }, 500)
+            }else {
+                this.setState({
+                    headerSearch: true,
+                    loading: true,
+                    searchKey:val
+                });
+
+                const category_id = this.props.navigation.getParam('category_id');
+
+                const results = await API.get(`/api/product/search/${category_id}/${val.trim()}`);
+
+                this.state.searchResults = [...results.data.data]
+
+                console.log(results.data)
+
+                this.setState({
+                    loading:false,
+                });
+
+
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
 
+                {this.state.fetched
+                    ?
+                    <HeaderForProducts
+                        onChange={this._handleSearchChange}
+                        onBlur={this._handleOnBlur}
+                        {...this.props}
+                    />
+                    :
+                    <></>
+                }
 
                 {
                     SwitcherStore.isSwitcherClicked
@@ -87,18 +152,46 @@ export default class ProductList extends Component {
                         />
                         {this.state.fetched
                             ?
-                            <>
+                            this.state.headerSearch
+                                ?
+                                <>
 
-                                <View style={styles.cardArea}>
-                                    {
-                                        this.props.ProductStore.getProducts.map(e => {
-                                            return <ProductCard key={e._id} e={e} {...this.props} />
+                                    {this.state.searchResults.length > 0
+                                        ?
+                                        <>
+                                            <View style={styles.searchResultArea}>
+                                                <View style={styles.searchInfoArea}>
+                                                    <Text style={styles.infoTexts}>{this.props.navigation.getParam('category_name')} içinde <Text style={styles.infoSearchText}>{this.state.searchKey}</Text> için sonuçlar </Text>
+                                                </View>
+                                            </View>
 
-                                        })
+                                            <View style={styles.cardArea2}>
+                                                {this.state.searchResults.map(e => {
+                                                    return <ProductCard key={e._id} e={e} {...this.props} />
+                                                })}
+                                            </View>
+                                        </>
+                                        :
+                                        <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
+                                            <Image source={EmptyIMG} style={{width:80, height:80}}/>
+                                            <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Hiç ürün bulamadık</Text>
+                                            <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>üzgünüz, en kısa sürede tedarik edeceğiz</Text>
+                                        </View>
                                     }
+                                </>
+                                :
+                                    <>
 
-                                </View>
-                            </>
+                                        <View style={styles.cardArea}>
+                                            {
+                                                this.props.ProductStore.getProducts.map(e => {
+                                                    return <ProductCard key={e._id} e={e} {...this.props} />
+
+                                                })
+                                            }
+
+                                        </View>
+                                    </>
                             :
                             <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
                                 <Loading />
@@ -112,6 +205,31 @@ export default class ProductList extends Component {
 }
 
 const styles = StyleSheet.create({
+    cardArea2:{
+        display:'flex',
+        flex:1,
+        flexDirection:'row',
+        justifyContent:'space-between',
+        flexWrap:'wrap',
+        paddingTop: 25
+    },
+    infoSearchText:{
+        fontFamily:'Muli-Bold',
+        color:'#00CFFF'
+    },
+    infoTexts:{
+        fontFamily:'Muli-ExtraBold',
+        fontSize:20,
+        color:'#003DFF'
+    },
+    searchInfoArea:{
+        display:'flex',
+        flexDirection:'row',
+        // justifyContent:'center'
+    },
+    searchResultArea:{
+        display:'flex',
+    },
     basketActionArea:{
         display:'flex',
         justifyContent:'center',

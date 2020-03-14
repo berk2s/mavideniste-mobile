@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import {StyleSheet, Text, View, Dimensions, TouchableOpacity, Platform, Image} from 'react-native';
 import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
@@ -34,6 +34,10 @@ import CustomIcon from '../../../font/CustomIcon';
 import HeaderForFeed from '../../components/HeaderForFeed';
 
 import ProductCard from '../../components/ProductCard';
+import EmptyIMG from '../../../img/search_result.png';
+
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 
 @inject('BasketStore', 'ProductStore')
 @observer
@@ -124,7 +128,7 @@ export default class Feed extends Component {
                     searchKey:val
                 });
 
-                const results = await API.get(`/api/product/search/${val}`);
+                const results = await API.get(`/api/product/search/${val.trim()}`);
 
                 this.state.searchResults = [...results.data.data]
 
@@ -190,41 +194,51 @@ export default class Feed extends Component {
                             ?
                             <>
 
-                                <View style={styles.searchResultArea}>
-                                    <View style={styles.searchInfoArea}>
-                                        <Text style={styles.infoTexts}>Tüm ürünlerde <Text style={styles.infoSearchText}>{this.state.searchKey}</Text> için sonuçlar</Text>
+                                {this.state.searchResults.length > 0
+                                    ?
+                                    <>
+                                    <View style={styles.searchResultArea}>
+                                        <View style={styles.searchInfoArea}>
+                                            <Text style={styles.infoTexts}>Tüm ürünlerde <Text style={styles.infoSearchText}>{this.state.searchKey}</Text> için sonuçlar </Text>
+                                        </View>
                                     </View>
-                                </View>
 
-                                <View style={styles.cardArea2}>
-                                    {this.state.searchResults.map(e => {
-                                        return <ProductCard e={e} {...this.props} />
-                                    })}
-                                </View>
-
-
+                                    <View style={styles.cardArea2}>
+                                        {this.state.searchResults.map(e => {
+                                                return <ProductCard key={e._id} e={e} {...this.props} />
+                                            })}
+                                    </View>
+                                    </>
+                                    :
+                                    <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
+                                        <Image source={EmptyIMG} style={{width:80, height:80}}/>
+                                        <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Hiç ürün bulamadık</Text>
+                                        <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>üzgünüz, en kısa sürede tedarik edeceğiz</Text>
+                                    </View>
+                                }
                             </>
                             :
-                            <View style={styles.cardArea}>
-                                {
-                                    this.state.datas.map(e => {
-                                        const uri = IMAGE_URL+e.category_image;
-                                        return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('Product', {category_id: e._id})}>
-                                            <View style={styles.card} >
-                                                <View style={styles.cardWhiteArea}>
-                                                    <FastImage
-                                                        source={{uri: uri}}
-                                                        style={styles.cardImage}
-                                                    />
-                                                </View>
-                                                <View style={styles.cardTextArea}>
-                                                    <Text style={styles.cardText}>{e.category_name}</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                    })
-                                }
-                            </View>
+
+                                    <View style={styles.cardArea}>
+                                        {
+                                            this.state.datas.map(e => {
+                                                const uri = IMAGE_URL+e.category_image;
+                                                return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('Product', {category_id: e._id, category_name:e.category_name})}>
+                                                    <View style={styles.card} >
+                                                        <View style={styles.cardWhiteArea}>
+                                                            <FastImage
+                                                                source={{uri: uri}}
+                                                                style={styles.cardImage}
+                                                            />
+                                                        </View>
+                                                        <View style={styles.cardTextArea}>
+                                                            <Text style={styles.cardText}>{e.category_name}</Text>
+                                                        </View>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            })
+                                        }
+                                    </View>
                       :
                       <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
                           <Loading />

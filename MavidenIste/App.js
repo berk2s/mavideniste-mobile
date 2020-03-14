@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {
-    SafeAreaView,
     StyleSheet,
     Text,
     StatusBar, Platform,
@@ -17,6 +16,7 @@ import {Provider} from 'mobx-react';
 
 import NavigationService from './src/NavigationService';
 
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const App: () => React$Node = () => {
 
@@ -26,11 +26,13 @@ const App: () => React$Node = () => {
 
   return (
     <Provider {...store}>
+        <SafeAreaProvider>
       <Router
           ref={navigatorRef => {
               NavigationService.setTopLevelNavigator(navigatorRef);
           }}
       />
+        </SafeAreaProvider>
     </Provider>
   );
 };

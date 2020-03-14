@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.10,
         shadowRadius: 5,
-        elevation: 1,
+        elevation: 6,
     },
     cardWhiteArea:{
         backgroundColor: '#fff',

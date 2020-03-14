@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Animated } from 'react-native';
-import {Input, Item} from 'native-base';
+import {StyleSheet, Text, View, Animated, TouchableOpacity, SafeAreaView, Platform} from 'react-native';
+import {Input, Item, Header} from 'native-base';
 import CustomIcon from '../../font/CustomIcon';
 
 export default class HeaderForFeed extends Component {
@@ -21,7 +21,7 @@ export default class HeaderForFeed extends Component {
       //  this.props.onFocus()
     }
 
-    _handleInputBlur = () => {
+    _handleInputBlur = async () => {
         Animated
             .spring(this.state.width,{
                 toValue:1,
@@ -88,9 +88,21 @@ export default class HeaderForFeed extends Component {
             </Animated.View>
 
             <View style={{display:'flex', width:'50%', flexDirection:'row', justifyContent:'flex-end', alignItems:'center'}}>
-                <Text>
-                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:16}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:16}}>iste</Text>
-                </Text>
+                {this.state.text == null
+                ?
+                    <Text>
+                        <Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:16}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:16}}>iste</Text>
+                    </Text>
+                :
+                    <TouchableOpacity onPress={async () => {
+                        this.setState({
+                            text:null,
+                        });
+                        this.props.onBlur(null);
+                    }}>
+                        <CustomIcon name="close" size={30} style={{color:'#003DFF'}} />
+                    </TouchableOpacity>
+                }
             </View>
         </View>
     );
@@ -103,7 +115,8 @@ const styles = StyleSheet.create({
         paddingVertical:15,
         display:'flex',
         flexDirection:'row',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        alignItems: 'center',
     },
     inputInfoArea:{
         fontFamily:'Muli-Light',
