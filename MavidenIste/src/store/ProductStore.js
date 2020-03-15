@@ -18,14 +18,16 @@ class ProductStore {
             const productCheckPromise = new Promise((resolve, reject) => {
                 this.products = [...products.data.data];
                 this.products.map(async e => {
-                    const productsFromStorage = await BasketStore.validateIfProductInBasket(e._id);
-                    if(productsFromStorage != -1){
-                        e.isInTheBasket = true;
-                        resolve(true);
-                    }else{
-                        e.isInTheBasket = false;
-                        resolve(true);
-                    }
+                   // const productsFromStorage = await BasketStore.validateIfProductInBasket(e._id);
+                  //  if(productsFromStorage != -1){
+                  //      e.isInTheBasket = true;
+                  //      resolve(true);
+                  //  }else{
+                  //      e.isInTheBasket = false;
+                  //      resolve(true);
+                  //  }
+
+                    resolve(true)
                 })
             })
             await productCheckPromise;
@@ -39,8 +41,8 @@ class ProductStore {
     }
 
     @action outOfTheBasket = async (product_id) => {
-        const index = this.products.map(e => e._id).indexOf(product_id);
-        this.products[index].isInTheBasket = false;
+     //   const index = this.products.map(e => e._id).indexOf(product_id);
+     //   this.products[index].isInTheBasket = false;
     }
 
     @action addTheBasket = async (product_id) => {

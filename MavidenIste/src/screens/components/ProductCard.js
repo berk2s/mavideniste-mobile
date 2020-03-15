@@ -6,26 +6,32 @@ import {IMAGE_URL} from '../../constants';
 import {observer} from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import BasketStore from '../../store/BasketStore';
+
 @observer
 export default class ProductCard extends Component {
 
     state = {
-        loading:false
+        loading:false,
+        isClicked:false
     }
 
     _handleProductAddToBasketClick = async (product_id) => {
         try{
-            this.setState({
-                loading:true,
-            });
-
-            setTimeout(async () => {
-                await this.props.BasketStore.setBasketProduct(product_id);
+            if(!this.state.isClicked) {
                 this.setState({
-                    loading:false,
+                    loading: true,
+                    isClicked: true
                 });
-            }, 500);
 
+                await this.props.BasketStore.addToBasket(product_id);
+                setTimeout(async () => {
+                    this.setState({
+                        loading: false,
+                        isClicked:false
+                    });
+                }, 500);
+            }
         }catch(e){
             alert(e);
         }
@@ -37,8 +43,9 @@ export default class ProductCard extends Component {
                 loading:true,
             });
 
+            await this.props.BasketStore.removeFromBasket(product_id);
+
             setTimeout(async () => {
-                await this.props.BasketStore.deleteBasketProduct(product_id);
                 this.setState({
                     loading:false,
                 });
@@ -98,7 +105,7 @@ export default class ProductCard extends Component {
 
             <View style={styles.basketActionArea}>
                 {
-                    e.isInTheBasket == true
+                    BasketStore.productsWithID.map(r => r.id).indexOf(e._id) !== -1
                         ?
                         <TouchableOpacity onPress={() => this._handleProductOutOfTHeBasketClick(e._id)}>
                             <View style={styles.addToBasketArea}>

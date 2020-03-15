@@ -14,22 +14,37 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import SwitcherStore from '../../../store/SwitcherStore';
 import Switcher from '../switcher/Switcher';
 
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import BasketStore from '../../../store/BasketStore';
+
+
 @inject('BasketStore')
 @observer
 export default class ShopingCard extends Component {
-
-
-
 
     state = {
         fetched:false,
         datas:[],
         loading: false,
+        totalPrice: 0
     }
 
     componentDidMount = async () => {
         try{
-            await this.props.BasketStore.getBasketProducts()
+            this.setState({
+                loading:true,
+            });
+
+            await this.props.BasketStore.readyProducts()
+
+            setTimeout(() => {
+                this.setState({
+                    loading:false,
+                    fetched:true,
+                    totalPrice: this.props.BasketStore.totalPrice
+                });
+            }, 1000)
+
         }catch(e){
             alert(e)
         }
@@ -51,13 +66,13 @@ export default class ShopingCard extends Component {
                                 loading:true,
                             });
 
+                            await this.props.BasketStore.clearBasket()
                             setTimeout(async () => {
-                                await this.props.BasketStore.deleteBasket()
                                 this.setState({
                                     loading:false,
+                                    fetched:true
                                 });
-
-                            }, 600);
+                            }, 1000);
                         }
                     },
                 ]
@@ -71,14 +86,18 @@ export default class ShopingCard extends Component {
         try{
             this.setState({
                 loading:true,
+               // fetched:false
             });
-            setTimeout(async () => {
-                await this.props.BasketStore.deleteBasketProduct(id);
 
+            await this.props.BasketStore.removeFromBasket(id);
+
+            setTimeout(() => {
                 this.setState({
                     loading:false,
+                 //   fetched:true
                 });
-            }, 600)
+            }, 1000)
+
         }catch(e){
             alert(e);
         }
@@ -90,11 +109,12 @@ export default class ShopingCard extends Component {
                 this.setState({
                     loading: true,
                 });
+                await this.props.BasketStore.decrementProduct(id);
                 setTimeout(async () => {
-                    await this.props.BasketStore.setBasketProductDecrement(id);
 
                     this.setState({
                         loading: false,
+                        totalPrice: this.props.BasketStore.totalPrice
                     });
                 }, 600);
             }
@@ -108,11 +128,12 @@ export default class ShopingCard extends Component {
             this.setState({
                 loading:true,
             });
+            await this.props.BasketStore.incrementProduct(id);
             setTimeout(async () => {
-                await this.props.BasketStore.setBasketProductIncrement(id);
 
                 this.setState({
                     loading:false,
+                    totalPrice: this.props.BasketStore.totalPrice
                 });
             }, 600)
         }catch(e){
@@ -142,10 +163,9 @@ export default class ShopingCard extends Component {
 
     render () {
 
-
     return (
         <Container style={styles.container}>
-          <Header transparent style={styles.header}>
+          <SafeAreaView transparent style={styles.header}>
             <Left style={styles.leftArea}>
 
                 <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
@@ -157,19 +177,23 @@ export default class ShopingCard extends Component {
             </Body>
             <Right>
                 {
-                    this.props.BasketStore.getProducts.length == 0
+                    this.state.fetched
                         ?
-                        <></>
+                            this.props.BasketStore.getProducts.length == 0
+                                ?
+                                <></>
+                                :
+                                <TouchableOpacity onPress={() => this._handleBasketRemove()}>
+                                    <View style={styles.removeBox}>
+                                        <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
+                                        <CustomIcon name="trash" size={18} color={'#FF0000'} />
+                                    </View>
+                                </TouchableOpacity>
                         :
-                        <TouchableOpacity onPress={() => this._handleBasketRemove()}>
-                            <View style={styles.removeBox}>
-                                <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
-                                <CustomIcon name="trash" size={18} color={'#FF0000'} />
-                            </View>
-                        </TouchableOpacity>
+                        <></>
                 }
             </Right>
-          </Header>
+          </SafeAreaView>
             {
                 SwitcherStore.isSwitcherClicked
                     ?
@@ -192,14 +216,16 @@ export default class ShopingCard extends Component {
               <View style={[styles.basketArea, {minHeight: Dimensions.get('window').height-245}]}>
 
                   {
-                      this.props.BasketStore.getProducts.length == 0
+                      this.state.fetched
                           ?
+                          this.props.BasketStore.getProducts.length == 0
+                              ?
                               <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
                                   <Image source={EmptyIMG} style={{width:80, height:80}}/>
                                   <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Hiç ürün yok</Text>
                                   <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>maviden iste, ayağına gelsin.</Text>
                               </View>
-                          :
+                              :
                               this.props.BasketStore.getProducts.map(e => {
                                   const uri = IMAGE_URL+e.product_image;
                                   return <View key={e.id} style={styles.basket}>
@@ -236,34 +262,38 @@ export default class ShopingCard extends Component {
                                       </View>
                                   </View>
                               })
-
-
+                          :
+                          <></>
 
                   }
 
               </View>
 
               {
-                  this.props.BasketStore.getProducts.length == 0
+                  this.state.fetched
                       ?
-                      <></>
-                      :
-                      <View style={styles.actionArea}>
-                          <TouchableOpacity style={{width:'55%'}} onPress={() => this.props.navigation.navigate('Feed')}>
-                              <View style={styles.resumeShopingBtn}>
-                                  <Text style={styles.actionText}>Alışverişe devam</Text>
-                              </View>
-                          </TouchableOpacity>
-
-                          <View style={{width:'32%'}}>
-                              <Text style={styles.resultCountPrice}>{this.props.BasketStore.getTotalPrice} TL</Text>
-                              <TouchableOpacity>
-                                  <View style={styles.paymentBtn}>
-                                      <Text style={styles.actionText}>Onayla</Text>
+                      this.props.BasketStore.getProducts.length == 0
+                          ?
+                          <></>
+                          :
+                          <View style={styles.actionArea}>
+                              <TouchableOpacity style={{width:'55%'}} onPress={() => this.props.navigation.navigate('Feed')}>
+                                  <View style={styles.resumeShopingBtn}>
+                                      <Text style={styles.actionText}>Alışverişe devam</Text>
                                   </View>
                               </TouchableOpacity>
+
+                              <View style={{width:'32%'}}>
+                                  <Text style={styles.resultCountPrice}>{this.props.BasketStore.getTotalPrice} TL</Text>
+                                  <TouchableOpacity>
+                                      <View style={styles.paymentBtn}>
+                                          <Text style={styles.actionText}>Onayla</Text>
+                                      </View>
+                                  </TouchableOpacity>
+                              </View>
                           </View>
-                      </View>
+                      :
+                      <></>
               }
 
 
@@ -275,6 +305,12 @@ export default class ShopingCard extends Component {
 }
 
 const styles = StyleSheet.create({
+    header:{
+        display:'flex',
+        flexDirection:'row',
+        height:55,
+        paddingLeft:10
+    },
     resultCountPrice:{
       position:'absolute',
         top:-35,

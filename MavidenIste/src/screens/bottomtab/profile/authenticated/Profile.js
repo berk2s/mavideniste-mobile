@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, Button, SafeAreaView, TouchableOpacity, Dimensions, Image} from 'react-native';
+import {StyleSheet, Text, View, Button,  TouchableOpacity, Dimensions, Image} from 'react-native';
 
 import {observer} from 'mobx-react';
 
@@ -16,6 +16,9 @@ import LocationAPI from '../../../../locationapi';
 import Ripple from 'react-native-material-ripple';
 
 import { Badge } from 'react-native-elements'
+
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 
 @observer
 export default class Profile extends Component {
@@ -143,7 +146,7 @@ export default class Profile extends Component {
   render() {
     return (
         <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-            <Header transparent style={styles.header}>
+            <SafeAreaView transparent style={styles.header}>
                 <Left style={styles.leftArea}>
 
                     <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
@@ -154,7 +157,7 @@ export default class Profile extends Component {
                     <Title style={styles.bodyTitleText}>Profilim</Title>
                 </Body>
 
-            </Header>
+            </SafeAreaView>
 
             {
                 SwitcherStore.isSwitcherClicked
@@ -284,6 +287,12 @@ export default class Profile extends Component {
 }
 
 const styles = StyleSheet.create({
+    header:{
+        display:'flex',
+        flexDirection:'row',
+        height:55,
+        paddingLeft:10
+    },
     cardText:{
       fontFamily:'Muli-Light'
     },

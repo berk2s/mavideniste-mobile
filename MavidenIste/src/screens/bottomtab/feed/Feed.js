@@ -60,6 +60,8 @@ export default class Feed extends Component {
 
             const categories = await API.get(`/api/category/current/${BRANCH_ID}`);
             this.state.datas = [...categories.data.data]
+
+            await this.props.BasketStore.readyProducts()
             /*
                 categories.data.data._id,
                 categories.data.data.category_name,

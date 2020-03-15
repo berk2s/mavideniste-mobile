@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Image} from 'react-native';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
@@ -17,6 +17,9 @@ import Switcher from '../bottomtab/switcher/Switcher';
 import ProductCard from '../components/ProductCard';
 import HeaderForProducts from '../components/HeaderForProducts';
 import EmptyIMG from '../../img/search_result.png';
+
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 
 @inject('BasketStore', 'ProductStore')
 @observer
@@ -148,6 +151,8 @@ export default class ProductList extends Component {
                     <View style={styles.content}>
                         <Spinner
                             visible={this.state.loading}
+                            animation={'fade'}
+
                             size={'small'}
                         />
                         {this.state.fetched

@@ -10,6 +10,8 @@ import CustomIcon from '../../../font/CustomIcon';
 import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../img/login.png';
 
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 @observer
 export default class Campaign extends Component {
 
@@ -39,8 +41,8 @@ export default class Campaign extends Component {
 
   render() {
     return (
-        <View style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-          <Header transparent style={styles.header}>
+        <Container style={[styles.container, {backgroundColor:'#F6F6F6', height:'100%', flex:1, paddingTop:0, marginTop:0}]}>
+          <SafeAreaView transparent style={[styles.header]}>
             <Left style={styles.leftArea}>
 
               <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
@@ -53,7 +55,7 @@ export default class Campaign extends Component {
             <Body>
             </Body>
 
-          </Header>
+          </SafeAreaView>
 
           {
             SwitcherStore.isSwitcherClicked
@@ -136,12 +138,22 @@ export default class Campaign extends Component {
 
           </Content>
 
-        </View>
+        </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  header:{
+    display:'flex',
+    flexDirection:'row',
+    height:55,
+    paddingLeft:10
+  },
+  container:{
+    paddingVertical: 0,
+    marginVertical:0
+  },
   campaignText:{
     fontFamily: 'Muli-SemiBold',
     color:'#304555',
