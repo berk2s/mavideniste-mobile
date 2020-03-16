@@ -39,18 +39,22 @@ export default class ProductCard extends Component {
 
     _handleProductOutOfTHeBasketClick = async (product_id) => {
         try{
-            this.setState({
-                loading:true,
-            });
-
-            await this.props.BasketStore.removeFromBasket(product_id);
-
-            setTimeout(async () => {
+            if(!this.state.isClicked){
                 this.setState({
-                    loading:false,
+                    loading:true,
+                    isClicked:true
                 });
-            }, 500);
 
+                await this.props.BasketStore.removeFromBasket(product_id);
+
+                setTimeout(async () => {
+                    this.setState({
+                        loading:false,
+                        isClicked:false
+                    });
+                }, 500);
+
+            }
         }catch(e){
             alert(e);
         }

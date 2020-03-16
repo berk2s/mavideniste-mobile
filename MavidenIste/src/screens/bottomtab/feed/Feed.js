@@ -37,6 +37,8 @@ import ProductCard from '../../components/ProductCard';
 import EmptyIMG from '../../../img/search_result.png';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Ripple from 'react-native-material-ripple';
+import Geolocation from '@react-native-community/geolocation';
 
 
 @inject('BasketStore', 'ProductStore')
@@ -57,6 +59,8 @@ export default class Feed extends Component {
 
     componentDidMount = async () => {
         try{
+
+            Geolocation.requestAuthorization()
 
             const categories = await API.get(`/api/category/current/${BRANCH_ID}`);
             this.state.datas = [...categories.data.data]
@@ -225,19 +229,28 @@ export default class Feed extends Component {
                                         {
                                             this.state.datas.map(e => {
                                                 const uri = IMAGE_URL+e.category_image;
-                                                return <TouchableOpacity key={e._id} onPress={() => this.props.navigation.navigate('Product', {category_id: e._id, category_name:e.category_name})}>
+                                                return <View
+
+                                                    key={e._id}
+
+                                                >
                                                     <View style={styles.card} >
-                                                        <View style={styles.cardWhiteArea}>
+                                                        <Ripple
+                                                            rippleSize={300}
+                                                            rippleDuration={1000}
+                                                            rippleColor={'#fff'}
+                                                            onPress={() => this.props.navigation.navigate('Product', {category_id: e._id, category_name:e.category_name})}
+                                                            style={styles.cardWhiteArea}>
                                                             <FastImage
                                                                 source={{uri: uri}}
                                                                 style={styles.cardImage}
                                                             />
-                                                        </View>
+                                                        </Ripple>
                                                         <View style={styles.cardTextArea}>
                                                             <Text style={styles.cardText}>{e.category_name}</Text>
                                                         </View>
                                                     </View>
-                                                </TouchableOpacity>
+                                                </View>
                                             })
                                         }
                                     </View>

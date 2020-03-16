@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, Platform} from 'react-native';
 import {NavigationEvents} from 'react-navigation';
 import {Body, Container, Content, Header, Left, Title} from 'native-base';
 import SwitcherStore from '../../../store/SwitcherStore';
@@ -46,7 +46,7 @@ export default class Campaign extends Component {
             <Left style={styles.leftArea}>
 
               <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
-                <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+                <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
               </TouchableOpacity>
             </Left>
             <Body style={styles.body}>
@@ -147,8 +147,10 @@ const styles = StyleSheet.create({
   header:{
     display:'flex',
     flexDirection:'row',
-    height:55,
-    paddingLeft:10
+    alignItems:'center',
+    height:Platform.OS == 'ios' ? 70 : 50,
+    paddingLeft:10,
+    paddingRight:10,
   },
   container:{
     paddingVertical: 0,

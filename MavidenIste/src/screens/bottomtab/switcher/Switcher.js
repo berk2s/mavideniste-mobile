@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import {NavigationEvents} from 'react-navigation';
 import SwitcherStore from '../../../store/SwitcherStore';
 import {observer} from 'mobx-react';
+import Ripple from 'react-native-material-ripple';
 
 @observer
 export default class Swicher extends Component {
@@ -25,16 +26,16 @@ export default class Swicher extends Component {
                             <View style={styles.box}>
                                 <Text style={styles.activeText}>mavideniste</Text>
                             </View>
-                            <TouchableOpacity style={styles.box} onPress={() => this._handeClick()}>
+                            <Ripple style={styles.box} onPress={() => this._handeClick()}>
                                 <Text style={styles.text}>mavikurye</Text>
-                            </TouchableOpacity>
+                            </Ripple>
                         </>
                         :
                         <>
-                            <TouchableOpacity style={styles.box} onPress={() => this._handeClick()}>
+                            <Ripple style={styles.box} onPress={() => this._handeClick()}>
                                 <Text style={styles.text}>mavideniste</Text>
-                            </TouchableOpacity>
-                            <View style={styles.box} onPress={() => this._handeClick()}>
+                            </Ripple>
+                            <View style={styles.box}>
                                 <Text style={styles.activeText}>mavikurye</Text>
                             </View>
                         </>

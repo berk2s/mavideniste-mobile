@@ -16,19 +16,21 @@ class ProductStore {
         try{
             const products = await API.get(`/api/product/get/${branch_id}/${category_id}`);
             const productCheckPromise = new Promise((resolve, reject) => {
-                this.products = [...products.data.data];
-                this.products.map(async e => {
-                   // const productsFromStorage = await BasketStore.validateIfProductInBasket(e._id);
-                  //  if(productsFromStorage != -1){
-                  //      e.isInTheBasket = true;
-                  //      resolve(true);
-                  //  }else{
-                  //      e.isInTheBasket = false;
-                  //      resolve(true);
-                  //  }
+                runInAction(() => {
+                    this.products = [...products.data.data];
+                    this.products.map(async e => {
+                        // const productsFromStorage = await BasketStore.validateIfProductInBasket(e._id);
+                        //  if(productsFromStorage != -1){
+                        //      e.isInTheBasket = true;
+                        //      resolve(true);
+                        //  }else{
+                        //      e.isInTheBasket = false;
+                        //      resolve(true);
+                        //  }
 
-                    resolve(true)
-                })
+                        resolve(true)
+                    })
+                });
             })
             await productCheckPromise;
         }catch(e){

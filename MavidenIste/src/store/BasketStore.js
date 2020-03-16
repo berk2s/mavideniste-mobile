@@ -1,8 +1,9 @@
 import {observable, action, runInAction, computed, configure} from 'mobx';
 import AsyncStorage from '@react-native-community/async-storage';
-import ProductStore from './ProductStore';
 import API from '../api'
 import {check} from 'react-native-permissions';
+
+import AddressStore from './AddressStore';
 
 configure({
     enforceActions: 'observed'
@@ -13,6 +14,8 @@ class BasketStore {
     @observable products = [];
     @observable productsWithID = [];
     @observable totalPrice = 0;
+    @observable totalPriceWithCommitte = 0;
+    @observable selectedAddress = AddressStore.getAddress.length > 0 ? AddressStore.getAddress[0] : null;
 
     /*
 
@@ -100,6 +103,8 @@ class BasketStore {
                 })
                 await AsyncStorage.setItem('products', JSON.stringify(this.productsWithID));
                 await this.readyProducts();
+            }else{
+                alert('eheheh')
             }
         }catch(e){
             alert(e);
@@ -126,6 +131,10 @@ class BasketStore {
 
     @computed get getTotalPrice() {
         return this.totalPrice
+    }
+
+    @computed get getTotalPriceWithCommite(){
+        return (this.totalPrice+4)
     }
 
     @action clearBasket = async () => {
@@ -176,10 +185,31 @@ class BasketStore {
         }
     }
 
+    @action setSelectedAddress = async (address) => {
+        runInAction(() => {
+            this.selectedAddress = address;
+        })
+    }
+
+    @action updateSelectedAddress = async () => {
+        runInAction(() => {
+            this.selectedAddress = AddressStore.getAddress.length > 0 ? AddressStore.getAddress[0] : null;
+        })
+    }
+
+    @action clearSelectedAddress = async () => {
+        runInAction(() => {
+           this.selectedAddress = null
+        });
+    }
+
     @computed get getProducts(){
         return this.products
     }
 
+    @computed get getSelectedAddress(){
+        return this.selectedAddress;
+    }
 }
 
 export default new BasketStore();

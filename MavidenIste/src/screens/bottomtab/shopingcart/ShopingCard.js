@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions} from 'react-native';
-import {Container, Header, Left, Body, Right, Button, Title, Content} from 'native-base';
+import {Alert, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Platform} from 'react-native';
+import {Container, Header, Left, Body, Right, Button, Title, Content, Card} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 import FastImage from 'react-native-fast-image';
 
@@ -16,9 +16,12 @@ import Switcher from '../switcher/Switcher';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import BasketStore from '../../../store/BasketStore';
+import Ripple from 'react-native-material-ripple';
+import API from '../../../api';
+import AuthStore from '../../../store/AuthStore';
 
 
-@inject('BasketStore')
+@inject('BasketStore', 'AuthStore')
 @observer
 export default class ShopingCard extends Component {
 
@@ -26,7 +29,7 @@ export default class ShopingCard extends Component {
         fetched:false,
         datas:[],
         loading: false,
-        totalPrice: 0
+        totalPrice: 0,
     }
 
     componentDidMount = async () => {
@@ -43,6 +46,8 @@ export default class ShopingCard extends Component {
                     fetched:true,
                     totalPrice: this.props.BasketStore.totalPrice
                 });
+
+
             }, 1000)
 
         }catch(e){
@@ -161,6 +166,27 @@ export default class ShopingCard extends Component {
         }, 300)
     }
 
+    _handleGoAheadClick = async () => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            if(this.props.AuthStore.token !== null){
+                this.props.navigation.navigate('ApplyOrder')
+            }else{
+                this.props.navigation.navigate('Profile')
+            }
+
+            this.setState({
+                loading:false,
+            });
+
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     render () {
 
     return (
@@ -168,9 +194,12 @@ export default class ShopingCard extends Component {
           <SafeAreaView transparent style={styles.header}>
             <Left style={styles.leftArea}>
 
-                <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
-                  <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+
+                <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
+                  <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                 </TouchableOpacity>
+
+
             </Left>
             <Body style={styles.body}>
               <Title style={styles.bodyTitleText}>Sepetim</Title>
@@ -277,19 +306,19 @@ export default class ShopingCard extends Component {
                           <></>
                           :
                           <View style={styles.actionArea}>
-                              <TouchableOpacity style={{width:'55%'}} onPress={() => this.props.navigation.navigate('Feed')}>
+                              <Ripple  rippleDuration={1000} rippleColor={'#000'} style={{width:'55%'}} onPress={() => this.props.navigation.navigate('Feed')}>
                                   <View style={styles.resumeShopingBtn}>
                                       <Text style={styles.actionText}>Alışverişe devam</Text>
                                   </View>
-                              </TouchableOpacity>
+                              </Ripple>
 
                               <View style={{width:'32%'}}>
                                   <Text style={styles.resultCountPrice}>{this.props.BasketStore.getTotalPrice} TL</Text>
-                                  <TouchableOpacity>
+                                  <Ripple  onPress={this._handleGoAheadClick} rippleDuration={1000} rippleColor={'#fff'}>
                                       <View style={styles.paymentBtn}>
                                           <Text style={styles.actionText}>Onayla</Text>
                                       </View>
-                                  </TouchableOpacity>
+                                  </Ripple>
                               </View>
                           </View>
                       :
@@ -308,8 +337,10 @@ const styles = StyleSheet.create({
     header:{
         display:'flex',
         flexDirection:'row',
-        height:55,
-        paddingLeft:10
+        alignItems:'center',
+        height:Platform.OS == 'ios' ? 70 : 50,
+        paddingLeft:10,
+        paddingRight:10,
     },
     resultCountPrice:{
       position:'absolute',
@@ -426,11 +457,11 @@ const styles = StyleSheet.create({
         shadowColor: "#000000",
         shadowOffset: {
             width: 0,
-            height: 0,
+            height: 1,
         },
-        shadowOpacity: 0.16,
-        shadowRadius: 7,
-        elevation: 5,
+        shadowOpacity: 0.12,
+        shadowRadius: 6,
+        elevation: 2,
         marginBottom:30
     },
     removeBoxText:{

@@ -20,6 +20,7 @@ import Geolocation from '@react-native-community/geolocation';
 
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
+import AddressStore from '../../../../../../store/AddressStore';
 
 @observer
 export default class AddAddressForm extends Component {
@@ -104,6 +105,7 @@ export default class AddAddressForm extends Component {
                     'x-access-token': AuthStore.getToken
                 }
             });
+            await AddressStore.setAddress(postit.data.data);
             this.props.navigation.navigate('AddressList', {address: postit.data.data});
         }catch(e){
             console.log(e)

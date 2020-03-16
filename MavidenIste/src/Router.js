@@ -37,6 +37,8 @@ import FindLocation from './screens/bottomtab/profile/authenticated/addressmanag
 import OrderList from './screens/bottomtab/profile/authenticated/ordermanagement/OrderList';
 import OrderDetail from './screens/bottomtab/profile/authenticated/ordermanagement/order_detail/OrderDetail';
 
+import ApplyOrderScreen from './screens/bottomtab/shopingcart/apply_order/ApplyOrder';
+
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
 // for the product listing
@@ -226,7 +228,12 @@ const authticatedBottomScreens = createBottomTabNavigator({
         }
     },
     ShopingCard:{
-        screen:ShopingCardScreen,
+        screen:createStackNavigator({
+                    ShopingCard:ShopingCardScreen,
+                    ApplyOrder:ApplyOrderScreen
+                },{
+                    headerMode:null
+                }),
         navigationOptions:{
             tabBarOnPress: ((obj) => {SwitcherStore.setTabIndex(3); obj.navigation.navigate('ShopingCard')}),
             tabBarLabel: () => (null),

@@ -7,6 +7,9 @@ import axios from 'axios';
 import {API_KEY, API_URL} from '../constants';
 import AsyncStorage from '@react-native-community/async-storage';
 
+import AddressStore from './AddressStore';
+import BasketStore from './BasketStore';
+
 configure({
     enforceActions:'observed'
 })
@@ -67,7 +70,14 @@ class AuthStore {
                     this.name_surname = user_information.data.data.name_surname;
                 });
 
+                const data = await API.get(`/api/user/address/${getUserId}`, {
+                    headers:{
+                        'x-access-token': getToken
+                    }
+                })
 
+                await AddressStore.setAddress(data.data.data);
+                await BasketStore.updateSelectedAddress();
 
                 NavigationService.navigate('authticatedBottomScreens');
             }else{
@@ -132,6 +142,8 @@ class AuthStore {
                 }
             });
             await Keychain.resetGenericPassword();
+            await AddressStore.clearAddress();
+            await BasketStore.clearSelectedAddress();
             runInAction(() => {
                this.token = null;
                this.user_id = null;

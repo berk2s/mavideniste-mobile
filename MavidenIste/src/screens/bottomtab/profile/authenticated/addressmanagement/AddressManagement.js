@@ -29,6 +29,9 @@ import API from '../../../../../api'
 import Ripple from 'react-native-material-ripple';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
+import Geolocation from '@react-native-community/geolocation';
+import AddressStore from '../../../../../store/AddressStore';
+import BasketStore from '../../../../../store/BasketStore';
 
 @observer
 export default class AddresManagement extends Component {
@@ -41,10 +44,10 @@ export default class AddresManagement extends Component {
     }
 
     componentDidMount = async () => {
+
         this.setState({
             getData: [],
         });
-
 
         this.setState({
             provincies: this.props.navigation.getParam('provinces'),
@@ -153,8 +156,9 @@ export default class AddresManagement extends Component {
                                 getData: [],
                             });
 
-                            this.state.getData = [...deleteit.data.data]
-
+                            this.state.getData = [...deleteit.data.data];
+                            await AddressStore.setAddress(deleteit.data.data);
+                            await BasketStore.updateSelectedAddress();
                             this.props.navigation.navigate('AddressList', {address: deleteit.data.data})
 
                             this.setState({
@@ -225,7 +229,7 @@ export default class AddresManagement extends Component {
                 padder>
                 <View style={styles.addressListArea}>
 
-                    {this.state.getData.length == 0
+                    {AddressStore.getAddress.length == 0
                     ?
                         <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
                             <Image source={EmptyIMG} style={{width:90, height:90}}/>
@@ -233,7 +237,7 @@ export default class AddresManagement extends Component {
                             <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>zaman kazanmak için adres ekleyebilirsin</Text>
                         </View>
                     :
-                        this.props.navigation.getParam('address').map((e, key) => {
+                        AddressStore.getAddress.map((e, key) => {
                             return <TouchableOpacity ob style={styles.addressCard} onPress={() => {
 
                                 this.setState({
