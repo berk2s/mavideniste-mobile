@@ -21,7 +21,9 @@ export default class ApplyOrder extends Component {
 
     state = {
         visible:false,
-        address:{}
+        visibleCoupon:false,
+        address:{},
+        selectedPaymentType:1
     }
 
     componentDidMount() {
@@ -70,7 +72,12 @@ export default class ApplyOrder extends Component {
                     <Title style={styles.bodyTitleText}>Siparişi onayla </Title>
                 </Body>
                 <Right>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        this.setState({
+                            visibleCoupon:true,
+                        });
+
+                    }}>
                         <Image
                             source={CouponIMG}
                             style={{width:35, height:30, marginTop:5, marginRight:10}}
@@ -88,6 +95,34 @@ export default class ApplyOrder extends Component {
                     animation={'fade'}
                     size={'small'}
                 />
+
+                <Modal
+                    visible={this.state.visibleCoupon}
+                    onTouchOutside={(event) => {
+                        this.setState({ visibleCoupon: false });
+                    }}
+
+                >
+                    <ModalContent style={[styles.selectAddress, {minHeight:200}]}>
+                        <View style={[styles.selectAddressHeader, {borderBottomColor: '#fff', marginVertical:0, marginBottom:0, paddingBottom:0}]}>
+                            <Text style={styles.selectAdressTitle}>Kupon uygula</Text>
+                        </View>
+                        <View style={styles.selectAddressList}>
+
+                            <Item style={[styles.inputAreaLast, styles.inputArea, {borderWidth:1, borderBottomColor:'#ddd', shadowColor:'#fff', borderRadius:0}]}>
+
+                                <Input
+                                    style={[styles.input, {fontFamily:'Muli-Regular',color:'#304555', borderRadius:0, paddingLeft:0, paddingHorizontal:0, borderWidth:0}]}
+                                    placeholder="Kuponu girin"
+                                    placeholderTextColor={'#304555'}
+                                    returnKeyType={'go'}
+                                />
+                            </Item>
+
+
+                        </View>
+                    </ModalContent>
+                </Modal>
 
                 <Modal
                     visible={this.state.visible}
@@ -122,7 +157,20 @@ export default class ApplyOrder extends Component {
                     <View style={{width:'85%'}}>
                         <View style={styles.addressArea}>
                             <Ripple
-                                onPress={() => this.props.navigation.navigate('Profile')}
+                                onPress={() => {
+                                    this.setState({
+                                        loading:true,
+                                    });
+
+                                    setTimeout(() => {
+                                        this.setState({
+                                            loading:false,
+                                        });
+
+                                        this.props.navigation.navigate('Profile');
+                                    }, 500)
+
+                                }}
                                 rippleColor={'#003DFF'}
                                 style={styles.addNewAddress}>
                                 <Text style={styles.addNewAddressText}>Yeni adres girin</Text>
@@ -184,17 +232,25 @@ export default class ApplyOrder extends Component {
 
                                         <Item
                                             style={styles.inputArea}>
-                                            <Input
-                                                style={[styles.input, {zIndex:9, fontFamily:'Muli-SemiBold', color:'#1B52FE'}]}
-                                                value={'Nakit'}
+
+                                            <TouchableOpacity
+                                                style={[{width:'65%', paddingLeft:10, zIndex:9,}]}
+                                                onPress={() => {
+                                                    this.setState({
+                                                        selectedPaymentType:1,
+                                                    });
+                                                }}
                                                 editable={false}
-                                            />
+                                            >
+                                                <Text style={{fontFamily:'Muli-SemiBold', color: this.state.selectedPaymentType == 1 ? '#1B52FE' : '#CBCDCF'}}>Nakit</Text>
+                                            </TouchableOpacity>
+
                                             <View style={{marginRight:5}}>
                                                 <Text style={styles.accIcon}>
                                                     <CustomIcon
                                                         name="checkmark-circle-2"
                                                         size={24}
-                                                        style={{color: '#1B52FE'}}
+                                                        style={{color: this.state.selectedPaymentType == 1 ? '#1B52FE' : '#CBCDCF'}}
                                                     />
                                                 </Text>
                                             </View>
@@ -202,23 +258,35 @@ export default class ApplyOrder extends Component {
 
                                     </View>
                                 </View>
-                                <View style={styles.payment}>
+                                <View
+                                    style={styles.payment}
+                                >
 
-                                    <View style={styles.paymentHeaderBody}>
+                                    <View style={styles.paymentHeaderBody}
+
+                                    >
 
                                         <Item
-                                            style={styles.inputArea}>
-                                            <Input
-                                                style={[styles.input, {zIndex:9, fontFamily:'Muli-SemiBold', color:'#CBCDCF'}]}
+
+                                            style={[styles.inputArea, {zIndex:999}]}>
+                                            <TouchableOpacity
+                                                style={[{width:'65%', paddingLeft:10, zIndex:9,}]}
                                                 value={'Kart'}
+                                                onPress={() => {
+                                                    this.setState({
+                                                        selectedPaymentType:2,
+                                                    });
+                                                }}
                                                 editable={false}
-                                            />
+                                            >
+                                                <Text style={{fontFamily:'Muli-SemiBold', color: this.state.selectedPaymentType == 2 ? '#1B52FE' : '#CBCDCF'}}>Kart</Text>
+                                            </TouchableOpacity>
                                             <View style={{marginRight:5}}>
                                                 <Text style={styles.accIcon}>
                                                     <CustomIcon
                                                         name="checkmark-circle-2"
                                                         size={24}
-                                                        style={{color: '#CBCDCF'}}
+                                                        style={{color: this.state.selectedPaymentType == 2 ? '#1B52FE' : '#CBCDCF'}}
                                                     />
                                                 </Text>
                                             </View>

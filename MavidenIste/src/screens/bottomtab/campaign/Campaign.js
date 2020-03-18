@@ -66,6 +66,7 @@ export default class Campaign extends Component {
                 :
                 <></>
           }
+
           <Spinner
               visible={this.state.loading}
               animation={'fade'}
