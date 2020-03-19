@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, PermissionsAndroid, Linking, Alert} from 'react-native';
+import {StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, PermissionsAndroid, Linking, Alert, Platform} from 'react-native';
 
 import {Body, Input, Item, Left, ListItem, Right, Button} from 'native-base';
 
@@ -76,9 +76,9 @@ export default class AddAddressForm extends Component {
         })
     }
 
-    _handleProvinceDone = async () => {
+    _handleProvinceDone = async (value=null) => {
         try{
-            const provinceID = this.state.selectedProvince;
+            const provinceID = value != null ? value : this.state.selectedProvince;
             const datas = await LocationAPI.get(`/api/location/county/${provinceID}`);
             this.setState({
                 counties: [],
@@ -86,6 +86,7 @@ export default class AddAddressForm extends Component {
             datas.data.map(e => {
                 this.state.counties.push({label: e.ilce_adi, value:{text:e.ilce_adi, value: e.id}})
             });
+            return datas.data.length
            // this.countySelect.togglePicker()
         }catch(e){
             console.log(e)
@@ -160,7 +161,22 @@ export default class AddAddressForm extends Component {
                                 <Item
                                     style={styles.inputAreaForPicker}>
                                         <RNPickerSelect
-                                            onValueChange={(value) => {this.setState({selectedProvince:value.value,}); setFieldValue('province', value)}}
+                                            onValueChange={async (value) => {
+                                                this.setState({selectedProvince:value.value,});
+                                                setFieldValue('province', value);
+                                                if(Platform.OS === 'android'){
+                                                    this.setState({
+                                                        loading:true,
+                                                    });
+
+                                                    const pdone = await this._handleProvinceDone(value.value);
+
+                                                    this.setState({
+                                                        loading:false,
+                                                    });
+
+                                                }
+                                            }}
                                             style={pickerStyle}
                                             value={values.province}
                                             items={this.state.provinces}
@@ -177,7 +193,12 @@ export default class AddAddressForm extends Component {
                                 <Item
                                     style={styles.inputAreaForPicker}>
                                     <RNPickerSelect
-                                        onValueChange={(value) => {setFieldValue('county', value)}}
+                                        onValueChange={(value) => {
+                                            setFieldValue('county', value)
+                                            if(Platform.OS === 'android'){
+                                                this._handleCountyDone()
+                                            }
+                                        }}
                                         value={values.county}
                                         style={pickerStyle}
                                         items={this.state.counties}
@@ -272,7 +293,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.08,
         shadowRadius: 5,
-        elevation: 3,
+        elevation: 1,
     },
     inputs:{
         marginBottom:10
@@ -308,7 +329,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.08,
         shadowRadius: 5,
-        elevation: 3,
+        elevation: 1,
     },
     inputFormArea:{
         width:'100%',
@@ -334,7 +355,7 @@ const styles = StyleSheet.create({
         shadowOffset: {
             height: 0,
         },
-        elevation:5,
+        elevation:1,
 
         borderTopColor: 'transparent',
 

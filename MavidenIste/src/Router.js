@@ -229,7 +229,7 @@ const authticatedBottomScreens = createBottomTabNavigator({
     },
     ShopingCard:{
         screen:createStackNavigator({
-                    ShopingCard:ShopingCardScreen,
+                    ShopingCard_:ShopingCardScreen,
                     ApplyOrder:ApplyOrderScreen
                 },{
                     headerMode:null

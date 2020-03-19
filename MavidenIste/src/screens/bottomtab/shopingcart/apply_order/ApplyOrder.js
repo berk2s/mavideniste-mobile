@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Image, Platform, StyleSheet, Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import {Image, Platform, StyleSheet, Text, TouchableOpacity, View, BackHandler} from 'react-native';
 import {Body, Container, Content, Input, Item, Left, Right, Title} from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomIcon from '../../../../font/CustomIcon';
@@ -14,7 +14,9 @@ import Modal, { ModalContent } from 'react-native-modals';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import AddressStore from '../../../../store/AddressStore';
+import Coupon from './coupon/Coupon';
 
+import PriceController from './PriceController';
 
 @observer
 export default class ApplyOrder extends Component {
@@ -24,6 +26,34 @@ export default class ApplyOrder extends Component {
         visibleCoupon:false,
         address:{},
         selectedPaymentType:1
+    }
+
+
+    constructor(props) {
+        super(props)
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+    }
+
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+
+    handleBackButtonClick() {
+
+        if(!this.state.visible && !this.state.visibleCoupon){
+            this.props.navigation.goBack()
+        }else{
+            this.setState({
+                visible:false,
+                visibleCoupon:false
+            });
+        }
+
+        return true;
     }
 
     componentDidMount() {
@@ -96,29 +126,21 @@ export default class ApplyOrder extends Component {
                     size={'small'}
                 />
 
+                {BasketStore.getTotalPrice == 0 && <PriceController {...this.props} />}
+
                 <Modal
                     visible={this.state.visibleCoupon}
                     onTouchOutside={(event) => {
                         this.setState({ visibleCoupon: false });
                     }}
-
                 >
-                    <ModalContent style={[styles.selectAddress, {minHeight:200}]}>
+                    <ModalContent style={[styles.selectAddress2, {minHeight:140}]}>
                         <View style={[styles.selectAddressHeader, {borderBottomColor: '#fff', marginVertical:0, marginBottom:0, paddingBottom:0}]}>
                             <Text style={styles.selectAdressTitle}>Kupon uygula</Text>
                         </View>
-                        <View style={styles.selectAddressList}>
+                        <View style={[styles.selectAddressList, {paddingBottom:0}]}>
 
-                            <Item style={[styles.inputAreaLast, styles.inputArea, {borderWidth:1, borderBottomColor:'#ddd', shadowColor:'#fff', borderRadius:0}]}>
-
-                                <Input
-                                    style={[styles.input, {fontFamily:'Muli-Regular',color:'#304555', borderRadius:0, paddingLeft:0, paddingHorizontal:0, borderWidth:0}]}
-                                    placeholder="Kuponu girin"
-                                    placeholderTextColor={'#304555'}
-                                    returnKeyType={'go'}
-                                />
-                            </Item>
-
+                            <Coupon />
 
                         </View>
                     </ModalContent>
@@ -373,6 +395,10 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         borderBottomWidth:1,
         borderBottomColor:'#304555',
+    },
+    selectAddress2:{
+        width:270,
+        paddingTop:15
     },
     selectAddress:{
         height:300,
