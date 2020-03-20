@@ -74,6 +74,7 @@ class BasketStore {
                                     product_name: data.product_name,
                                     product_amount: data.product_amount,
                                     product_image: data.product_image,
+                                    product_category:data.category_id,
                                     count: e.count > 0 ? e.count : 1
                                 });
 

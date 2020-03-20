@@ -5,14 +5,55 @@ import Ripple from 'react-native-material-ripple';
 
 import validationSchema from './validations'
 
+import API from '../../../../../api';
+
 import {Formik} from 'formik';
+import AuthStore from '../../../../../store/AuthStore';
+import Snackbar from 'react-native-snackbar';
+import BasketStore from '../../../../../store/BasketStore';
 
 export default class Coupon extends Component {
 
-    _handleSubmit = (values) => {
-        alert(JSON.stringify(values));
+    _handleSubmit = async (values, bag) => {
+        try{
+            const {coupon} = values;
 
+            const validateCoupon = await API.post('/api/coupon/validate',{
+                user_id: AuthStore.getUserID,
+                coupon_name:coupon,
+                total_price: BasketStore.getTotalPriceWithCommite,
+                products: BasketStore.getProducts,
+            },{
+                headers:{
+                    'x-access-token': AuthStore.getToken
+                }
+            });
 
+            if(validateCoupon.data.status.code == 'VC_1'){
+                Snackbar.show({
+                    text: validateCoupon.data.data,
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                });
+                bag.setErrors({coupon: validateCoupon.data.data})
+                return false
+            }
+
+            if(validateCoupon.data.status.code == 'VC_2'){
+                Snackbar.show({
+                    text: validateCoupon.data.data,
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                });
+                bag.setErrors({coupon: validateCoupon.data.info})
+                return false
+            }
+
+        }catch(e){
+            console.log(e);
+        }
     }
 
     render() {
@@ -25,15 +66,16 @@ export default class Coupon extends Component {
             validationSchema={validationSchema}
             onSubmit={this._handleSubmit}
           >
-              {({values, handleSubmit, handleChange, isSubmitting}) => (
+              {({values, errors, handleSubmit, touched, setFieldTouched, handleChange, isSubmitting}) => (
                   <>
-                  <Item style={[styles.inputAreaLast, styles.inputArea, {borderWidth:1, borderBottomColor:'#ddd', shadowColor:'#fff', borderRadius:0}]}>
+                  <Item style={[styles.inputAreaLast, styles.inputArea, {borderWidth:1, borderBottomColor:'#ddd', shadowColor:'#fff', borderRadius:0}]} error={errors.coupon && touched.coupon}>
                       <Input
                           style={[styles.input, {fontFamily:'Muli-Regular',color:'#304555', borderRadius:0, paddingLeft:0, paddingHorizontal:0, borderWidth:0}]}
                           placeholder="Kuponu girin"
                           placeholderTextColor={'#304555'}
                           returnKeyType={'go'}
                           value={values.coupon}
+                          onBlur={() => setFieldTouched('coupon')}
                           onChangeText={handleChange('coupon')}
                       />
                   </Item>
@@ -46,6 +88,9 @@ export default class Coupon extends Component {
 
                       </View>
                   </Ripple>
+
+                      {   (errors.coupon && touched.coupon)  && <Text style={styles.errorText}>{errors.coupon}</Text> }
+
 
                   </>
               )}
