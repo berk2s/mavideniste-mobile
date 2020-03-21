@@ -17,12 +17,26 @@ class BasketStore {
     @observable totalPriceWithCommitte = 0;
     @observable selectedAddress = AddressStore.getAddress.length > 0 ? AddressStore.getAddress[0] : null;
 
+    @observable totalPriceWithCommitte_BeforeCoupon = 0;
+    @observable hasCoupon = false;
+
+    @observable relevantCoupon = null;
     /*
 
         productsWithID stores {id: ..., count:...}
         products stores with its details
 
      */
+
+    @action cancelCoupon = async () => {
+        if(this.hasCoupon){
+            runInAction(() => {
+                this.hasCoupon = false;
+                this.relevantCoupon = null;
+               // this.totalPriceWithCommitte = (this.totalPrice+4)
+            });
+        }
+    }
 
     @action readyProducts = async () => {
         try{
@@ -31,6 +45,7 @@ class BasketStore {
                 runInAction(() => {
                     this.productsWithID = JSON.parse(productsFromStore);
                 });
+                await this.cancelCoupon();
                 await this.fetchProducts();
             }
         }catch(e){
@@ -57,38 +72,50 @@ class BasketStore {
 
     @action fetchProducts = async () => {
         try{
-                this.productsWithID.map(async e => {
-                    const product_id = e.id;
-                    const checkIndex = this.products.map(e => e.id).indexOf(product_id);
-                    if(checkIndex === -1){
-                        try{
-                            const product = await API.get(`/api/product/get/${product_id}`);
-                            const data = product.data.data;
-                            runInAction(() => {
+            //this.totalPriceWithCommitte = this.totalPrice+4;
+                const mapPromise = this.productsWithID.map(async e => {
+                    return new Promise((async (resolve, reject) => {
+                        const product_id = e.id;
+                        const checkIndex = this.products.map(e => e.id).indexOf(product_id);
+                        if(checkIndex === -1){
+                            try{
+                                const product = await API.get(`/api/product/get/${product_id}`);
+                                const data = product.data.data;
+                                runInAction(() => {
 
-                                this.products.push({
-                                    id: data._id,
-                                    product_discount: data.product_discount == null ? null : parseFloat(data.product_discount),
-                                    product_discount_price: data.product_discount == null ? null : parseFloat(data.product_discount_price),
-                                    product_list_price: parseFloat(data.product_list_price),
-                                    product_name: data.product_name,
-                                    product_amount: data.product_amount,
-                                    product_image: data.product_image,
-                                    product_category:data.category_id,
-                                    count: e.count > 0 ? e.count : 1
-                                });
+                                    this.products.push({
+                                        id: data._id,
+                                        product_discount: data.product_discount == null ? null : parseFloat(data.product_discount),
+                                        product_discount_price: data.product_discount == null ? null : parseFloat(data.product_discount_price),
+                                        product_list_price: parseFloat(data.product_list_price),
+                                        product_name: data.product_name,
+                                        product_amount: data.product_amount,
+                                        product_image: data.product_image,
+                                        product_category:data.category_id,
+                                        count: e.count > 0 ? e.count : 1
+                                    });
 
-                                if(data.product_discount != null)
-                                    this.totalPrice += (parseFloat(data.product_discount_price)*parseInt(e.count));
-                                else
-                                    this.totalPrice += (parseFloat(data.product_list_price)*parseInt(e.count));
+                                    if(data.product_discount != null) {
+                                        this.totalPrice += (parseFloat(data.product_discount_price) * parseInt(e.count));
+                                    }else {
+                                        this.totalPrice += (parseFloat(data.product_list_price) * parseInt(e.count));
+                                    }
 
-                            })
-                        }catch(e){
-                            alert(e);
+                                })
+                            }catch(e){
+                                alert(e);
+                            }
                         }
-                    }
+                        resolve(true);
+                    }))
+                });
+
+                const promiseIt = await Promise.all(mapPromise);
+
+                runInAction(() => {
+                    this.totalPriceWithCommitte = this.totalPrice+4;
                 })
+
 
         }catch(e){
             alert(e);
@@ -102,8 +129,10 @@ class BasketStore {
                 await runInAction(() => {
                     this.productsWithID.push({id: product_id, count:count});
                 })
+
                 await AsyncStorage.setItem('products', JSON.stringify(this.productsWithID));
                 await this.readyProducts();
+
             }else{
                 alert('eheheh')
             }
@@ -135,7 +164,13 @@ class BasketStore {
     }
 
     @computed get getTotalPriceWithCommite(){
-        return (this.totalPrice+4)
+        return (this.totalPriceWithCommitte)
+    }
+
+    @action setTotalPriceWithCommitte = async (price) => {
+        runInAction(() => {
+            this.totalPriceWithCommitte = price;
+        })
     }
 
     @action clearBasket = async () => {
@@ -210,6 +245,34 @@ class BasketStore {
 
     @computed get getSelectedAddress(){
         return this.selectedAddress;
+    }
+
+    @computed get oldTotalPriceWithCoupon(){
+        return this.totalPriceWithCommitte_BeforeCoupon;
+    }
+
+    @computed get couponStatus(){
+        return this.hasCoupon;
+    }
+
+    @computed get getCoupon(){
+        return this.relevantCoupon;
+    }
+
+    @action setOldTotalPriceBeforeCoupon = async (price) => {
+        this.totalPriceWithCommitte_BeforeCoupon = price;
+    }
+
+    @action setLastTotalPrice = async (price) => {
+        this.totalPriceWithCommitte = price;
+    }
+
+    @action setCouponStatus = async (data) => {
+        this.hasCoupon = data;
+    }
+
+    @action setCoupon = async (coupon) => {
+        this.relevantCoupon = coupon;
     }
 }
 

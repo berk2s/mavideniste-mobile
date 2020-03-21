@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import {Image, Platform, StyleSheet, Text, TouchableOpacity, View, BackHandler} from 'react-native';
-import {Body, Container, Content, Input, Item, Left, Right, Title} from 'native-base';
+import {Image, Platform, StyleSheet, Text, TouchableOpacity, View, BackHandler, Alert} from 'react-native';
+import {Body, Container, Content, Input, Item, Left, Right, Title,Textarea} from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomIcon from '../../../../font/CustomIcon';
 import Ripple from 'react-native-material-ripple';
 
-import BasketStore from '../../../../store/BasketStore';
-import {observer} from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 
 import CouponIMG from '../../../../img/kupon.png'
 
@@ -17,7 +16,12 @@ import AddressStore from '../../../../store/AddressStore';
 import Coupon from './coupon/Coupon';
 
 import PriceController from './PriceController';
+import BasketStore from '../../../../store/BasketStore';
+import Snackbar from 'react-native-snackbar';
 
+import API from '../../../../api';
+
+@inject('BasketStore', 'AuthStore')
 @observer
 export default class ApplyOrder extends Component {
 
@@ -25,9 +29,15 @@ export default class ApplyOrder extends Component {
         visible:false,
         visibleCoupon:false,
         address:{},
-        selectedPaymentType:1
+        selectedPaymentType:1,
+        orderNote:''
     }
 
+    changeCouponVisibility = async (data) => {
+        this.setState({
+            visibleCoupon:data,
+        });
+    }
 
     constructor(props) {
         super(props)
@@ -37,6 +47,7 @@ export default class ApplyOrder extends Component {
     componentWillMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
+
 
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
@@ -56,7 +67,7 @@ export default class ApplyOrder extends Component {
         return true;
     }
 
-    componentDidMount() {
+    componentDidMount = async () =>  {
         if(AddressStore.getAddress.length > 0){
             this.setState({
                 address:{
@@ -66,6 +77,7 @@ export default class ApplyOrder extends Component {
                 },
             });
         }
+
     }
 
     _handleSelectAddressClick = async (e) => {
@@ -74,7 +86,7 @@ export default class ApplyOrder extends Component {
                 loading:true,
             });
 
-            await BasketStore.setSelectedAddress(e);
+            await this.props.BasketStore.setSelectedAddress(e);
 
             setTimeout(() => {
                 this.setState({
@@ -83,6 +95,107 @@ export default class ApplyOrder extends Component {
                 });
             }, 400);
 
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    _cancelCoupon = async () => {
+        try{
+            Alert.alert(
+                'Kuponu Sil',
+                'Kuponu sepetten silmek için emin misiniz?',
+                [
+                    {
+                        text: 'Hayır',
+                        style: 'cancel',
+                    },
+                    {   text: 'Evet',
+                        onPress: async () => {
+                            this.setState({
+                                loading:true,
+                                waitPrice:true,
+                            });
+
+                            await this.props.BasketStore.cancelCoupon();
+                            await this.props.BasketStore.readyProducts();
+
+                            setTimeout(() => {
+                                this.setState({
+                                    loading:false,
+                                    waitPrice:false
+                                });
+                            }, 1000)
+                        }
+                    },
+                ]
+            );
+
+
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    _handleOrderApply = async () => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            if(this.props.BasketStore.getTotalPriceWithCommite <= 0){
+                Snackbar.show({
+                    text: 'Beklenmedik bir hata oluştu (KOD: MVDNZO)',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                });
+                return false;
+            }
+
+            if(this.props.BasketStore.getProducts.length == 0){
+                Snackbar.show({
+                    text: 'Beklenmedik bir hata oluştu (KOD: MVDNZOA)',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                });
+                return false;
+            }
+
+            if(this.props.BasketStore.getSelectedAddress.length == 0){
+                Snackbar.show({
+                    text: 'Beklenmedik bir hata oluştu (KOD: MVDNZOAA)',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#d32f2f',
+                    textColor:'white',
+                });
+                return false;
+            }
+
+            const sendOrder = await API.post('/api/orders', {
+                user_id: this.props.AuthStore.getUserID,
+                user_address: this.props.BasketStore.getSelectedAddress,
+                payload_type: this.state.selectedPaymentType,
+                products: this.props.BasketStore.getProducts,
+                price: this.props.BasketStore.getTotalPriceWithCommite,
+                order_note: this.state.orderNote,
+                is_bluecurrier: false,
+                coupon: this.props.BasketStore.couponStatus != null ? this.props.BasketStore.getCoupon : null,
+            }, {
+                'x-access-token': this.props.AuthStore.getToken
+            });
+
+
+            this.setState({
+                loading:false,
+            });
+
+            // urunler
+            // user bilgileri
+            // konum
+            // tutar
+            // kupon
         }catch(e){
             console.log(e);
         }
@@ -103,9 +216,19 @@ export default class ApplyOrder extends Component {
                 </Body>
                 <Right>
                     <TouchableOpacity onPress={() => {
-                        this.setState({
-                            visibleCoupon:true,
-                        });
+
+                        if(this.props.BasketStore.hasCoupon){
+                            Snackbar.show({
+                                text: 'Sadece bir tane kupon uygulayabilirsiniz',
+                                duration: Snackbar.LENGTH_LONG,
+                                backgroundColor:'#FF9800',
+                                textColor:'white',
+                            });
+                        }else{
+                            this.setState({
+                                visibleCoupon:true,
+                            });
+                        }
 
                     }}>
                         <Image
@@ -126,7 +249,7 @@ export default class ApplyOrder extends Component {
                     size={'small'}
                 />
 
-                {BasketStore.getTotalPrice == 0 && <PriceController {...this.props} />}
+                {this.props.BasketStore.getTotalPrice == 0 && <PriceController {...this.props} />}
 
                 <Modal
                     visible={this.state.visibleCoupon}
@@ -140,7 +263,9 @@ export default class ApplyOrder extends Component {
                         </View>
                         <View style={[styles.selectAddressList, {paddingBottom:0}]}>
 
-                            <Coupon />
+                            <Coupon
+                                changeCouponVisibility={this.changeCouponVisibility}
+                            />
 
                         </View>
                     </ModalContent>
@@ -205,7 +330,7 @@ export default class ApplyOrder extends Component {
                                     <View style={styles.addressList}>
                                         <View style={styles.address}>
                                             <View style={styles.addressHeader}>
-                                                <Text style={styles.addressHeaderText}>{BasketStore.getSelectedAddress.address_title} adresi</Text>
+                                                <Text style={styles.addressHeaderText}>{this.props.BasketStore.getSelectedAddress.address_title} adresi</Text>
                                                 <TouchableOpacity onPress={() => this.setState({
                                                     visible:true,
                                                 })
@@ -219,7 +344,7 @@ export default class ApplyOrder extends Component {
                                                     style={styles.inputArea}>
                                                     <Input
                                                         style={[styles.input, {zIndex:9}]}
-                                                        value={BasketStore.getSelectedAddress.address}
+                                                        value={this.props.BasketStore.getSelectedAddress.address}
                                                         editable={false}
                                                     />
                                                     <View style={{marginRight:5}}>
@@ -320,7 +445,7 @@ export default class ApplyOrder extends Component {
                             </View>
                         </View>
 
-                        <View style={styles.servicePriceArea}>
+                        <View style={[styles.servicePriceArea, {marginBottom:0}]}>
                             <Text style={styles.servicePriceText}>4 TL</Text>
                             <Text style={styles.servicePriceInfo}>hizmet bedeli</Text>
                         </View>
@@ -334,13 +459,19 @@ export default class ApplyOrder extends Component {
                                     </View>
                                     <View style={styles.addressBody}>
 
-                                        <Item
-                                            style={[styles.inputArea, {height:46}]}>
-                                            <Input
-                                                style={[styles.input, {zIndex:9, height:200}]}
+
+                                            <Textarea
+                                                onChangeText={(val) => {
+
+                                                    this.setState({
+                                                        orderNote:val,
+                                                    });
+
+                                                }}
+                                                rowSpan={1}
+                                                style={[styles.input, styles.inputArea, {zIndex:9, height:50, color:'#304555', paddingTop:6, paddingRight:5}]}
                                             />
 
-                                        </Item>
 
                                     </View>
                                 </View>
@@ -352,16 +483,62 @@ export default class ApplyOrder extends Component {
 
                             <View style={styles.totalPrice}>
                                 <Text style={styles.totalPriceInfo}>Toplam Tutar</Text>
-                                <Text style={styles.totalPriceText}>{BasketStore.getTotalPriceWithCommite} TL</Text>
+                                {this.props.BasketStore.couponStatus == true ? <Text style={[styles.totalPriceText, {fontSize:15, color:'#304555', textAlign:'left', textDecorationLine:'line-through'}]}>{parseFloat(this.props.BasketStore.oldTotalPriceWithCoupon)} TL</Text> : <></>}
+                                <Text style={styles.totalPriceText}>{this.state.waitPrice ? <></> : parseFloat(this.props.BasketStore.getTotalPriceWithCommite)+ ' TL'} </Text>
                             </View>
 
-                            <Ripple style={{marginTop:3}} onPress={() => this.props.navigation.navigate('ApplyOrder')} rippleDuration={1000} rippleColor={'#fff'}>
+                            <Ripple style={{marginTop:3}} onPress={() => {
+                                if(AddressStore.getAddress.length == 0){
+                                    Snackbar.show({
+                                        text: 'Bir adres seçimi yapın',
+                                        duration: Snackbar.LENGTH_LONG,
+                                        backgroundColor:'#FF9800',
+                                        textColor:'white',
+                                    });
+                                }else {
+                                    if(this.state.orderNote.length > 400){
+                                        Snackbar.show({
+                                            text: 'Çok uzun not girdiniz',
+                                            duration: Snackbar.LENGTH_LONG,
+                                            backgroundColor:'#FF9800',
+                                            textColor:'white',
+                                        });
+                                    }else{
+                                        Alert.alert(
+                                            'Siparişi Onayla',
+                                            'Siparişi onaylamak için emin misiniz?',
+                                            [
+                                                {
+                                                    text: 'Hayır',
+                                                    style: 'cancel',
+                                                },
+                                                {
+                                                    text: 'Evet',
+                                                    onPress: this._handleOrderApply
+                                                },
+                                            ]
+                                        );
+                                    }
+                                }
+                            }} rippleDuration={1000} rippleColor={'#fff'}>
                                 <View style={styles.paymentBtn}>
                                     <Text style={styles.actionText}>Onayla</Text>
                                 </View>
                             </Ripple>
-
                         </View>
+
+                        {
+                            this.props.BasketStore.relevantCoupon != null
+                                ?
+                                    <View style={{display:'flex', flexDirection:'row', alignItems:'center', flexWrap:'wrap'}}>
+                                        <Text style={{fontFamily:'Muli-Regular', color:'#304555', marginBottom:5}}><Text style={{fontFamily:'Muli-Bold'}}>{this.props.BasketStore.relevantCoupon.coupon_name}</Text> kuponu uygulandı.  </Text>
+                                        <TouchableOpacity onPress={this._cancelCoupon}>
+                                            <Text style={[{fontSize:12, color:'#1B52FE'}]}>(Kuponu sil)</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                :
+                                    <></>
+                        }
 
                     </View>
                 </View>
@@ -426,7 +603,7 @@ const styles = StyleSheet.create({
         fontFamily:'Muli-SemiBold',
         color:'#1A51FE',
         fontSize:25,
-        textAlign: 'center'
+        textAlign: 'left'
     },
     totalPriceInfo:{
         fontFamily:'Muli-Light',

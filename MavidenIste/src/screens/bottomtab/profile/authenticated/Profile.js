@@ -245,13 +245,6 @@ export default class Profile extends Component {
 
                             <CardItem style={styles.card}>
                                 <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>İndirim kuponlarım</Text>
-                                <Right>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
-                            <CardItem style={styles.card}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
                                 <Text style={styles.cardText}>Şifremi değiştir</Text>
                                 <Right>
                                     <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
@@ -297,13 +290,13 @@ const styles = StyleSheet.create({
       fontFamily:'Muli-Light'
     },
     card_:{
-        shadowColor: '#000',
+        shadowColor: '#304555',
         shadowOpacity:0.10,
-        shadowRadius: 20,
+        shadowRadius: 3,
         shadowOffset: {
-            height: 0,
+            height: 1,
         },
-        elevation:5,
+        elevation:1,
         borderRadius:15,
     },
     card:{
@@ -329,13 +322,14 @@ const styles = StyleSheet.create({
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
-        shadowColor: '#000',
-        shadowOpacity:0.15,
-        shadowRadius: 9,
+        shadowColor: '#304555',
+        shadowOpacity:0.30,
+        shadowRadius: 5,
         shadowOffset: {
+            width:0,
             height: 0,
         },
-        elevation:5,
+        elevation:1,
 
         borderTopColor: 'transparent',
 

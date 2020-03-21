@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, } from 'react-native';
+import {StyleSheet, Text, View, Keyboard, TouchableOpacity} from 'react-native';
 import {Input, Item, Spinner} from 'native-base';
 import Ripple from 'react-native-material-ripple';
 
@@ -12,10 +12,22 @@ import AuthStore from '../../../../../store/AuthStore';
 import Snackbar from 'react-native-snackbar';
 import BasketStore from '../../../../../store/BasketStore';
 
+import Spinner_ from 'react-native-loading-spinner-overlay';
+
+import {observer} from 'mobx-react';
+
+
+
+@observer
 export default class Coupon extends Component {
+
+    state = {
+        loading:false
+    }
 
     _handleSubmit = async (values, bag) => {
         try{
+            Keyboard.dismiss()
             const {coupon} = values;
 
             const validateCoupon = await API.post('/api/coupon/validate',{
@@ -48,10 +60,43 @@ export default class Coupon extends Component {
                     textColor:'white',
                 });
                 bag.setErrors({coupon: validateCoupon.data.info})
-                return false
+               return false
+            }
+
+            if(validateCoupon.data.status.code == 'VC_3'){
+                this.setState({
+                    loading:true,
+                });
+
+                const newPrice = validateCoupon.data.result;
+                const coupon = validateCoupon.data.coupon;
+
+
+                await BasketStore.setOldTotalPriceBeforeCoupon(BasketStore.getTotalPriceWithCommite);
+                await BasketStore.setLastTotalPrice(newPrice);
+                await BasketStore.setCouponStatus(true);
+                await BasketStore.setCoupon(coupon);
+
+                await this.props.changeCouponVisibility(false);
+
+                this.setState({
+                    loading:false,
+                });
+
+                setTimeout(() => {
+                    Snackbar.show({
+                        text: 'Kupon uygulandı',
+                        duration: Snackbar.LENGTH_LONG,
+                        backgroundColor:'#4CAF50',
+                        textColor:'white',
+                    });
+                }, 500);
+
+                return false;
             }
 
         }catch(e){
+            alert(e)
             console.log(e);
         }
     }
@@ -59,6 +104,11 @@ export default class Coupon extends Component {
     render() {
     return (
       <View>
+          <Spinner_
+              visible={this.state.loading}
+              animation={'fade'}
+              size={'small'}
+          />
           <Formik
             initialValues={{
                 coupon:''
@@ -80,7 +130,7 @@ export default class Coupon extends Component {
                       />
                   </Item>
 
-                  <Ripple style={{marginTop:15, width:'100%'}} onPress={handleSubmit} rippleDuration={1000} rippleColor={'#fff'}>
+                  <Ripple style={{marginTop:15, width:'100%'}} onPressIn={handleSubmit} rippleDuration={1000} rippleColor={'#fff'}>
                       <View style={[styles.paymentBtn, {width:'100%', height:33}]}>
 
                           {isSubmitting && <Spinner size={'small'} color={'#fff'} />}
