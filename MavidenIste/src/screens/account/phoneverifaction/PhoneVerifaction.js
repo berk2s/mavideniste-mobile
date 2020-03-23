@@ -15,7 +15,7 @@ export default class PhoneVerifaction extends Component {
                 <View style={styles.textArea}>
                     <Text style={styles.text}>Lütfen numaranıza gönderilen şifreyi doğrulayın.</Text>
                 </View>
-                <PhoneVerifactionForm />
+                <PhoneVerifactionForm {...this.props} />
             </Content>
         </Container>
     );

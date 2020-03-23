@@ -15,7 +15,7 @@ export default class Step2 extends Component {
                 <View style={styles.textArea}>
                     <Text style={styles.text}>Yeni şifrenizi girin</Text>
                 </View>
-                <Step2Form />
+                <Step2Form {...this.props} />
             </Content>
         </Container>
     );

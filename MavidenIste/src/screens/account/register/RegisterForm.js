@@ -12,21 +12,33 @@ import CheckBox from 'react-native-check-box'
 import Snackbar from 'react-native-snackbar';
 
 
-import {TERMSOFUSE_URL} from '../../../constants'
+import {TERMSOFUSE_URL, KVKK_URL, UNIQUE_KEY} from '../../../constants'
 import API from '../../../api';
 
 
 export default class RegisterForm extends Component {
 
     state={
-        isChecked:false,
+        isChecked_TermsOfUse:false,
+        isChecked_KVKK:false,
     }
 
     _handleSubmit = async (values, bag) => {
         Keyboard.dismiss();
-        if(!this.state.isChecked){
+        if(!this.state.isChecked_TermsOfUse){
             Snackbar.show({
-                text: 'Lütfen kullanım koşullarını kabul edin.',
+                text: 'Kullanım koşullarını kabul etmeniz gerekiyor.',
+                duration: 7000,
+                backgroundColor:'#bf360c',
+                fontFamily:'Muli-Bold',
+                textColor:'white',
+            });
+            return false
+        }
+
+        if(!this.state.isChecked_KVKK){
+            Snackbar.show({
+                text: 'KVKK metnini kabul etmeniz gerekiyor.',
                 duration: 7000,
                 backgroundColor:'#bf360c',
                 fontFamily:'Muli-Bold',
@@ -38,7 +50,7 @@ export default class RegisterForm extends Component {
         try{
             values.phoneNumber = this.phoneNumber.getRawValue();
             const {nameSurname, emailAddress, phoneNumber, password } = values;
-            const {data} = await API.post(`/register`,
+            const {data} = await API.post(`/checkuser`,
                 {
                     name_surname: nameSurname,
                     email_address: emailAddress,
@@ -96,7 +108,33 @@ export default class RegisterForm extends Component {
                 /*
                     it will be a sms verication area
                  */
-                this.props.navigation.navigate('Login');
+                //{phone_number: values.phoneNumber, key: UNIQUE_KEY}
+
+                const sendSMS = await API.post('/api/sms/newuser', {
+                    phone_number:`9${values.phoneNumber}`,
+                    unique_key:UNIQUE_KEY
+                });
+
+                if(sendSMS.data.status.code == 'SV_1'){
+                    const {nameSurname, emailAddress, phoneNumber, password } = values;
+                    this.props.navigation.navigate('PhoneVerifaction',  {
+                        name_surname: nameSurname,
+                        email_address: emailAddress,
+                        phone_number_clear: this.phoneNumber.getRawValue(),
+                        phone_number: '9'+phoneNumber,
+                        password:password,
+                        which_platform: Platform.OS,
+                        code:sendSMS.data.data,
+                        page_type:1,
+                    });
+                }else{
+                    Snackbar.show({
+                        text: 'Beklenmedik sorun oluştu',
+                        duration: Snackbar.LENGTH_LONG,
+                        backgroundColor:'#FF9800',
+                        textColor:'white',
+                    });
+                }
             }
         }catch(e){
             console.log(e);
@@ -263,12 +301,37 @@ export default class RegisterForm extends Component {
                                 style={{flex: 1,}}
                                 onClick={()=>{
                                     this.setState({
-                                        isChecked:!this.state.isChecked
+                                        isChecked_TermsOfUse:!this.state.isChecked_TermsOfUse
                                     })
                                 }}
-                                isChecked={this.state.isChecked}
+                                isChecked={this.state.isChecked_TermsOfUse}
                                 checkBoxColor={'#616D7B'}
+                                rightText={
+                                    <>
+                                        <Text onPress={() => Linking.openURL(TERMSOFUSE_URL)} style={{color:'blue', fontFamily:'Muli-Regular'}}>Kullanım koşulları</Text>
+                                        <Text style={{color:'#616D7B', fontFamily:'Muli-Regular'}}>'nı okudum.</Text>
+                                    </>}
+
                             />
+
+
+                            <CheckBox
+                                style={{flex: 1, marginTop:15}}
+                                onClick={()=>{
+                                    this.setState({
+                                        isChecked_KVKK:!this.state.isChecked_KVKK
+                                    })
+                                }}
+                                isChecked={this.state.isChecked_KVKK}
+                                checkBoxColor={'#616D7B'}
+                                rightText={
+                                    <>
+                                        <Text onPress={() => Linking.openURL(KVKK_URL)} style={{color:'blue', fontFamily:'Muli-Regular'}}>KVKK aydınlatma metni</Text>
+                                        <Text style={{color:'#616D7B', fontFamily:'Muli-Regular'}}>'ni okudum.</Text>
+                                    </>}
+
+                            />
+
 
                             <View style={styles.btnArea}>
                                 <TouchableOpacity
@@ -292,7 +355,7 @@ export default class RegisterForm extends Component {
                   <View style={styles.helperTextArea}>
 
                       <Text style={styles.helperText1}>Zaten hesabınız var mı? </Text>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}>
                           <Text style={styles.helperText2}>Giriş yapın.</Text>
                       </TouchableOpacity>
                   </View>

@@ -21,6 +21,7 @@ class AuthStore {
 
     @action saveToken = async (user_id, token, name_surname) => {
         try{
+          //  await this.deleteUser()
             await Keychain.setGenericPassword(user_id, token);
             runInAction(() => {
                 this.token = token;
@@ -55,7 +56,7 @@ class AuthStore {
             console.log(getUserId)
             console.log(getUserId)
             console.log('===============')
-
+          //  await this.deleteUser()
             if(getToken != null && getUserId != null){
 
                 const user_information = await API.get(`/api/user/detail/${getUserId}`, {
@@ -69,6 +70,8 @@ class AuthStore {
                     this.user_id = getUserId;
                     this.name_surname = user_information.data.data.name_surname;
                 });
+
+                // checkpoint
 
                 const data = await API.get(`/api/user/address/${getUserId}`, {
                     headers:{

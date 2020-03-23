@@ -62,6 +62,9 @@ const unAuthticatedProfileStack = createStackNavigator({
     },
     PhoneVerifaction:{
         screen:PhoneVerifactionScreen,
+        navigationOptions:{
+            gestureEnabled: false,
+        }
     },
     Onboarding:{
         screen:OnboardingScreen,

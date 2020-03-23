@@ -188,6 +188,8 @@ export default class ProductList extends Component {
                                     <>
 
                                         <View style={styles.cardArea}>
+
+
                                             {
                                                 this.props.ProductStore.getProducts.map(e => {
                                                     return <ProductCard key={e._id} e={e} {...this.props} />

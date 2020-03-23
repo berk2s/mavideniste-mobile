@@ -15,7 +15,7 @@ export default class Step1 extends Component {
                 <View style={styles.textArea}>
                     <Text style={styles.text}>Kayıtlı telefon numaranızı yazınız.</Text>
                 </View>
-                <Step1Form />
+                <Step1Form {...this.props} />
             </Content>
         </Container>
     );

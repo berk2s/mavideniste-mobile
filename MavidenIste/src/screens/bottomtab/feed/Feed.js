@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, Dimensions, TouchableOpacity, Platform, Image} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    TouchableOpacity,
+    Platform,
+    Image,
+    ScrollView,
+    FlatList,
+    TouchableWithoutFeedback,
+} from 'react-native';
 import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
@@ -40,6 +51,9 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Ripple from 'react-native-material-ripple';
 import Geolocation from '@react-native-community/geolocation';
 
+import ChangeIMG from '../../../img/changebranch.png'
+import BranchIMG from '../../../img/supermarket.png'
+import Modal, {ModalContent} from 'react-native-modals';
 
 @inject('BasketStore', 'ProductStore')
 @observer
@@ -53,7 +67,8 @@ export default class Feed extends Component {
         loading :false,
         headerSeacrh:false,
         searchKey:null,
-        searchResults:[]
+        searchResults:[],
+        visibleBranchChange:false
     }
 
 
@@ -180,9 +195,42 @@ export default class Feed extends Component {
                 size={'small'}
             />
 
+            <Modal
+                visible={this.state.visibleBranchChange}
+                onTouchOutside={(event) => {
+                    this.setState({ visibleBranchChange: false });
+                }}
+            >
+                <ModalContent style={{width:270, height:270,}}>
+                    <View style={[{borderBottomColor: '#fff', marginVertical:0, marginBottom:0, paddingBottom:0}]}>
+                        <Text style={{fontFamily:'Muli-Bold', color:'#304555', marginBottom:10, fontSize:16}}>Şube değiştir</Text>
+                    </View>
+                    <View style={{height:200}}>
+
+                        <FlatList
+                            data={[
+                                {text:'Serdivan'},
+                                {text:'Düzce'},
+                                {text:'Kütahya'},
+                                {text:'Adana'},
+                                {text:'Van'},
+                                {text:'Manisa'},
+
+                            ]}
+                            renderItem={({ item, index }) => (
+
+                                <Ripple style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', height:50, marginBottom:1}}>
+                                    <Image source={BranchIMG} style={{width:25, height:25, marginRight:10}} />
+                                    <Text style={{fontFamily:'Muli-Bold', color:'#304555',}}>{item.text}</Text>
+                                </Ripple>
+                            )}
+                            keyExtractor={item => ''.concat(Math.random())}/>
+                    </View>
+                </ModalContent>
+            </Modal>
 
           <Content
-              style={{display:'flex', flex:1}}
+              style={{display:'flex', flex:1, height:'100%'}}
               padder>
 
               <NavigationEvents
@@ -192,8 +240,7 @@ export default class Feed extends Component {
                   />
 
 
-
-              <View style={styles.content}>
+              <View style={[styles.content, {height:'100%'}]}>
                   {this.state.fetched
                       ?
                         this.state.headerSearch
@@ -224,7 +271,24 @@ export default class Feed extends Component {
                                 }
                             </>
                             :
+                                    <View style={{flex:1}}>
+                                        <View style={{marginBottom:20, display:'flex', flexDirection:'row', justifyContent:'flex-end', paddingHorizontal:5}}>
+                                            <TouchableOpacity style={{dipslay:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center'}} onPress={() => {
+                                                this.setState({
+                                                    visibleBranchChange:true,
+                                                });
 
+                                            }}>
+                                                <View style={{display:'flex', flexDirection:'row'}}>
+                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:16}}>Serd</Text>
+                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:16}}>ivan</Text>
+                                                </View>
+                                                <Image
+                                                    source={ChangeIMG}
+                                                    style={{width:16, height:16, marginLeft:10}}
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
                                     <View style={styles.cardArea}>
                                         {
                                             this.state.datas.map(e => {
@@ -253,6 +317,7 @@ export default class Feed extends Component {
                                                 </View>
                                             })
                                         }
+                                    </View>
                                     </View>
                       :
                       <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>
@@ -454,6 +519,8 @@ const styles = StyleSheet.create({
         backgroundColor:'#F6F6F6',
         flex:1,
         display:'flex',
+        paddingBottom:0,
+        marginBottom:0
     },
     absolute: {
         position: "absolute",

@@ -46,7 +46,7 @@ export default class LoginForm extends Component {
             }else if(data.status.code == 'A1') {
                 bag.setErrors({password:'!'})
                 Snackbar.show({
-                    text: 'Hatalı Şifre',
+                    text: 'Hatalı şifre girdiniz',
                     duration: Snackbar.LENGTH_LONG,
                     backgroundColor:'#d32f2f',
                     textColor:'white',
@@ -141,7 +141,7 @@ export default class LoginForm extends Component {
 
                       <View style={styles.forgotPassArea}>
 
-                          <TouchableOpacity>
+                          <TouchableOpacity onPress={() => this.props.navigation.navigate('ForgotPassStep1')}>
                               <Text style={styles.forgotPassText}>Şifremi Unuttum</Text>
                           </TouchableOpacity>
 
@@ -165,7 +165,7 @@ export default class LoginForm extends Component {
                       <View style={styles.helperTextArea}>
 
                           <Text style={styles.helperText1}>Hesabınız yok mu? </Text>
-                          <TouchableOpacity>
+                          <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
                               <Text style={styles.helperText2}>Hemen kayıt olun.</Text>
                           </TouchableOpacity>
                       </View>
