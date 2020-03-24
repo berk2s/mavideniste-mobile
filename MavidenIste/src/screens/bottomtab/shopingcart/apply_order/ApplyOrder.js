@@ -21,9 +21,7 @@ import Snackbar from 'react-native-snackbar';
 
 import API from '../../../../api';
 
-import {BRANCH_ID} from '../../../../constants';
-
-@inject('BasketStore', 'AuthStore')
+@inject('BasketStore', 'AuthStore', 'BranchStore')
 @observer
 export default class ApplyOrder extends Component {
 
@@ -184,7 +182,7 @@ export default class ApplyOrder extends Component {
                 order_note: this.state.orderNote,
                 is_bluecurrier: false,
                 coupon: this.props.BasketStore.couponStatus != null ? this.props.BasketStore.getCoupon : null,
-                branch_id:BRANCH_ID,
+                branch_id:this.props.BranchStore.branchID,
             }, {
                 'x-access-token': this.props.AuthStore.getToken
             });
@@ -449,7 +447,7 @@ export default class ApplyOrder extends Component {
                         </View>
 
                         <View style={[styles.servicePriceArea, {marginBottom:0}]}>
-                            <Text style={styles.servicePriceText}>4 TL</Text>
+                            <Text style={styles.servicePriceText}>{this.props.BranchStore.branchCommittee} TL</Text>
                             <Text style={styles.servicePriceInfo}>hizmet bedeli</Text>
                         </View>
 

@@ -10,9 +10,11 @@ import AsyncStorage from '@react-native-community/async-storage';
 import AddressStore from './AddressStore';
 import BasketStore from './BasketStore';
 
+import BranchStore from './BranchStore';
+
 configure({
     enforceActions:'observed'
-})
+});
 
 class AuthStore {
     @observable token = null;
@@ -51,12 +53,8 @@ class AuthStore {
             const getToken = await this.getTokenFromRepo();
             const getUserId = await this.getUserIdFromRepo();
 
-            console.log('===============')
-            console.log(getToken)
-            console.log(getUserId)
-            console.log(getUserId)
-            console.log('===============')
-          //  await this.deleteUser()
+            await BranchStore.checkBranchExists();
+
             if(getToken != null && getUserId != null){
 
                 const user_information = await API.get(`/api/user/detail/${getUserId}`, {
@@ -65,11 +63,20 @@ class AuthStore {
                     }
                 });
 
-                runInAction(() => {
-                    this.token = getToken;
-                    this.user_id = getUserId;
-                    this.name_surname = user_information.data.data.name_surname;
-                });
+                console.log(user_information.data)
+                console.log(Object.keys(user_information.data).length)
+
+                if(user_information.data.data !== null) {
+
+                    runInAction(() => {
+                        this.token = getToken;
+                        this.user_id = getUserId;
+                        this.name_surname = user_information.data.data.name_surname;
+                    });
+
+                }else{
+                    await this.deleteUser()
+                }
 
                 // checkpoint
 
@@ -92,7 +99,7 @@ class AuthStore {
                 NavigationService.navigate('unAuthticatedBottomScreens');
             }
         }catch(e){
-            alert('asd'+e);
+            alert('asdd'+e);
         }
     }
 

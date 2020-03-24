@@ -4,7 +4,7 @@ import API from '../api'
 import {check} from 'react-native-permissions';
 
 import AddressStore from './AddressStore';
-
+import BranchStore from './BranchStore';
 configure({
     enforceActions: 'observed'
 })
@@ -113,7 +113,7 @@ class BasketStore {
                 const promiseIt = await Promise.all(mapPromise);
 
                 runInAction(() => {
-                    this.totalPriceWithCommitte = this.totalPrice+4;
+                    this.totalPriceWithCommitte = this.totalPrice+BranchStore.branchCommittee;
                 })
 
 

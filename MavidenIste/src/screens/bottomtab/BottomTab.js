@@ -7,7 +7,7 @@ import SwitcherStore from '../../store/SwitcherStore';
 export default class BottomTab extends Component {
 
     componentDidMount() {
-        console.log(this.props);
+      //  console.log(this.props);
 
     }
 

@@ -9,17 +9,18 @@ import {
     Image,
     ScrollView,
     FlatList,
-    TouchableWithoutFeedback,
+    TouchableWithoutFeedback, BackHandler,
 } from 'react-native';
 import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 // API
 import API from '../../../api'
+import LocationAPI from '../../../locationapi'
 
 import {inject, observer} from 'mobx-react';
 
 //brach fake
-import {BRANCH_ID, IMAGE_URL} from '../../../constants'
+import { IMAGE_URL} from '../../../constants'
 
 //components
 import HeaderWithSearch from '../../components/HeaderWithSearch';
@@ -32,14 +33,16 @@ import Switcher from '../switcher/Switcher';
 import SwitcherStore from '../../../store/SwitcherStore';
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import messaging from '@react-native-firebase/messaging';
+
+
 import PushNotification from 'react-native-push-notification'
-import firebase from 'react-native-firebase';
+//import firebase from '@react-native-firebase/app';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
 import AuthStore from '../../../store/AuthStore';
-const messaging = firebase.messaging();
-import type { RemoteMessage, NotificationOpen } from "react-native-firebase";
+
 import CustomIcon from '../../../font/CustomIcon';
 
 import HeaderForFeed from '../../components/HeaderForFeed';
@@ -55,8 +58,9 @@ import ChangeIMG from '../../../img/changebranch.png'
 import BranchIMG from '../../../img/supermarket.png'
 import Modal, {ModalContent} from 'react-native-modals';
 
-@inject('BasketStore', 'ProductStore')
+@inject('BasketStore', 'ProductStore', 'BranchStore', 'CategoryStore')
 @observer
+
 
 export default class Feed extends Component {
 
@@ -68,31 +72,51 @@ export default class Feed extends Component {
         headerSeacrh:false,
         searchKey:null,
         searchResults:[],
-        visibleBranchChange:false
+        visibleBranchChange:false,
+        branchList:[]
     }
 
 
     componentDidMount = async () => {
         try{
 
-            Geolocation.requestAuthorization()
+            const branchies = await LocationAPI.get(`/api/branch`);
 
-            const categories = await API.get(`/api/category/current/${BRANCH_ID}`);
-            this.state.datas = [...categories.data.data]
+            branchies.data.map(e => {
+                this.state.branchList.push({
+                    id: e.branch_id,
+                    branch_name:e.branch_name,
+                    branch_committee:e.branch_committee,
+                    branch_province:e.branch_province,
+                    branch_county:e.branch_county,
+                })
+            });
 
-            await this.props.BasketStore.readyProducts()
+            if(Platform.OS == 'ios') {
+                Geolocation.requestAuthorization()
+            }
+
+            await this.props.CategoryStore.fetchCategories();
+
+          //  const categories = await API.get(`/api/category/current/${this.props.BranchStore.branchID}`);
+
+          //  this.state.datas = [...categories.data.data]
+
+            await this.props.BasketStore.readyProducts();
+
+
             /*
                 categories.data.data._id,
                 categories.data.data.category_name,
                 categories.data.data.category_image,
              */
-            setTimeout(() => {
+           // setTimeout(() => {
                 this.setState({
                     fetched: true,
                 });
-            }, 1000)
+           // }, 1000)
 
-            console.log(categories.data.data);
+           // console.log(categories.data.data);
 
         }catch(e){
             console.log(e)
@@ -149,7 +173,7 @@ export default class Feed extends Component {
                     searchKey:val
                 });
 
-                const results = await API.get(`/api/product/search/${val.trim()}`);
+                const results = await API.get(`/api/product/search/${this.props.BranchStore.branchID}/${val.trim()}`);
 
                 this.state.searchResults = [...results.data.data]
 
@@ -161,6 +185,36 @@ export default class Feed extends Component {
 
 
             }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    _handleBranchChange = async (item) => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            const {id, branch_name, branch_province, branch_county, branch_committee} = item;
+
+            await this.props.BranchStore.changeBranch(id, branch_name, branch_province, branch_county, branch_committee);
+
+            this.setState({
+                fetched:false,
+                loading:false,
+                visibleBranchChange:false
+            });
+
+
+            await this.props.CategoryStore.fetchCategories();
+            await this.props.BasketStore.clearBasket();
+
+            this.setState({
+                fetched:true
+            });
+
+
         }catch(e){
             console.log(e);
         }
@@ -208,20 +262,12 @@ export default class Feed extends Component {
                     <View style={{height:200}}>
 
                         <FlatList
-                            data={[
-                                {text:'Serdivan'},
-                                {text:'Düzce'},
-                                {text:'Kütahya'},
-                                {text:'Adana'},
-                                {text:'Van'},
-                                {text:'Manisa'},
-
-                            ]}
+                            data={this.state.branchList}
                             renderItem={({ item, index }) => (
 
-                                <Ripple style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', height:50, marginBottom:1}}>
+                                <Ripple onPress={() => this._handleBranchChange(item)} style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', height:50, marginBottom:1}}>
                                     <Image source={BranchIMG} style={{width:25, height:25, marginRight:10}} />
-                                    <Text style={{fontFamily:'Muli-Bold', color:'#304555',}}>{item.text}</Text>
+                                    <Text style={{fontFamily:'Muli-Bold', color:'#304555',}}>{item.branch_name}</Text>
                                 </Ripple>
                             )}
                             keyExtractor={item => ''.concat(Math.random())}/>
@@ -280,8 +326,8 @@ export default class Feed extends Component {
 
                                             }}>
                                                 <View style={{display:'flex', flexDirection:'row'}}>
-                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:16}}>Serd</Text>
-                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:16}}>ivan</Text>
+                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:16}}>{this.props.BranchStore.branchName.substr(0, (this.props.BranchStore.branchName.length-(this.props.BranchStore.branchName.length/2)))}</Text>
+                                                    <Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:16}}>{this.props.BranchStore.branchName.substr((this.props.BranchStore.branchName.length-(this.props.BranchStore.branchName.length/2)), this.props.BranchStore.branchName.length)}</Text>
                                                 </View>
                                                 <Image
                                                     source={ChangeIMG}
@@ -291,7 +337,7 @@ export default class Feed extends Component {
                                         </View>
                                     <View style={styles.cardArea}>
                                         {
-                                            this.state.datas.map(e => {
+                                            this.props.CategoryStore.categoryList.map(e => {
                                                 const uri = IMAGE_URL+e.category_image;
                                                 return <View
 
@@ -332,38 +378,35 @@ export default class Feed extends Component {
   }
 }
 
-messaging.hasPermission()
-    .then((enabled) => {
-        if (enabled) {
-            messaging.getToken()
-                .then(async token => {
 
-                    const postToken = await API.post(`/api/notification/token`, {
-                        token:token,
-                        platform: Platform.OS
-                    });
+    messaging().requestPermission().then(async (granted) => {
+        if (granted) {
+            const token = await messaging().getToken();
 
-                    await AsyncStorage.setItem('token', token);
+            const postToken = await API.post(`/api/notification/token`, {
+                token:token,
+                platform: Platform.OS
+            });
 
-                 })
-                .catch(error => { /* handle error */ });
+            await AsyncStorage.setItem('token', token);
+
+            console.log('User granted messaging permissions.! ' + token);
         } else {
-            messaging.requestPermission()
-                .then(() => { /* got permission */ })
-                .catch(error => { /* handle error */ });
+            console.log('User declined messaging permissions :(');
         }
     })
-    .catch(error => { /* handle error */ });
+        .catch((e) => {
+            console.log(e);
+        })
 
-firebase.notifications().onNotification((notification) => {
-    const { title, body } = notification;
+messaging().onMessage(async remoteMessage => {
+    PushNotification.localNotification({
+        title: remoteMessage.data.title,
+        message: remoteMessage.data.body, // (required),
+    });
+});
 
-
-        PushNotification.localNotification({
-            title: title,
-            message: body, // (required),
-        });
-
+messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 });
 

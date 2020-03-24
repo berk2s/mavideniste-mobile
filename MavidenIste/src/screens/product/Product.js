@@ -3,7 +3,6 @@ import {Dimensions, StyleSheet, Text, TouchableOpacity, View, Image} from 'react
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
-import {BRANCH_ID, IMAGE_URL} from '../../constants';
 import FastImage from 'react-native-fast-image';
 import Loading from '../components/Loading';
 import CustomIcon from '../../font/CustomIcon';
@@ -21,7 +20,7 @@ import EmptyIMG from '../../img/search_result.png';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 
-@inject('BasketStore', 'ProductStore')
+@inject('BasketStore', 'ProductStore', 'BranchStore')
 @observer
 export default class ProductList extends Component {
 
@@ -39,7 +38,7 @@ export default class ProductList extends Component {
     componentDidMount = async () => {
         try{
             const category_id = this.props.navigation.getParam('category_id');
-            await this.props.ProductStore.fetchProducts(category_id, BRANCH_ID);
+            await this.props.ProductStore.fetchProducts(category_id, this.props.BranchStore.branchID);
             setTimeout(() => {
                 this.setState({
                     fetched: true,
@@ -102,11 +101,9 @@ export default class ProductList extends Component {
 
                 const category_id = this.props.navigation.getParam('category_id');
 
-                const results = await API.get(`/api/product/search/${category_id}/${val.trim()}`);
+                const results = await API.get(`/api/product/search/${this.props.BranchStore.branchID}/${category_id}/${val.trim()}`);
 
                 this.state.searchResults = [...results.data.data]
-
-                console.log(results.data)
 
                 this.setState({
                     loading:false,

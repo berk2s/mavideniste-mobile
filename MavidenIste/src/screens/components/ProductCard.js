@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CustomIcon from '../../font/CustomIcon';
 import {IMAGE_URL} from '../../constants';
@@ -64,12 +64,12 @@ export default class ProductCard extends Component {
       const {e} = this.props;
       const uri = IMAGE_URL+e.product_image;
     return (
-        <>
+        <View  key={e._id}>
             <Spinner
                 visible={this.state.loading}
                 size={'small'}
             />
-        <View  key={e._id} style={styles.card} >
+        <View  style={styles.card} >
             <View style={styles.cardWhiteArea}>
                 <FastImage
                     source={{uri: uri}}
@@ -86,11 +86,11 @@ export default class ProductCard extends Component {
                             e.product_discount != null
                                 ?
                                 <>
-                                    <Text style={styles.cardAboutDiscountOldPrice}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:4}}>₺</Text></Text>
-                                    <Text style={styles.cardAboutPricing}>{e.product_discount_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
+                                    <Text style={styles.cardAboutDiscountOldPrice}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:9}}>₺</Text></Text>
+                                    <Text style={styles.cardAboutPricing}>{e.product_discount_price}<Text style={{fontFamily:'Arial', fontSize:9}}>₺</Text></Text>
                                 </>
                                 :
-                                <Text style={styles.cardAboutPricing}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:8}}>₺</Text></Text>
+                                <Text style={styles.cardAboutPricing}>{e.product_list_price}<Text style={{fontFamily:'Arial', fontSize:9}}>₺</Text></Text>
 
                         }
                     </View>
@@ -128,7 +128,7 @@ export default class ProductCard extends Component {
             </View>
 
         </View>
-            </>
+            </View>
     );
   }
 }
@@ -140,19 +140,21 @@ const styles = StyleSheet.create({
         alignItems:'center',
         width:30,
         height:30,
-        position:'absolute',
-        bottom:5,
-        right:5,
+   //     position:'absolute',
+        bottom:89,
+        left:125,
         backgroundColor:"#fff",
         borderRadius:50,
-        shadowColor: "#000000",
+       // overflow:'hidden',
+
+        shadowColor: "#304555",
         shadowOffset: {
             width: 0,
-            height: 1,
+            height: 0,
         },
-        shadowOpacity: 0.30,
-        shadowRadius: 5,
-        elevation: 2,
+        shadowOpacity: 0.25,
+        shadowRadius: 2,
+        elevation: 1,
     },
     allCountText:{
         paddingTop: 5,
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
-        shadowColor: "#000000",
+        shadowColor: "#304555",
         shadowOffset: {
             width: 0,
             height: 1,
@@ -222,11 +224,11 @@ const styles = StyleSheet.create({
     cardAboutDiscountOldPrice:{
         fontFamily:'Muli-Bold',
         color:'#A5A5A5',
-        fontSize:8,
+        fontSize:11,
         marginRight:5,
-        textDecorationLine: "underline",
-        textDecorationStyle: "solid",
-        textDecorationColor: "#A5A5A5",
+        textDecorationLine:'line-through',
+        //textDecorationStyle: "solid",
+        //textDecorationColor: "#A5A5A5",
     },
     infoAboutPricing:{
         display:'flex',
@@ -258,19 +260,21 @@ const styles = StyleSheet.create({
         // borderRightWidth:1,
         // borderRightColor:'#003DFF',
         paddingVertical:4,
-        paddingHorizontal:12
+        paddingHorizontal:12,
+
     },
     cardTextArea:{
         width:162,
         display:'flex',
         flexDirection:'row',
-        position:'absolute',
+       // position:'absolute',
         backgroundColor:'#fff',
         height:55,
         borderBottomLeftRadius:20,
         borderBottomRightRadius:20,
         opacity:.89,
-        bottom:-54,
+        bottom:0,
+
     },
     cardText:{
         fontFamily:'Muli-ExtraBold',
@@ -302,29 +306,37 @@ const styles = StyleSheet.create({
     },
     card:{
         width:162,
-        marginBottom:80,
-        shadowColor: "#000000",
+        marginBottom:30,
+        shadowColor: "#304555",
         shadowOffset: {
             width: 0,
-            height: 1,
+            height: 3,
         },
         shadowOpacity: 0.10,
-        shadowRadius: 5,
-        elevation: 6,
+        shadowRadius: 2,
+        elevation: 1,
+        //borderTopLeftRadius:20,
+        //borderTopRightRadius:20,
+        borderRadius:20,
+        overflow:'hidden',
+        height:163
     },
     cardWhiteArea:{
         backgroundColor: '#fff',
-        borderRadius:20,
+        //borderTopLeftRadius:20,
+        //borderTopRightRadius:20,
         width:162,
         height:105,
         display:'flex',
         justifyContent:'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        overflow:'hidden'
     },
     cardImage:{
         width:162,
         height:105,
-        borderTopLeftRadius:20,
-        borderTopRightRadius:20
+       // borderTopLeftRadius:20,
+       // borderTopRightRadius:20,
+      //  borderRadius:20
     },
 });
