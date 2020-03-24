@@ -192,6 +192,10 @@ export default class ApplyOrder extends Component {
                 loading:false,
             });
 
+            await this.props.BasketStore.clearBasket();
+            await this.props.BasketStore.cancelCoupon();
+
+            this.props.navigation.navigate('OrderSuccessfull')
             // urunler
             // user bilgileri
             // konum

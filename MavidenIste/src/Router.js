@@ -38,6 +38,7 @@ import OrderList from './screens/bottomtab/profile/authenticated/ordermanagement
 import OrderDetail from './screens/bottomtab/profile/authenticated/ordermanagement/order_detail/OrderDetail';
 
 import ApplyOrderScreen from './screens/bottomtab/shopingcart/apply_order/ApplyOrder';
+import OrderSuccessfullScreen from './screens/bottomtab/shopingcart/order_successfull/OrderSuccessfull';
 
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
@@ -233,7 +234,8 @@ const authticatedBottomScreens = createBottomTabNavigator({
     ShopingCard:{
         screen:createStackNavigator({
                     ShopingCard_:ShopingCardScreen,
-                    ApplyOrder:ApplyOrderScreen
+                    ApplyOrder:ApplyOrderScreen,
+                    OrderSuccessfull:OrderSuccessfullScreen
                 },{
                     headerMode:null
                 }),

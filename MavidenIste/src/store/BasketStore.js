@@ -5,6 +5,7 @@ import {check} from 'react-native-permissions';
 
 import AddressStore from './AddressStore';
 import BranchStore from './BranchStore';
+import Snackbar from 'react-native-snackbar';
 configure({
     enforceActions: 'observed'
 })
@@ -81,6 +82,12 @@ class BasketStore {
                             try{
                                 const product = await API.get(`/api/product/get/${product_id}`);
                                 const data = product.data.data;
+
+                                if(data.branch_id != BranchStore.branchID){
+                                    await this.clearBasket();
+                                    return false;
+                                }
+
                                 runInAction(() => {
 
                                     this.products.push({
@@ -89,10 +96,10 @@ class BasketStore {
                                         product_discount_price: data.product_discount == null ? null : parseFloat(data.product_discount_price),
                                         product_list_price: parseFloat(data.product_list_price),
                                         product_name: data.product_name,
-                                        product_amount: data.product_amount,
+                                        product_amount: data.product_amonut,
                                         product_image: data.product_image,
                                         product_category:data.category_id,
-                                        count: e.count > 0 ? e.count : 1
+                                        count: e.count > 0 ? e.count : 1,
                                     });
 
                                     if(data.product_discount != null) {
@@ -209,8 +216,19 @@ class BasketStore {
             let index = this.productsWithID.map(e => e.id).indexOf(product_id)
             if(index > -1) {
                 runInAction(() => {
-                    let index = this.products.map(e => e.id).indexOf(product_id)
-                    this.products[index].count++;
+                    let indexx = this.products.map(e => e.id).indexOf(product_id);
+
+                    if(parseInt(this.products[indexx].count) < parseInt(this.products[indexx].product_amount)) {
+                        this.products[indexx].count++;
+                    }else{
+                        Snackbar.show({
+                            text: 'Bu üründen en fazla ' + this.products[indexx].count + ' tane alabilirsiniz',
+                            duration: Snackbar.LENGTH_LONG,
+                            backgroundColor:'#FF9800',
+                            textColor:'white',
+                        });
+                    }
+
                 });
             }
             await AsyncStorage.setItem('products', JSON.stringify(this.products));

@@ -14,6 +14,8 @@ import BasketStore from '../../../../../store/BasketStore';
 
 import Spinner_ from 'react-native-loading-spinner-overlay';
 
+import BranchStore from '../../../../../store/BranchStore';
+
 import {observer} from 'mobx-react';
 
 
@@ -30,11 +32,14 @@ export default class Coupon extends Component {
             Keyboard.dismiss()
             const {coupon} = values;
 
+            console.log(BranchStore.branchID);
+
             const validateCoupon = await API.post('/api/coupon/validate',{
                 user_id: AuthStore.getUserID,
                 coupon_name:coupon,
                 total_price: BasketStore.getTotalPriceWithCommite,
                 products: BasketStore.getProducts,
+                branch_id:BranchStore.branchID
             },{
                 headers:{
                     'x-access-token': AuthStore.getToken

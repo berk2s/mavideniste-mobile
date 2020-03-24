@@ -133,7 +133,8 @@ export default class ShopingCard extends Component {
             this.setState({
                 loading:true,
             });
-            await this.props.BasketStore.incrementProduct(id);
+            const increment = await this.props.BasketStore.incrementProduct(id);
+            console.log(increment)
             setTimeout(async () => {
 
                 this.setState({
