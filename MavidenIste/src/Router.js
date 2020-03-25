@@ -40,6 +40,10 @@ import OrderDetail from './screens/bottomtab/profile/authenticated/ordermanageme
 import ApplyOrderScreen from './screens/bottomtab/shopingcart/apply_order/ApplyOrder';
 import OrderSuccessfullScreen from './screens/bottomtab/shopingcart/order_successfull/OrderSuccessfull';
 
+import ChangePasswordScreen from './screens/bottomtab/profile/authenticated/changepassword/ChangePassword';
+
+import ComplaintScreen from './screens/bottomtab/profile/authenticated/complaint/Complaint';
+
 import AuthSwitcher from './screens/switch/AuthSwitcher';
 
 // for the product listing
@@ -104,7 +108,9 @@ const authticatedProfileStack = createStackNavigator({
         },{
             headerMode:null
         })
-    }
+    },
+    ChangePassword:ChangePasswordScreen,
+    Complaint:ComplaintScreen
 }, {
     headerMode: null
 })

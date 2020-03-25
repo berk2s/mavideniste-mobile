@@ -81,7 +81,8 @@ export default class Unauthticated extends Component {
                                     <Image source={LoginIMG} style={{width:80, height:80}}/>
                                     <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Üye olmalısın</Text>
                                     <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555', textAlign:'center'}}>maviden istediğin ayağına gelmesi için giriş yapmalısın</Text>
-                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')} style={{borderRadius:12, marginTop:20, marginBottom:10, height:38, backgroundColor:'#7FB7EA', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}
+                                                      style={{borderRadius:12, marginTop:20, marginBottom:10, height:38, backgroundColor:'#7FB7EA', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
                                         <Text style={{color:'#fff', fontFamily:'Muli-ExtraBold'}}>Giriş yap</Text>
                                     </TouchableOpacity>
                                     <Text  style={{fontFamily:'Muli-Light', color:'#304555'}}>veya</Text>

@@ -14,12 +14,27 @@ import OrderEnroute from '../../../../../img/delivery-man.png';
 import NextIMG from '../../../../../img/next.png';
 import DoneIMG from '../../../../../img/tick.png';
 import CancelIMG from '../../../../../img/cross.png';
+import {min} from 'react-native-reanimated';
 
 
 export default class OrderList extends Component {
 
   state = {
-    loading:false
+    loading:false,
+    months:[
+        {month: '01', text: 'Ocak'},
+        {month: '02', text: 'Şubat'},
+        {month: '03', text: 'Mart'},
+        {month: '04', text: 'Nisan'},
+        {month: '05', text: 'Mayıs'},
+        {month: '06', text: 'Haziran'},
+        {month: '07', text: 'Temmuz'},
+        {month: '08', text: 'Ağustos'},
+        {month: '09', text: 'Eylül'},
+        {month: '10', text: 'Ekim'},
+        {month: '11', text: 'Kasım'},
+        {month: '12', text: 'Aralık'},
+    ]
   }
 
 
@@ -32,6 +47,27 @@ export default class OrderList extends Component {
    </View>
 
    */
+
+  dateCustomize = e => {
+    const split = e.split('T');
+    const splitOfSplit = split[0].split('-');
+    const year = splitOfSplit[0];
+    const month = splitOfSplit[1];
+    const day = splitOfSplit[2];
+    const mapIt = this.state.months.map(e => e.month).indexOf(''+month);
+
+    return `${day} ${this.state.months[mapIt].text} ${year}`
+  }
+// LOG  2020-03-24T20:18:35.890Z
+  timeCustomize = e => {
+    const split = e.split('T');
+    const splitOfSplit = split[1].split(':');
+    const hour = splitOfSplit[0];
+    const minut = splitOfSplit[1];
+
+    return `${hour}:${minut}`
+  }
+
   render() {
     return (
         <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
@@ -72,105 +108,74 @@ export default class OrderList extends Component {
 
             <View style={styles.orderList}>
 
-              <View style={styles.currentOrders}>
+              {
+                this.props.navigation.getParam('opened_orders').data.length > 0
+                    ?
+                      <View style={styles.currentOrders}>
+
+                        <View style={styles.currentOrdersListArea}>
+
+                          {this.props.navigation.getParam('opened_orders').data.map(e => {
+                              return <View style={styles.orderCard} key={e._id}>
+
+                                <View style={styles.cardHeader}>
+                                  <Text style={styles.cardHeaderText}>Sipariş - #{e.visibility_id}</Text>
+                                  <Text style={styles.cardHeaderText2}>
+
+                                    {
+                                      e.products != null && e.products.length != 1
+                                        ?
+                                          <Text>{e.products[0].product_name} ve {e.products.length-1} ürün daha</Text>
+                                        :
+                                          <Text>Sadece {e.products[0].product_name}</Text>
+                                    }
 
 
-                <View style={styles.currentOrdersListArea}>
-
-                  <View style={styles.orderCard}>
-
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={styles.cardHeaderText2}>Başyazıcı dana eti afyon sucuğu 500g ve 4 ürün daha</Text>
-                    </View>
+                                  </Text>
+                                </View>
 
 
-                    <View style={styles.orderStatus}>
+                                <View style={styles.orderStatus}>
 
-                      <Image
-                        source={OrderWaiting}
-                        style={styles.orderImage}
-                      />
+                                  {
+                                    e.order_status == 0 &&  <Image source={OrderWaiting} style={styles.orderImage}/>
+                                  }
+                                  {
+                                    e.order_status == 1 &&  <Image source={OrderPreparing} style={styles.orderImage}/>
+                                  }
+                                  {
+                                    e.order_status == 2 &&  <Image source={OrderEnroute} style={styles.orderImage}/>
+                                  }
 
-                      <Text style={styles.orderStatusText}>Onay bekliyor</Text>
 
-                    </View>
+                                  <Text style={styles.orderStatusText}>
+                                    {e.order_status == 0 && 'Onay bekliyor'}
+                                    {e.order_status == 1 && 'Hazırlanıyor'}
+                                    {e.order_status == 2 && 'Siparişin yolda'}
+                                  </Text>
 
-                    <View style={styles.cardBottom}>
+                                </View>
 
-                      <Ripple onPress={() => this.props.navigation.navigate('OrderDetail')}>
-                        <View style={styles.detailOrder}>
-                          <Text style={styles.detailOrderText}>Detaylar</Text>
+                                <View style={styles.cardBottom}>
+
+                                  <Ripple onPress={() => this.props.navigation.navigate('OrderDetail', {order:e})}>
+                                    <View style={styles.detailOrder}>
+                                      <Text style={styles.detailOrderText}>Detaylar</Text>
+                                    </View>
+                                  </Ripple>
+
+                                </View>
+
+                              </View>
+                          })}
+
                         </View>
-                      </Ripple>
 
-                    </View>
+                      </View>
+                    :
+                    <></>
+              }
 
-                  </View>
-                  <View style={styles.orderCard}>
-
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={styles.cardHeaderText2}>Başyazıcı dana eti afyon sucuğu 500g ve 4 ürün daha</Text>
-                    </View>
-
-
-                    <View style={styles.orderStatus}>
-
-                      <Image
-                          source={OrderEnroute}
-                          style={styles.orderImage}
-                      />
-
-                      <Text style={styles.orderStatusText}>Siparişin yolda!</Text>
-
-                    </View>
-
-                    <View style={styles.cardBottom}>
-
-                      <Ripple>
-                        <View style={styles.detailOrder}>
-                          <Text style={styles.detailOrderText}>Detaylar</Text>
-                        </View>
-                      </Ripple>
-
-                    </View>
-
-                  </View>
-                  <View style={styles.orderCard}>
-
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={styles.cardHeaderText2}>Başyazıcı dana eti afyon sucuğu 500g ve 4 ürün daha</Text>
-                    </View>
-
-
-                    <View style={styles.orderStatus}>
-
-                      <Image
-                          source={OrderPreparing}
-                          style={styles.orderImage}
-                      />
-
-                      <Text style={styles.orderStatusText}>Hazırlanıyor</Text>
-
-                    </View>
-
-                    <View style={styles.cardBottom}>
-
-                      <Ripple>
-                        <View style={styles.detailOrder}>
-                          <Text style={styles.detailOrderText}>Detaylar</Text>
-                        </View>
-                      </Ripple>
-
-                    </View>
-
-                  </View>
-
-                </View>
-
-              </View>
 
               <View style={styles.currentOrders}>
 
@@ -180,90 +185,61 @@ export default class OrderList extends Component {
 
                 <View style={styles.currentOrdersListArea}>
 
-                  <View style={styles.orderCard}>
+                  {
+                    this.props.navigation.getParam('history_orders').data.length > 0
+                        ?
+                        this.props.navigation.getParam('history_orders').data.map((e) => {
+                            return <View style={styles.orderCard} key={e._id}>
 
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={[styles.cardHeaderText2, {marginVertical:10}]}>16 Mayıs 2020, 5 ürün, 14:50</Text>
-                    </View>
+                              <View style={styles.cardHeader}>
+                                <Text style={styles.cardHeaderText}>Sipariş - #{e.visibility_id}</Text>
+                                <Text style={[styles.cardHeaderText2, {marginVertical:10}]}>{this.dateCustomize(e.order_date)}{e.products != null ? ', '+e.products.length+' ürün,' : ''} {this.timeCustomize(e.order_date)}</Text>
+                              </View>
 
-                    <View style={[styles.orderStatus, {marginVertical: 0, paddingVertical:0}]}>
+                              <View style={[styles.orderStatus, {display:'flex', flexDirection:'row', justifyContent:'space-between', marginVertical: 0, paddingVertical:0}]}>
 
-                      <Image
-                          source={DoneIMG}
-                          style={[styles.orderImage, {width:20, height:20}]}
-                      />
 
-                      <Text style={styles.orderStatusText}>Teslim edildi!</Text>
+                                <View style={{display:'flex', flexDirection:'row'}}>
 
-                    </View>
+                                  {
+                                    e.order_status == 3 &&  <Image source={DoneIMG} style={[styles.orderImage, {width:20, height:20}]}/>
+                                  }
+                                  {
+                                    e.order_status == -1 &&  <Image source={CancelIMG} style={[styles.orderImage, {width:20, height:20}]}/>
+                                  }
 
-                    <View style={styles.nextArrowArea}>
-                      <TouchableOpacity>
-                        <Image
-                          source={NextIMG}
-                          style={{width:22, height:22}}
-                        />
-                      </TouchableOpacity>
-                    </View>
+                                  <Text style={styles.orderStatusText}>
+                                    {e.order_status == 3 && 'Teslim edildi'}
+                                    {e.order_status == -1 && 'İptal edildi'}
+                                  </Text>
 
-                  </View>
-                  <View style={styles.orderCard}>
+                                </View>
 
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={[styles.cardHeaderText2, {marginVertical:10}]}>16 Mayıs 2020, 5 ürün, 14:50</Text>
-                    </View>
+                                <View>
+                                  {!e.is_bluecurrier && <Title><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:12}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:12}}>iste</Text></Title>}
+                                  {e.is_bluecurrier && <Title><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:12}}>mavi</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:12}}>kurye</Text></Title>}
+                                </View>
 
-                    <View style={[styles.orderStatus, {marginVertical: 0, paddingVertical:0}]}>
+                              </View>
 
-                      <Image
-                          source={CancelIMG}
-                          style={[styles.orderImage, {width:20, height:20}]}
-                      />
+                              {e.order_status != -1 && <View style={styles.nextArrowArea}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('OrderDetail', {order:e})}>
+                                  <Image
+                                      source={NextIMG}
+                                      style={{width:22, height:22}}
+                                  />
+                                </TouchableOpacity>
+                              </View>}
 
-                      <Text style={styles.orderStatusText}>İptal edildi!</Text>
 
-                    </View>
+                            </View>
 
-                    <View style={styles.nextArrowArea}>
-                      <TouchableOpacity>
-                        <Image
-                            source={NextIMG}
-                            style={{width:22, height:22}}
-                        />
-                      </TouchableOpacity>
-                    </View>
+                        })
 
-                  </View>
-                  <View style={styles.orderCard}>
+                        :
+                        <></>
+                  }
 
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardHeaderText}>Sipariş - #5912321</Text>
-                      <Text style={[styles.cardHeaderText2, {marginVertical:10}]}>16 Mayıs 2020, 5 ürün, 14:50</Text>
-                    </View>
-
-                    <View style={[styles.orderStatus, {marginVertical: 0, paddingVertical:0}]}>
-
-                      <Image
-                          source={DoneIMG}
-                          style={[styles.orderImage, {width:20, height:20}]}
-                      />
-
-                      <Text style={styles.orderStatusText}>Teslim edildi!</Text>
-
-                    </View>
-
-                    <View style={styles.nextArrowArea}>
-                      <TouchableOpacity>
-                        <Image
-                            source={NextIMG}
-                            style={{width:22, height:22}}
-                        />
-                      </TouchableOpacity>
-                    </View>
-
-                  </View>
                 </View>
 
               </View>

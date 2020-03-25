@@ -19,6 +19,12 @@ import { Badge } from 'react-native-elements'
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import ProfileAddressImg from '../../../../img/profile_address.png';
+import ProfileOrdersImg from '../../../../img/profile_product.png';
+import ProfileKeyImg from '../../../../img/profile_key.png';
+import ProfileComplaintImg from '../../../../img/profile_complaint.png';
+import ProfileLogoutImg from '../../../../img/profile_logout.png';
+import RightArrow from '../../../../img/right-arrow.png'
 
 @observer
 export default class Profile extends Component {
@@ -124,21 +130,38 @@ export default class Profile extends Component {
             });
             //await AuthStore.deleteUser();
 
-            const address = await API.get(`/api/user/address/${AuthStore.getUserID}`, {
-                headers:{
-                    'x-access-token': AuthStore.getToken
-                }
-            });
-
-            const datas = await LocationAPI.get('/api/location/province');
+            const openedOrders = await API.get(`/api/orders/user/open/${AuthStore.getUserID}`);
+            const historyOrders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`);
 
             this.setState({
                 loading:false,
             });
 
-            this.props.navigation.navigate('Orders', {address: address.data.data, provinces:datas.data})
+            this.props.navigation.navigate('Orders', {opened_orders: openedOrders.data, history_orders:historyOrders.data})
 
         }catch{
+            console.log(e);
+        }
+    }
+
+    _handleComplaintClick = async () => {
+        try{
+
+            this.setState({
+                loading:true,
+            });
+
+            const orders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`);
+
+           // console.log(orders.data)
+
+            this.props.navigation.navigate('Complaint', {orders: orders.data.data});
+
+            this.setState({
+                loading:false,
+            });
+
+        }catch(e){
             console.log(e);
         }
     }
@@ -209,61 +232,82 @@ export default class Profile extends Component {
                         <Card style={styles.card_}>
                             <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={this._handleAddressClick}>
                                 <CardItem style={styles.card}>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    <Image
+                                        source={ProfileAddressImg}
+                                        style={{width:20, height:20, marginRight:14, marginLeft:-5}}
+                                    />
                                     <Text style={styles.cardText}>Adreslerim</Text>
-                                    <Right>
-                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                    </Right>
+                                    <View style={{ position:'absolute', right:11 }}>
+                                        <Image
+                                            source={RightArrow}
+                                            style={{width:13, height:13, }}
+                                        />
+                                    </View>
                                 </CardItem>
                             </Ripple>
                             <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={this._handleOrdersClick}>
                                 <CardItem style={styles.card}>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    <Image
+                                        source={ProfileOrdersImg}
+                                        style={{width:20, height:20, marginRight:14, marginLeft:-5}}
+                                    />
                                     <Text style={styles.cardText}>Siparişlerim</Text>
-                                    <Right>
-                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                    </Right>
+                                    <View style={{ position:'absolute', right:11 }}>
+                                        <Image
+                                            source={RightArrow}
+                                            style={{width:13, height:13, }}
+                                        />
+                                    </View>
                                 </CardItem>
                             </Ripple>
 
-                            <CardItem style={[styles.card]}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <View>
-                                <Text style={styles.cardText}>Bildirimler</Text>
 
-                                    <Badge
-                                        status="success"
-                                        containerStyle={{ position: 'absolute', right:-13, top:6}}
+                            <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={() => this.props.navigation.navigate('ChangePassword')}>
+                                <CardItem style={styles.card}>
+                                    <Image
+                                        source={ProfileKeyImg}
+                                        style={{width:20, height:20, marginRight:14, marginLeft:-5}}
                                     />
+                                    <Text style={styles.cardText}>Şifremi değiştir</Text>
+                                    <View style={{ position:'absolute', right:11 }}>
+                                        <Image
+                                            source={RightArrow}
+                                            style={{width:13, height:13, }}
+                                        />
+                                    </View>
+                                </CardItem>
+                            </Ripple>
 
-                                </View>
+                            <Ripple rippleSize={100} rippleColor={'#8394CB'} onPress={this._handleComplaintClick}>
 
-                                <Right>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
+                                <CardItem style={styles.card}>
+                                    <Image
+                                        source={ProfileComplaintImg}
+                                        style={{width:20, height:20, marginRight:14, marginLeft:-5}}
+                                    />
+                                    <Text style={styles.cardText}>Şikayette bulun</Text>
+                                    <View style={{ position:'absolute', right:11 }}>
+                                        <Image
+                                            source={RightArrow}
+                                            style={{width:13, height:13, }}
+                                        />
+                                    </View>
+                                </CardItem>
 
-                            <CardItem style={styles.card}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Şifremi değiştir</Text>
-                                <Right>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
-                            <CardItem style={styles.card}>
-                                <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                <Text style={styles.cardText}>Şikayette bulun</Text>
-                                <Right>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                </Right>
-                            </CardItem>
+                            </Ripple>
                             <TouchableOpacity onPress={this._handleLogout}>
                                 <CardItem style={{borderRadius:15}}>
-                                    <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
+                                    <Image
+                                        source={ProfileLogoutImg}
+                                        style={{width:20, height:20, marginRight:14, marginLeft:-5}}
+                                    />
                                     <Text style={styles.cardText}>Çıkış yap</Text>
-                                    <Right>
-                                        <CustomIcon name="person-fill" size={25} style={{color: '#fff'}} />
-                                    </Right>
+                                    <View style={{ position:'absolute', right:11 }}>
+                                        <Image
+                                            source={RightArrow}
+                                            style={{width:13, height:13, }}
+                                        />
+                                    </View>
                                 </CardItem>
                             </TouchableOpacity>
                         </Card>
@@ -303,6 +347,7 @@ const styles = StyleSheet.create({
       borderRadius:15,
         borderBottomWidth:1,
         borderBottomColor:'#eee',
+        width:'100%'
     },
     cardListArea:{
       marginVertical:30

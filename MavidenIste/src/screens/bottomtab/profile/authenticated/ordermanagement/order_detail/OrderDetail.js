@@ -13,15 +13,55 @@ import DoneIMG from '../../../../../../img/tick.png';
 import NextIMG from '../../../../../../img/next.png';
 import CancelIMG from '../../../../../../img/cross.png';
 
+import ProfileAddress from '../../../../../../img/profile_address.png'
+
+import {IMAGE_URL} from '../../../../../../constants'
+
 import Timeline from 'react-native-timeline-flatlist'
 
 export default class OrderDetail extends Component {
 
     state = {
         loading:false,
+        months:[
+            {month: '01', text: 'Ocak'},
+            {month: '02', text: 'Şubat'},
+            {month: '03', text: 'Mart'},
+            {month: '04', text: 'Nisan'},
+            {month: '05', text: 'Mayıs'},
+            {month: '06', text: 'Haziran'},
+            {month: '07', text: 'Temmuz'},
+            {month: '08', text: 'Ağustos'},
+            {month: '09', text: 'Eylül'},
+            {month: '10', text: 'Ekim'},
+            {month: '11', text: 'Kasım'},
+            {month: '12', text: 'Aralık'},
+        ]
+    }
+
+
+    dateCustomize = e => {
+        const split = e.split('T');
+        const splitOfSplit = split[0].split('-');
+        const year = splitOfSplit[0];
+        const month = splitOfSplit[1];
+        const day = splitOfSplit[2];
+        const mapIt = this.state.months.map(e => e.month).indexOf(''+month);
+
+        return `${day} ${this.state.months[mapIt].text} ${year}`
+    }
+// LOG  2020-03-24T20:18:35.890Z
+    timeCustomize = e => {
+        const split = e.split('T');
+        const splitOfSplit = split[1].split(':');
+        const hour = splitOfSplit[0];
+        const minut = splitOfSplit[1];
+
+        return `${hour}:${minut}`
     }
 
   render() {
+        const order = this.props.navigation.getParam('order')
     return (
         <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
             <Header transparent style={styles.header}>
@@ -60,14 +100,14 @@ export default class OrderDetail extends Component {
                 padder>
 
                 <View style={styles.headerAreaOrder}>
-                    <Text style={styles.headerOrderText}>Sipariş - #5551232</Text>
+                    <Text style={styles.headerOrderText}>Sipariş - #{order.visibility_id}</Text>
 
                     <View style={styles.detailTexts}>
-                        <Text style={styles.headerOrderText2}>Çarşamba</Text>
+                        <Text style={[styles.headerOrderText2, {fontSize:13}]}><><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:13}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:13}}>iste</Text></> siparişi</Text>
 
                         <View style={styles.area2}>
-                            <Text style={styles.headerOrderText2}>14 Mayıs 2020</Text>
-                            <Text style={styles.headerOrderText2}>Tutar: <Text style={{fontFamily:'Muli-ExtraBold', fontSize:16}}>20 TL</Text></Text>
+                            <Text style={styles.headerOrderText2}>{this.dateCustomize(order.order_date)}</Text>
+                            <Text style={styles.headerOrderText2}>Tutar: <Text style={{fontFamily:'Muli-ExtraBold', fontSize:16}}>{order.price} TL</Text></Text>
                         </View>
                     </View>
                 </View>
@@ -84,78 +124,48 @@ export default class OrderDetail extends Component {
                             titleStyle={{fontFamily:'Muli-Bold', marginTop:-4, marginLeft:5}}
                             descriptionStyle={{height:50, fontFamily:'Muli-Regular', marginTop:3, marginLeft:5}}
                             data={[
-                                {time: '09:00', lineColor:'#CDDC39', icon:DoneIMG, title: 'Teslim edildi',description: '13:00'},
-                                {time: '09:00', lineColor:'#CDDC39', icon:OrderEnroute, title: 'Sipariş yolda',description: '12:56'},
-                                {time: '09:00',  lineColor:'#CDDC39', icon:OrderPreparing, title: 'Hazırlanıyor',description: '12:53'},
-                                {time: '09:00',  descriptionStyle:{height:20}, icon:OrderWaiting, title: 'Sipariş onayı', description: 'Onaylandı'},
+                                {time: '09:00', lineColor:order.order_history_success != null ? '#CDDC39' : '#304555', icon:DoneIMG, title: order.order_history_success != null && 'Teslim edildi',description: order.order_history_success != null ? this.timeCustomize(order.order_history_success) : ''},
+                                {time: '09:00', lineColor:order.order_history_enroute != null ? '#CDDC39' : '#304555', icon:OrderEnroute, title: order.order_history_enroute != null && 'Sipariş yolda', description: order.order_history_enroute != null ? this.timeCustomize(order.order_history_enroute) : ''},
+                                {time: '09:00',  lineColor:order.order_history_prepare != null ? '#CDDC39' : '#304555', icon:OrderPreparing, title: order.order_history_prepare != null && 'Hazırlanıyor',description:order.order_history_prepare != null ? this.timeCustomize(order.order_history_prepare) : ''},
+                                {time: '09:00',  descriptionStyle:{height:20}, icon:OrderWaiting, title: 'Sipariş onayı', description: order.order_history_prepare != null ? 'Onaylandı' : 'Onay bekliyor'},
                             ]}
                         />
                     </View>
                 </View>
 
-                <View style={styles.productsArea}>
-                    <View style={styles.productsAreaInfo}>
-                        <Text style={styles.productsAreaText}>Ürünler</Text>
-                    </View>
-
-                    <View style={styles.currentOrdersListArea}>
-
-                        <View style={styles.orderCard}>
-                            <View style={styles.imageArea}>
-                                <Image
-                                    style={styles.cardImg}
-                                    source={{uri: 'https://reimg-carrefour.mncdn.com/mnresize/600/600/productimage/30116717/30116717_0_MC/8797075243058_1521460674849.jpg'}}
-                                />
-                            </View>
-
-                            <View style={styles.cardInfo}>
-                                <Text style={styles.cardInfoText}>Çaykur Harman çay Rizeden Serisi 500g</Text>
-                                <Text style={styles.cardInfoText2}>Miktar: 1</Text>
-                            </View>
+                {
+                    order.products != null
+                    &&
+                    <View style={styles.productsArea}>
+                        <View style={styles.productsAreaInfo}>
+                            <Text style={styles.productsAreaText}>Ürünler</Text>
                         </View>
-                        <View style={styles.orderCard}>
-                            <View style={styles.imageArea}>
-                                <Image
-                                    style={styles.cardImg}
-                                    source={{uri: 'https://reimg-carrefour.mncdn.com/mnresize/600/600/productimage/30116717/30116717_0_MC/8797075243058_1521460674849.jpg'}}
-                                />
-                            </View>
 
-                            <View style={styles.cardInfo}>
-                                <Text style={styles.cardInfoText}>Çaykur Harman çay Rizeden Serisi 500g</Text>
-                                <Text style={styles.cardInfoText2}>Miktar: 1</Text>
-                            </View>
-                        </View>
-                        <View style={styles.orderCard}>
-                            <View style={styles.imageArea}>
-                                <Image
-                                    style={styles.cardImg}
-                                    source={{uri: 'https://reimg-carrefour.mncdn.com/mnresize/600/600/productimage/30116717/30116717_0_MC/8797075243058_1521460674849.jpg'}}
-                                />
-                            </View>
+                        <View style={styles.currentOrdersListArea}>
 
-                            <View style={styles.cardInfo}>
-                                <Text style={styles.cardInfoText}>Çaykur Harman çay Rizeden Serisi 500g</Text>
-                                <Text style={styles.cardInfoText2}>Miktar: 1</Text>
-                            </View>
-                        </View>
-                        <View style={styles.orderCard}>
-                            <View style={styles.imageArea}>
-                                <Image
-                                    style={styles.cardImg}
-                                    source={{uri: 'https://reimg-carrefour.mncdn.com/mnresize/600/600/productimage/30116717/30116717_0_MC/8797075243058_1521460674849.jpg'}}
-                                />
-                            </View>
+                            {order.products.map(e => {
+                                const imageUrl = IMAGE_URL+e.product_image;
+                                return <View style={styles.orderCard} key={e.id}>
+                                    <View style={styles.imageArea}>
+                                        <Image
+                                            style={styles.cardImg}
+                                            source={{uri: imageUrl}}
+                                        />
+                                    </View>
 
-                            <View style={styles.cardInfo}>
-                                <Text style={styles.cardInfoText}>Çaykur Harman çay Rizeden Serisi 500g</Text>
-                                <Text style={styles.cardInfoText2}>Miktar: 1</Text>
-                            </View>
+                                    <View style={styles.cardInfo}>
+                                        <Text style={styles.cardInfoText}>{e.product_name}</Text>
+                                        <Text style={styles.cardInfoText2}>{e.count} adet</Text>
+                                    </View>
+                                </View>
+                            })}
+
+
                         </View>
 
                     </View>
+                }
 
-                </View>
 
                 <View style={[styles.productsArea, {marginVertical:5}]}>
 
@@ -165,14 +175,14 @@ export default class OrderDetail extends Component {
                             <View style={[styles.imageArea, {justifyContent:'flex-start', alignItems: 'center'}]}>
                                 <Image
                                     style={styles.cardImg2}
-                                    source={{uri: 'https://reimg-carrefour.mncdn.com/mnresize/600/600/productimage/30116717/30116717_0_MC/8797075243058_1521460674849.jpg'}}
+                                    source={ProfileAddress}
                                 />
                             </View>
 
                             <View style={[styles.cardInfo, {justifyContent:'flex-start'}]}>
-                                <Text style={[styles.cardInfoText, {width:'100%'}]}>Sipariş Adresi (Ev)</Text>
-                                <Text style={{fontFamily:'Muli-Regular', color:'#6C7277', marginVertical:2, marginRight:5,}}>1625. ada d blok daire 5 15 temmuz camili mahallesi</Text>
-                                <Text style={{fontFamily:'Muli-Regular', color:'#6C7277', marginVertical:2, marginRight:5}}>(Yunus marketin arkasindaki sari binalar)</Text>
+                                <Text style={[styles.cardInfoText, {width:'100%'}]}>Sipariş Adresi ({order.user_address.address_title})</Text>
+                                <Text style={{fontFamily:'Muli-Regular', color:'#6C7277', marginVertical:2, marginRight:5,}}>{order.user_address.address}</Text>
+                                <Text style={{fontFamily:'Muli-Regular', color:'#6C7277', marginVertical:2, marginRight:5}}>{order.user_address.address_direction != null && `(${order.user_address.address_direction})`}</Text>
                             </View>
                         </View>
 
@@ -204,21 +214,21 @@ const styles = StyleSheet.create({
       color:'#304555',
       fontSize:16,
         flexWrap:'wrap',
-        width:'85%'
+        width:'78%'
     },
     cardInfo:{
-        maxWidth:'100%',
+        width:'100%',
         display:'flex',
         justifyContent:'space-between'
     },
     cardImg2:{
-        width:30,
-        height:30,
+        width:32,
+        height:32,
         marginRight:15
     },
     cardImg:{
-      width:60,
-      height:60,
+      width:65,
+      height:65,
         marginRight:15
     },
     orderCard:{

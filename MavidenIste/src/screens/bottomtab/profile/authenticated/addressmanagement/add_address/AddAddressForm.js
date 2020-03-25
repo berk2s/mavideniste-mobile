@@ -245,10 +245,10 @@ export default class AddAddressForm extends Component {
 
                                 <Button
                                     onPress={handleSubmit}
-                                    style={{backgroundColor:'#003DFF', borderRadius:12, marginVertical:25}} full>
+                                    style={{borderRadius:8, marginTop:20, marginBottom:10, height:38, backgroundColor:'#7FB7EA', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
 
                                     {isSubmitting && <ActivityIndicator /> }
-                                    {!isSubmitting && <Text style={{fontFamily:'Muli-ExtraBold', color:'#fff'}}>Kaydet</Text> }
+                                    {!isSubmitting && <Text style={{color:'#fff', fontFamily:'Muli-ExtraBold'}}>Değiştir</Text> }
 
                                 </Button>
 
