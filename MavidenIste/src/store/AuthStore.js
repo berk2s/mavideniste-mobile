@@ -20,6 +20,7 @@ class AuthStore {
     @observable token = null;
     @observable user_id = null;
     @observable name_surname = null;
+    @observable phone_number = null;
 
     @action saveToken = async (user_id, token, name_surname) => {
         try{
@@ -72,6 +73,7 @@ class AuthStore {
                         this.token = getToken;
                         this.user_id = getUserId;
                         this.name_surname = user_information.data.data.name_surname;
+                        this.phone_number = user_information.data.data.phone_number;
                     });
 
                 }else{
@@ -158,6 +160,7 @@ class AuthStore {
                this.token = null;
                this.user_id = null;
                this.name_surname = null;
+               this.phone_number = null;
             });
             await this.authSync();
         }catch(e){
@@ -171,6 +174,10 @@ class AuthStore {
 
     @computed get getNameSurname(){
         return this.name_surname;
+    }
+
+    @computed get getPhoneNumber(){
+        return this.phone_number;
     }
 
     @computed get getToken(){

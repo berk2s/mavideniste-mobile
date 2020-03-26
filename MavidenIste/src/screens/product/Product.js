@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView} from 'react-native';
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
@@ -18,6 +18,7 @@ import HeaderForProducts from '../components/HeaderForProducts';
 import EmptyIMG from '../../img/search_result.png';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Ripple from 'react-native-material-ripple';
 
 
 @inject('BasketStore', 'ProductStore', 'BranchStore')
@@ -32,7 +33,9 @@ export default class ProductList extends Component {
         headerSeacrh:false,
         headerSearch:false,
         searchKey:null,
-        searchResults:[]
+        searchResults:[],
+        filter:false,
+        filterSubIds:[]
     }
 
     componentDidMount = async () => {
@@ -116,6 +119,40 @@ export default class ProductList extends Component {
         }
     }
 
+    handleSubCategoryPress = async (sub_category_id, status) => {
+        try{
+            this.setState({
+                loading:true,
+            });
+
+            if(status === -1) {
+               // await this.props.ProductStore.fetchProductsWithSubCategory(sub_category_id);
+
+                this.setState({
+                    filter:true,
+                });
+
+                this.state.filterSubIds.push(sub_category_id)
+
+            }else {
+                const index = this.state.filterSubIds.indexOf(sub_category_id);
+                this.state.filterSubIds.splice(index,1);
+
+                if(this.state.filterSubIds.length == 0){
+                    this.setState({
+                        filter:false,
+                    });
+                }
+               // await this.props.ProductStore.clearSubCategory(sub_category_id)
+            }
+
+            this.setState({
+                loading:false,
+            });
+        }catch(e){
+            console.log(e);
+        }
+    }
 
     render() {
         return (
@@ -184,14 +221,47 @@ export default class ProductList extends Component {
                                 :
                                     <>
 
-                                        <View style={styles.cardArea}>
-
+                                        <ScrollView
+                                            horizontal={true}
+                                            contentContainerStyle={{height:40, display:'flex', flexDirection:'row', }}>
 
                                             {
-                                                this.props.ProductStore.getProducts.map(e => {
-                                                    return <ProductCard key={e._id} e={e} {...this.props} />
-
+                                                this.props.ProductStore.subCategories.map(e => {
+                                                    const styleArray = [];
+                                                    styleArray.push(styles.tag);
+                                                    if(this.state.filterSubIds.indexOf(e._id) !== -1){
+                                                        styleArray.push(styles.selectedTag)
+                                                    }
+                                                    return <Ripple key={e._id} onPress={() => this.handleSubCategoryPress(e._id, this.state.filterSubIds.indexOf(e._id))} rippleContainerBorderRadius={8} style={styleArray}>
+                                                        <Text style={{color:this.state.filterSubIds.indexOf(e._id) !== -1 ? '#1BD4FE' : '#fff', fontFamily:'Muli-Bold', fontSize:13}}>{e.sub_category_name}</Text>
+                                                    </Ripple>
                                                 })
+                                            }
+
+
+
+
+
+                                        </ScrollView>
+
+                                        <View style={styles.cardArea}>
+
+                                            {
+                                                this.state.filter
+                                                    ?
+                                                    this.props.ProductStore.getProducts.filter(e => {
+
+                                                        for(let index in this.state.filterSubIds){
+                                                            if (e.sub_category_id === undefined || e.sub_category_id != this.state.filterSubIds[index]){
+                                                                return false;
+                                                            }
+                                                        }
+                                                        return true;
+                                                    }).map(e => <ProductCard key={e._id} e={e} {...this.props} />)
+                                                    :
+                                                    this.props.ProductStore.getProducts.map(e => {
+                                                        return <ProductCard key={e._id} e={e} {...this.props} />
+                                                    })
                                             }
 
                                         </View>
@@ -209,6 +279,29 @@ export default class ProductList extends Component {
 }
 
 const styles = StyleSheet.create({
+    selectedTag:{
+        borderColor:'#1BD4FE',
+        borderWidth:1,
+        backgroundColor:'#fff'
+    },
+    tag:{
+        backgroundColor:'#1BD4FE',
+        shadowColor: "#304555",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 2,
+        elevation: 1,
+        marginRight:13,
+        paddingHorizontal:12,
+        height:27,
+        borderRadius:8,
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+    },
     cardArea2:{
         display:'flex',
         flex:1,

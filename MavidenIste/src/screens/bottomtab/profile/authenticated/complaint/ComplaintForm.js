@@ -7,6 +7,14 @@ import {Button, Input, Item, Textarea} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
 import RNPickerSelect from "react-native-picker-select";
 
+import LocationAPI from '../../../../../locationapi';
+import {observer} from 'mobx-react';
+
+import BranchStore from '../../../../../store/BranchStore';
+import AuthStore from '../../../../../store/AuthStore';
+import Snackbar from 'react-native-snackbar';
+
+@observer
 export default class ComplaintForm extends Component {
 
   state = {
@@ -25,9 +33,49 @@ export default class ComplaintForm extends Component {
     })
   }
 
-  _handleSubmit = (values) => {
+  _handleSubmit = async (values) => {
 
-    alert(JSON.stringify(this.state.complaint) + ' ' + JSON.stringify(this.state.selectedOrder));
+    try{
+
+      if(this.state.complaint.trim() == ''){
+        Snackbar.show({
+          text: 'Lütfen şikayetinizi yazın',
+          duration: Snackbar.LENGTH_LONG,
+          backgroundColor:'#FF9800',
+          textColor:'white',
+        });
+        return false;
+      }
+
+      const post = await LocationAPI.post('/api/complaint', {
+        branch_id:BranchStore.branchID,
+        user_name:AuthStore.getNameSurname,
+        user_phone:AuthStore.getPhoneNumber,
+        user_id:AuthStore.getUserID,
+        order:`Sipariş - #${this.state.selectedOrder.order.visibility_id}`,
+        order_id:this.state.selectedOrder.value,
+        complaint:this.state.complaint
+      });
+
+      if(post.status == 200){
+        Snackbar.show({
+          text: 'Şikayetiniz ile en kısa sürede ilgileneceğiz',
+          duration: Snackbar.LENGTH_LONG,
+          backgroundColor:'#4CAF50',
+          textColor:'white',
+        });
+      }else{
+        Snackbar.show({
+          text: 'Beklenmedik hata (CSP41)',
+          duration: Snackbar.LENGTH_LONG,
+          backgroundColor:'#d32f2f',
+          textColor:'white',
+        });
+      }
+
+    }catch(e){
+      console.log(e);
+    }
 
   }
 
@@ -54,7 +102,7 @@ export default class ComplaintForm extends Component {
                         style={styles.inputAreaForPicker}>
                       <RNPickerSelect
                           onValueChange={async (value) => {
-                            this.setState({selectedOrder:value.value,});
+                            this.setState({selectedOrder:value,});
                             setFieldValue('order', value);
                           }}
                           style={pickerStyle}

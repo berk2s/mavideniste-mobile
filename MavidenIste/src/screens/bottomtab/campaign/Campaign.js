@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, Platform} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+  Platform,
+  Button,
+  ScrollView,
+} from 'react-native';
 import {NavigationEvents} from 'react-navigation';
 import {Body, Container, Content, Header, Left, Title} from 'native-base';
 import SwitcherStore from '../../../store/SwitcherStore';
@@ -12,11 +23,20 @@ import LoginIMG from '../../../img/login.png';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import API from '../../../api';
+import {IMAGE_URL} from '../../../constants';
+
+import RBSheet from "react-native-raw-bottom-sheet";
+
+import Image_ from '../../../img/up-arrow.png'
+
 @observer
 export default class Campaign extends Component {
 
   state ={
-    loading:false
+    loading:false,
+    campaigns:[],
+    fetched:false
   }
 
   _clickEvent = () => {
@@ -38,6 +58,28 @@ export default class Campaign extends Component {
 
     }, 300)
   }
+
+  componentDidMount = async () => {
+    try {
+      this.setState({
+        loading: true,
+      });
+
+      const campaigns = await API.get('/api/campaign');
+
+      this.state.campaigns = [...campaigns.data.data];
+
+      this.setState({
+        loading: false,
+        fetched:true
+      });
+
+    }catch(e){
+      console.log(e);
+    }
+
+  }
+
 
   render() {
     return (
@@ -76,65 +118,69 @@ export default class Campaign extends Component {
               style={{display:'flex', flex:1, }}
               padder>
 
+            {
+              this.state.fetched &&
+                this.state.campaigns.map(e => {
+                  const uri = IMAGE_URL+e.campaign_image;
+                  return <View style={styles.campaignArea} key={e._id} onPress={() => {
+                              if(e.campaign_type == 1){
+                                this[RBSheet + e._id].open()
+                              }
+                            }}>
 
-            <View style={styles.campaignArea}>
-              <View style={styles.campaignCard}>
-                <View style={styles.shadowImage}>
-                  <Image
-                    source={{uri: 'https://cdn.webrazzi.com/uploads/2015/08/getir-algida-kampanya-gorseli.jpg'}}
-                    style={styles.campaignImage}
-                  />
-                </View>
-                <View style={styles.campaingTextArea}>
-                  <Text style={styles.campaignText}>10 Mart'a kadar yapacağınız alışverişlerde %10 indirim!</Text>
-                </View>
-              </View>
-            </View>
+                    {e.campaign_type == 1
+                        ?
+                            <RBSheet
+                                ref={ref => {
+                                  this[RBSheet + e._id] = ref;
+                                }}
+                                closeOnPressMask={true}
+                                closeOnPressBack={true}
+                                customStyles={{
+                                  draggableIcon: {
+                                    backgroundColor: "#304555"
+                                  },
+                                  container:{
+                                    borderTopLeftRadius: 10,
+                                    borderTopRightRadius: 10,
+                                  }
+                                }}
+                                height={(Dimensions.get('window').height*65)/100}
+                            >
 
-            <View style={styles.campaignArea}>
-              <View style={styles.campaignCard}>
-                <View style={styles.shadowImage}>
-                  <Image
-                      source={{uri: 'https://cdn.webrazzi.com/uploads/2015/08/getir-algida-kampanya-gorseli.jpg'}}
-                      style={styles.campaignImage}
-                  />
-                </View>
-                <View style={styles.campaingTextArea}>
-                  <Text style={styles.campaignText}>10 Mart'a kadar yapacağınız alışverişlerde %10 indirim!</Text>
-                </View>
-              </View>
-            </View>
+                                <View style={{paddingHorizontal:15, paddingVertical:15}}>
+                                  <Text style={{fontFamily:'Muli-ExtraBold', color:'#304555', fontSize:18, paddingBottom:10}}>Kampanya detayları</Text>
+                                  <ScrollView contentContainerStyle={{minHeight:(Dimensions.get('window').height*60)/100}}><Text style={{fontFamily:'Muli-Regular', marginBottom:10, color:'#304555'}}>{e.campaign_desc}</Text></ScrollView>
+                                </View>
 
+                            </RBSheet>
+                        :
+                            <></>
+                    }
 
-            <View style={styles.campaignArea}>
-              <View style={styles.campaignCard}>
-                <View style={styles.shadowImage}>
-                  <Image
-                      source={{uri: 'https://cdn.webrazzi.com/uploads/2015/08/getir-algida-kampanya-gorseli.jpg'}}
-                      style={styles.campaignImage}
-                  />
-                </View>
-                <View style={styles.campaingTextArea}>
-                  <Text style={styles.campaignText}>10 Mart'a kadar yapacağınız alışverişlerde %10 indirim!</Text>
-                </View>
-              </View>
-            </View>
-
-
-            <View style={styles.campaignArea}>
-              <View style={styles.campaignCard}>
-                <View style={styles.shadowImage}>
-                  <Image
-                      source={{uri: 'https://cdn.webrazzi.com/uploads/2015/08/getir-algida-kampanya-gorseli.jpg'}}
-                      style={styles.campaignImage}
-                  />
-                </View>
-                <View style={styles.campaingTextArea}>
-                  <Text style={styles.campaignText}>10 Mart'a kadar yapacağınız alışverişlerde %10 indirim!</Text>
-                </View>
-              </View>
-            </View>
-
+                    <View style={styles.campaignCard}>
+                      <View style={styles.shadowImage}>
+                        <Image
+                            source={{uri: uri}}
+                            style={styles.campaignImage}
+                        />
+                        {e.campaign_type == 1 &&
+                          <TouchableOpacity
+                              onPress={() => {
+                                this[RBSheet + e._id].open()
+                              }}
+                              style={{shadowColor: "#304555", shadowOffset: {width: 0, height: 0, }, shadowOpacity: 0.25, shadowRadius: 2, elevation: 1, position:'absolute', bottom:5, right:5, width:36, height:36, borderRadius:50, backgroundColor:'#fff', display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Image source={Image_} style={{width:18, height:18}} />
+                          </TouchableOpacity>
+                        }
+                      </View>
+                      <View style={styles.campaingTextArea}>
+                        <Text style={styles.campaignText}>{e.campaign_short_desc}</Text>
+                      </View>
+                    </View>
+                  </View>
+                })
+            }
 
 
           </Content>

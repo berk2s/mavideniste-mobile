@@ -120,18 +120,24 @@ export default class OrderList extends Component {
 
                                 <View style={styles.cardHeader}>
                                   <Text style={styles.cardHeaderText}>Sipariş - #{e.visibility_id}</Text>
-                                  <Text style={styles.cardHeaderText2}>
+
 
                                     {
-                                      e.products != null && e.products.length != 1
+                                      e.products != null
                                         ?
-                                          <Text>{e.products[0].product_name} ve {e.products.length-1} ürün daha</Text>
-                                        :
-                                          <Text>Sadece {e.products[0].product_name}</Text>
+                                          <Text style={styles.cardHeaderText2}>
+                                            {e.products.length != 1
+                                            ?
+                                              <Text>{e.products[0].product_name} ve {e.products.length-1} ürün daha</Text>
+                                            :
+                                              <Text>Sadece {e.products[0].product_name}</Text>}
+                                          </Text>
+                                          :
+                                          <></>
                                     }
 
 
-                                  </Text>
+
                                 </View>
 
 

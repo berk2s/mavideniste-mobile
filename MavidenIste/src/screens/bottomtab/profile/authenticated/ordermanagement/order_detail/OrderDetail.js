@@ -103,11 +103,22 @@ export default class OrderDetail extends Component {
                     <Text style={styles.headerOrderText}>Sipariş - #{order.visibility_id}</Text>
 
                     <View style={styles.detailTexts}>
-                        <Text style={[styles.headerOrderText2, {fontSize:13}]}><><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:13}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:13}}>iste</Text></> siparişi</Text>
+                        {
+                            order.is_bluecurrier == true
+                                ?
+                                <Text style={[styles.headerOrderText2, {fontSize:13}]}><><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:13}}>mavi</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:13}}>kurye</Text></> siparişi</Text>
+
+                                :
+                                <Text style={[styles.headerOrderText2, {fontSize:13}]}><><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF', fontSize:13}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF', fontSize:13}}>iste</Text></> siparişi</Text>
+
+                        }
 
                         <View style={styles.area2}>
                             <Text style={styles.headerOrderText2}>{this.dateCustomize(order.order_date)}</Text>
-                            <Text style={styles.headerOrderText2}>Tutar: <Text style={{fontFamily:'Muli-ExtraBold', fontSize:16}}>{order.price} TL</Text></Text>
+                            {
+                                order.price != null && <Text style={styles.headerOrderText2}>Tutar: <Text style={{fontFamily:'Muli-ExtraBold', fontSize:16}}>{order.price} TL</Text></Text>
+                            }
+
                         </View>
                     </View>
                 </View>
