@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback,TouchableOpacity, Keyboard } from 'react-native';
 import CustomIcon from '../../font/CustomIcon';
 
 import SwitcherStore from '../../store/SwitcherStore';
+import Switcher from './switcher/Switcher';
+import Ripple from 'react-native-material-ripple';
 
 export default class BottomTab extends Component {
 
     componentDidMount() {
       //  console.log(this.props);
 
+    }
+
+    state = {
+        isSwitcherClicked:false,
+        whichSwitch:0
     }
 
 
@@ -18,7 +25,9 @@ export default class BottomTab extends Component {
         const { routes } = navigation.state;
 
             return (
+
                 <SafeAreaView style={styles.tab}>
+
                     <View style={styles.tabArea}>
                         {routes && routes.map((route, index) => {
                             let focused = index === navigation.state.index;
@@ -28,13 +37,10 @@ export default class BottomTab extends Component {
                                 return <TouchableWithoutFeedback
                                     key={route.key}
                                     onPress={() => {
-                                        SwitcherStore.setSwitcherClicked(false);
-                                        SwitcherStore.setTabIndex(0);
-
+                                        this.setState({isSwitcherClicked:false,});
                                         if(!focused){
                                             navigation.navigate(route)
                                         }
-
                                     }}
                                 >
                                     <View  style={styles.bottomPress}>
@@ -45,13 +51,10 @@ export default class BottomTab extends Component {
                                 return <TouchableWithoutFeedback
                                     key={route.key}
                                     onPress={() => {
-                                        SwitcherStore.setSwitcherClicked(false);
-                                        SwitcherStore.setTabIndex(1);
-
+                                        this.setState({isSwitcherClicked:false,});
                                         if(!focused){
                                             navigation.navigate(route)
                                         }
-
                                     }}
                                 >
                                     <View style={styles.bottomPress}>
@@ -62,14 +65,10 @@ export default class BottomTab extends Component {
                                 return <TouchableWithoutFeedback
                                     key={route.key}
                                     onPress={() => {
-
-                                        SwitcherStore.setSwitcherClicked(false);
-                                        SwitcherStore.setTabIndex(3);
-
+                                        this.setState({isSwitcherClicked:false,});
                                         if(!focused){
                                             navigation.navigate(route)
                                         }
-
                                     }}
                                 >
                                     <View style={styles.bottomPress}>
@@ -81,13 +80,10 @@ export default class BottomTab extends Component {
 
                                     key={route.key}
                                     onPress={() => {
-                                        SwitcherStore.setSwitcherClicked(false);
-                                        SwitcherStore.setTabIndex(4);
-
+                                        this.setState({isSwitcherClicked:false,});
                                         if(!focused){
                                             navigation.navigate(route)
                                         }
-
                                     }}
                                 >
                                     <View style={styles.bottomPress}>
@@ -98,23 +94,113 @@ export default class BottomTab extends Component {
                                 return <TouchableWithoutFeedback
                                     key={route.key}
                                     onPress={() => {
-                                        SwitcherStore.getSwitcherClicked ? SwitcherStore.setSwitcherClicked(false) : SwitcherStore.setSwitcherClicked(true);
-                                        this.props.jumpTo(this.props.navigation.state.routeKeyHistory[this.props.navigation.state.routeKeyHistory.length-1])}}
+                                        this.setState({isSwitcherClicked:!this.state.isSwitcherClicked,});
+                                        this.props.jumpTo(this.props.navigation.state.routeKeyHistory[this.props.navigation.state.routeKeyHistory.length-1])}
+                                    }
                                 >
                                     <View style={styles.bottomPress}>
-                                        <CustomIcon   name="us" size={38} style={{color: SwitcherStore.getSwitcherClicked ? activeTintColor : inactiveTintColor}} />
+                                        <CustomIcon   name="us" size={38} style={{color: this.state.isSwitcherClicked ? activeTintColor : inactiveTintColor}} />
                                     </View>
                                 </TouchableWithoutFeedback>
                             }
                         })}
 
                     </View>
+
+
+                    {this.state.isSwitcherClicked
+                    &&
+                    <View style={styles.topContainer}>
+                        <View style={styles.container}>
+                            {
+                                this.state.whichSwitch == 0
+                                    ?
+                                    <View style={{height:30, display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                                        <View style={styles.box}>
+                                            <Text style={styles.activeText}>mavideniste</Text>
+                                        </View>
+                                            <TouchableOpacity style={styles.box}  onPressIn={() => alert('e')}>
+                                                <View style={{}}>
+
+                                                <Text style={styles.text}>mavikurye</Text>
+                                                </View>
+
+                                            </TouchableOpacity>
+                                    </View>
+                                    :
+                                    <>
+                                        <TouchableOpacity style={styles.box} onPress={() => alert('b')}>
+                                            <Text style={styles.text}>mavideniste</Text>
+                                        </TouchableOpacity>
+                                        <View style={styles.box}>
+                                            <Text style={styles.activeText}>mavikurye</Text>
+                                        </View>
+                                    </>
+                            }
+                        </View>
+                    </View>
+                    }
                 </SafeAreaView>
             );
     }
 }
 
 const styles = StyleSheet.create({
+    text:{
+        color:'#BCBCBC',
+        fontFamily:'Muli-ExtraBold',
+        fontSize:15,
+        height:20
+    },
+    box:{
+        width:117,
+        height:31,
+        display:'flex',
+        justifyContent: 'center',
+        alignItems:'center',
+        backgroundColor:'#fff',
+        borderRadius:20,
+        marginHorizontal:5,
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 7,
+        elevation: 4,
+    },
+    activeText:{
+        color:'#003DFF',
+        fontFamily:'Muli-ExtraBold',
+        fontSize:15,
+    },
+    container2:{
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'center',
+        backgroundColor:'transparent'
+    },
+    container:{
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'center',
+    },
+    topContainer:{
+        bottom:65,
+
+        zIndex:1,
+
+        backgroundColor:'#000',
+
+        position:'absolute',
+        right:'50%',
+        left:'50%'
+    },
+
+
+
+
     bottomPress:{
         display:'flex',
         flex:1,
@@ -147,6 +233,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
 
 
+        position:'relative',
 
         borderTopColor: 'transparent',
         borderTopLeftRadius:20,

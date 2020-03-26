@@ -19,17 +19,16 @@ export default class Swicher extends Component {
         <View style={styles.topContainer}>
             <View style={styles.container}>
                 {
-
                     SwitcherStore.whichSwitcher == 0
                         ?
-                        <>
+                        <View style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
                             <View style={styles.box}>
                                 <Text style={styles.activeText}>mavideniste</Text>
                             </View>
-                            <Ripple style={styles.box} onPress={() => this._handeClick()}>
+                            <Ripple style={styles.box} onPressIn={() => this._handeClick()}>
                                 <Text style={styles.text}>mavikurye</Text>
                             </Ripple>
-                        </>
+                        </View>
                         :
                         <>
                             <Ripple style={styles.box} onPress={() => this._handeClick()}>
@@ -40,7 +39,6 @@ export default class Swicher extends Component {
                             </View>
                         </>
                 }
-
             </View>
         </View>
     );
@@ -82,11 +80,10 @@ const styles = StyleSheet.create({
         justifyContent:'center',
     },
     topContainer:{
-        display:'flex',
         position:'absolute',
-        bottom:10,
+        bottom:65,
         right:'50%',
         left:'50%',
-        zIndex:9999,
+        zIndex:1
     }
 });

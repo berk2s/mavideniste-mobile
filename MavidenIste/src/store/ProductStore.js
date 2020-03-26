@@ -20,22 +20,31 @@ class ProductStore {
                 this.selected_tags = []
             })
             const products = await API.get(`/api/product/get/${branch_id}/${category_id}`);
+
             const sub_categories = await API.get(`/api/subcategory/${category_id}`);
 
             const productCheckPromise = new Promise((resolve, reject) => {
                 runInAction(() => {
                     this.products = [...products.data.data];
-                    this.products.map(async e => {
+                    if(this.products.length !=0) {
+                        this.products.map(async e => {
+                            resolve(true)
+                        })
+                    }else{
                         resolve(true)
-                    })
+                    }
                 });
             })
             const subPromise = new Promise((resolve, reject) => {
                 runInAction(() => {
                     this.sub_categories = [...sub_categories.data.data];
-                    this.sub_categories.map(async e => {
+                    if(this.sub_categories.length != 0) {
+                        this.sub_categories.map(async e => {
+                            resolve(true)
+                        })
+                    }else{
                         resolve(true)
-                    })
+                    }
                 });
             })
             await subPromise;

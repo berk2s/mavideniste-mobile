@@ -126,29 +126,34 @@ export default class ProductList extends Component {
             });
 
             if(status === -1) {
-               // await this.props.ProductStore.fetchProductsWithSubCategory(sub_category_id);
 
-                this.setState({
-                    filter:true,
-                });
+                this.state.filterSubIds.push(sub_category_id);
 
-                this.state.filterSubIds.push(sub_category_id)
-
+                setTimeout(() => {
+                    this.setState({
+                        filter:true,
+                    });
+                }, 100);
             }else {
                 const index = this.state.filterSubIds.indexOf(sub_category_id);
                 this.state.filterSubIds.splice(index,1);
 
-                if(this.state.filterSubIds.length == 0){
-                    this.setState({
-                        filter:false,
-                    });
-                }
-               // await this.props.ProductStore.clearSubCategory(sub_category_id)
+                setTimeout(() => {
+
+                    if(this.state.filterSubIds.length == 0){
+                        this.setState({
+                            filter:false,
+                        });
+                    }
+                }, 50)
             }
 
-            this.setState({
-                loading:false,
-            });
+            setTimeout(() => {
+                this.setState({
+                    loading:false,
+                });
+            }, 100)
+
         }catch(e){
             console.log(e);
         }
@@ -221,43 +226,43 @@ export default class ProductList extends Component {
                                 :
                                     <>
 
+                                        {this.props.ProductStore.subCategories.length > 0 &&
                                         <ScrollView
                                             horizontal={true}
-                                            contentContainerStyle={{height:40, display:'flex', flexDirection:'row', }}>
-
+                                            contentContainerStyle={{
+                                                height: 40,
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                            }}>
                                             {
                                                 this.props.ProductStore.subCategories.map(e => {
                                                     const styleArray = [];
                                                     styleArray.push(styles.tag);
-                                                    if(this.state.filterSubIds.indexOf(e._id) !== -1){
+                                                    if (this.state.filterSubIds.indexOf(e._id) !== -1) {
                                                         styleArray.push(styles.selectedTag)
                                                     }
-                                                    return <Ripple key={e._id} onPress={() => this.handleSubCategoryPress(e._id, this.state.filterSubIds.indexOf(e._id))} rippleContainerBorderRadius={8} style={styleArray}>
-                                                        <Text style={{color:this.state.filterSubIds.indexOf(e._id) !== -1 ? '#1BD4FE' : '#fff', fontFamily:'Muli-Bold', fontSize:13}}>{e.sub_category_name}</Text>
+                                                    return <Ripple key={e._id}
+                                                                   onPress={() => this.handleSubCategoryPress(e._id, this.state.filterSubIds.indexOf(e._id))}
+                                                                   rippleContainerBorderRadius={8} style={styleArray}>
+                                                        <Text style={{
+                                                            color: this.state.filterSubIds.indexOf(e._id) !== -1 ? '#1BD4FE' : '#fff',
+                                                            fontFamily: 'Muli-Bold',
+                                                            fontSize: 13
+                                                        }}>{e.sub_category_name}</Text>
                                                     </Ripple>
                                                 })
                                             }
-
-
-
-
-
                                         </ScrollView>
+                                        }
 
                                         <View style={styles.cardArea}>
 
                                             {
                                                 this.state.filter
                                                     ?
-                                                    this.props.ProductStore.getProducts.filter(e => {
-
-                                                        for(let index in this.state.filterSubIds){
-                                                            if (e.sub_category_id === undefined || e.sub_category_id != this.state.filterSubIds[index]){
-                                                                return false;
-                                                            }
-                                                        }
-                                                        return true;
-                                                    }).map(e => <ProductCard key={e._id} e={e} {...this.props} />)
+                                                    this.props.ProductStore.getProducts
+                                                        .filter(e => this.state.filterSubIds.indexOf(e.sub_category_id) !== -1)
+                                                        .map(e => <ProductCard key={e._id} e={e} {...this.props} />)
                                                     :
                                                     this.props.ProductStore.getProducts.map(e => {
                                                         return <ProductCard key={e._id} e={e} {...this.props} />
@@ -282,7 +287,8 @@ const styles = StyleSheet.create({
     selectedTag:{
         borderColor:'#1BD4FE',
         borderWidth:1,
-        backgroundColor:'#fff'
+        backgroundColor:'#fff',
+        paddingHorizontal:11,
     },
     tag:{
         backgroundColor:'#1BD4FE',
