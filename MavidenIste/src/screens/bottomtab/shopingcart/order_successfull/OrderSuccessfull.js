@@ -4,22 +4,25 @@ import LogoIMG from '../../../../img/logo.png';
 import {Body, Left, Title, Right} from 'native-base';
 import CustomIcon from '../../../../font/CustomIcon';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import EmptyHeader from '../../../components/EmptyHeader';
 
 export default class OrderSuccessfull extends Component {
   render() {
     return (
-        <View style={styles.container}>
-        <SafeAreaView transparent style={styles.header}>
-            <Left style={styles.leftArea}>
-                <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.navigate('ShopingCard_')}>
-                    <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
-                </TouchableOpacity>
-            </Left>
-            <Body style={styles.body}>
-                <Title style={styles.bodyTitleText}><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF'}}>iste</Text></Title>
-            </Body>
-            <Right></Right>
-        </SafeAreaView>
+        <SafeAreaView style={styles.container}>
+
+
+            <EmptyHeader>
+                <View style={{marginRight:30}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.navigate('ShopingCard_')}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
+                    </TouchableOpacity>
+                </View>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                    <Title style={styles.bodyTitleText}><Text style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>maviden</Text><Text style={{fontFamily:'Muli-ExtraBold', color:'#00CFFF'}}>iste</Text></Title>
+                </View>
+            </EmptyHeader>
+
         <View style={{backgroundColor:'#F6F6F6', display:'flex', justifyContent:'center', alignItems:'center', flex:1, marginTop:-5}}>
 
             <View style={{display:'flex', flexDirection:'column', width:176, marginBottom:35}}>
@@ -43,7 +46,7 @@ export default class OrderSuccessfull extends Component {
 
 
         </View>
-        </View>
+        </SafeAreaView>
     );
   }
 }

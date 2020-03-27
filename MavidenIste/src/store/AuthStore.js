@@ -18,6 +18,7 @@ configure({
 
 class AuthStore {
     @observable token = null;
+    @observable push_token = null;
     @observable user_id = null;
     @observable name_surname = null;
     @observable phone_number = null;

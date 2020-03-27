@@ -1,23 +1,60 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback,TouchableOpacity, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback,TouchableOpacity, Keyboard, BackHandler } from 'react-native';
 import CustomIcon from '../../font/CustomIcon';
 
-import SwitcherStore from '../../store/SwitcherStore';
-import Switcher from './switcher/Switcher';
 import Ripple from 'react-native-material-ripple';
+
+import NavigationService from '../../NavigationService';
 
 export default class BottomTab extends Component {
 
-    componentDidMount() {
-      //  console.log(this.props);
 
-    }
 
     state = {
         isSwitcherClicked:false,
         whichSwitch:0
     }
 
+    componentDidMount() {
+        BackHandler.addEventListener(
+            'hardwareBackPress',
+            this.handleBackButtonPressAndroid
+        );
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener(
+            'hardwareBackPress',
+            this.handleBackButtonPressAndroid
+        );
+    }
+
+    handleBackButtonPressAndroid = () => {
+        if(this.state.whichSwitch == 1){
+            this.setState({
+                whichSwitch:0,
+            });
+            //return true;
+            this.props.navigation.goBack(null)
+        }else{
+            this.props.navigation.goBack(null)
+        }
+        return true;
+    };
+
+    _handleSwitcherClick = () => {
+        if(this.state.whichSwitch == 0){
+            this.setState({
+                whichSwitch:1,
+            });
+            NavigationService.navigate('Currier')
+        }else{
+            this.setState({
+                whichSwitch:0,
+            });
+            NavigationService.navigate('Category')
+        }
+    }
 
 
     render() {
@@ -25,7 +62,7 @@ export default class BottomTab extends Component {
         const { routes } = navigation.state;
 
             return (
-
+<View style={{maxHeight:55}}>
                 <SafeAreaView style={styles.tab}>
 
                     <View style={styles.tabArea}>
@@ -106,41 +143,30 @@ export default class BottomTab extends Component {
                         })}
 
                     </View>
-
-
-                    {this.state.isSwitcherClicked
-                    &&
-                    <View style={styles.topContainer}>
-                        <View style={styles.container}>
-                            {
-                                this.state.whichSwitch == 0
-                                    ?
-                                    <View style={{height:30, display:'flex', flexDirection:'row', justifyContent:'center'}}>
-                                        <View style={styles.box}>
-                                            <Text style={styles.activeText}>mavideniste</Text>
-                                        </View>
-                                            <TouchableOpacity style={styles.box}  onPressIn={() => alert('e')}>
-                                                <View style={{}}>
-
-                                                <Text style={styles.text}>mavikurye</Text>
-                                                </View>
-
-                                            </TouchableOpacity>
-                                    </View>
-                                    :
-                                    <>
-                                        <TouchableOpacity style={styles.box} onPress={() => alert('b')}>
-                                            <Text style={styles.text}>mavideniste</Text>
-                                        </TouchableOpacity>
-                                        <View style={styles.box}>
-                                            <Text style={styles.activeText}>mavikurye</Text>
-                                        </View>
-                                    </>
-                            }
-                        </View>
-                    </View>
-                    }
                 </SafeAreaView>
+                    {this.state.isSwitcherClicked == true
+                        ? this.state.whichSwitch == 0
+                            ?
+                                <View style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                                    <View style={styles.box}>
+                                        <Text style={styles.activeText}>mavideniste {this.state.isSwitcherClicked}</Text>
+                                    </View>
+                                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
+                                        <Text style={styles.text}>mavikurye</Text>
+                                    </Ripple>
+                                </View>
+                            :
+                                <View style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
+                                        <Text style={styles.text}>mavideniste</Text>
+                                    </Ripple>
+                                    <View style={styles.box}>
+                                        <Text style={styles.activeText}>mavikurye</Text>
+                                    </View>
+                                </View>
+                        : <></>
+                    }
+        </View>
             );
     }
 }
@@ -167,8 +193,11 @@ const styles = StyleSheet.create({
             height: 4,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 7,
+        shadowRadius: 4,
         elevation: 4,
+       // position:'absolute',
+        top:-95,
+       // zIndex:9999
     },
     activeText:{
         color:'#003DFF',
@@ -187,15 +216,17 @@ const styles = StyleSheet.create({
         justifyContent:'center',
     },
     topContainer:{
-        bottom:65,
+      //  bottom:95,
 
-        zIndex:1,
+      //  zIndex:9999,
 
-        backgroundColor:'#000',
+     //   display:'flex',
+      //  bottom:100,
+      //  height:100,
 
-        position:'absolute',
-        right:'50%',
-        left:'50%'
+      //  position:'absolute',
+       // right:'50%',
+       // left:'50%'
     },
 
 
@@ -215,7 +246,7 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         justifyContent: 'space-around',
-        height:55,
+        maxHeight:55,
 
         borderTopLeftRadius:20,
         borderTopRightRadius:20,
@@ -230,8 +261,9 @@ const styles = StyleSheet.create({
             height: 0,
         },
         elevation:5,
-        backgroundColor: 'white',
+        backgroundColor: 'transparent',
 
+        maxHeight:55,
 
         position:'relative',
 

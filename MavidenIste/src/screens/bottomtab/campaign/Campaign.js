@@ -12,9 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {NavigationEvents} from 'react-navigation';
-import {Body, Container, Content, Header, Left, Title} from 'native-base';
-import SwitcherStore from '../../../store/SwitcherStore';
-import Switcher from '../switcher/Switcher';
+import {Body, Container, Content, Left, Title} from 'native-base';
 
 import { observer } from 'mobx-react';
 import CustomIcon from '../../../font/CustomIcon';
@@ -30,6 +28,8 @@ import RBSheet from "react-native-raw-bottom-sheet";
 
 import Image_ from '../../../img/up-arrow.png'
 
+import EmptyHeader from '../../components/EmptyHeader';
+
 @observer
 export default class Campaign extends Component {
 
@@ -39,25 +39,6 @@ export default class Campaign extends Component {
     fetched:false
   }
 
-  _clickEvent = () => {
-    this.setState({
-      loading:true,
-    });
-
-    setTimeout(() => {
-      if(SwitcherStore.whichSwitcher == 0) {
-        this.props.navigation.navigate('Currier');
-        SwitcherStore.setWhichSwitcher(1);
-      }else {
-        this.props.navigation.navigate('Category');
-        SwitcherStore.setWhichSwitcher(0);
-      }
-      this.setState({
-        loading:false,
-      });
-
-    }, 300)
-  }
 
   componentDidMount = async () => {
     try {
@@ -83,31 +64,17 @@ export default class Campaign extends Component {
 
   render() {
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6', height:'100%', flex:1, paddingTop:0, marginTop:0}]}>
-          <SafeAreaView transparent style={[styles.header]}>
-            <Left style={styles.leftArea}>
-
-              <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
+          <EmptyHeader>
+            <View style={{marginRight:30}}>
+              <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack()}>
                 <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
               </TouchableOpacity>
-            </Left>
-            <Body style={styles.body}>
-              <Title style={styles.bodyTitleText}>Kampanyalar</Title>
-            </Body>
-            <Body>
-            </Body>
-
-          </SafeAreaView>
-
-          {
-            SwitcherStore.isSwitcherClicked
-                ?
-                <Switcher
-                    clickEvent={this._clickEvent}
-                />
-                :
-                <></>
-          }
+            </View>
+            <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+              <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Kampanyalar</Title>
+            </View>
+          </EmptyHeader>
 
           <Spinner
               visible={this.state.loading}
@@ -185,7 +152,7 @@ export default class Campaign extends Component {
 
           </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }
@@ -248,22 +215,5 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems: 'center'
   },
-  bodyTitleText:{
-    fontFamily:'Muli-ExtraBold',
-    color:'#003DFF'
-  },
-  leftArea:{
-    maxWidth:'15%'
-  },
-  backBtn:{
-    display:'flex',
-    justifyContent:'flex-end',
-    alignItems:'flex-end'
-  },
-  body:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'flex-start',
-    maxWidth:'82%'
-  }
+
 });

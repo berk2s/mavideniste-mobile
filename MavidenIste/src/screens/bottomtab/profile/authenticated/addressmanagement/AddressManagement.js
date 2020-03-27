@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import {Body, Container, Content, Header, Left, Title, Fab} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
-import SwitcherStore from '../../../../../store/SwitcherStore';
-import Switcher from '../../../switcher/Switcher';
+
+
 import Spinner from 'react-native-loading-spinner-overlay';
 import AuthStore from '../../../../../store/AuthStore';
 import {observer} from 'mobx-react';
@@ -32,6 +32,9 @@ import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from '@react-native-community/geolocation';
 import AddressStore from '../../../../../store/AddressStore';
 import BasketStore from '../../../../../store/BasketStore';
+import EmptyHeader from '../../../../components/EmptyHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Snackbar from 'react-native-snackbar';
 
 @observer
 export default class AddresManagement extends Component {
@@ -56,30 +59,20 @@ export default class AddresManagement extends Component {
     }
 
 
-    _clickEvent = () => {
-        this.setState({
-            loading:true,
-        });
-
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
-    }
-
 
     _handleAddLocationClick = async() => {
 
         try{
+
+            if(AddressStore.getAddress.length >= 4){
+                Snackbar.show({
+                    text: 'En fazla dört adres ekleyebilirsiniz',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#FF9800',
+                    textColor:'white',
+                });
+                return false;
+            }
 
             if(Platform.OS === "ios"){
                 const chek = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
@@ -111,7 +104,7 @@ export default class AddresManagement extends Component {
                     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                         this.props.navigation.navigate('FindLocation', {provinces: this.state.provincies});
                     } else {
-                        alert("Location permission denied")
+                        alert("Konum izni yok")
                     }
                 } catch (err) {
                     alert(err)
@@ -186,29 +179,20 @@ export default class AddresManagement extends Component {
 
 
       return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-            <Header transparent style={styles.header}>
-                <Left style={styles.leftArea}>
-
-                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
-                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
+            <EmptyHeader>
+                <View style={{marginRight:30}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                     </TouchableOpacity>
-                </Left>
-                <Body style={styles.body}>
-                    <Title style={styles.bodyTitleText}>Adreslerim</Title>
-                </Body>
+                </View>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Adreslerim</Title>
+                </View>
+            </EmptyHeader>
 
-            </Header>
 
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._clickEvent}
-                    />
-                    :
-                    <></>
-            }
+
 
 
             <Spinner
@@ -279,7 +263,7 @@ export default class AddresManagement extends Component {
 
             </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

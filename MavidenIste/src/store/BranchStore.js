@@ -15,6 +15,19 @@ class BranchStore{
     @observable branch_province = null;
     @observable branch_county = null;
     @observable branch_committee = null;
+    @observable branch_list = []
+
+    @action fetchBranchList = async () => {
+        try{
+            const branchies = await LocationAPI.get(`/api/branch`);
+            runInAction(() => {
+                this.branch_list = [...branchies.data]
+            });
+
+        }catch(e){
+            console.log(e);
+        }
+    }
 
     @action checkBranchExists = async () => {
         try{
@@ -85,6 +98,10 @@ class BranchStore{
 
     @computed get branchCommittee(){
         return this.branch_committee;
+    }
+
+    @computed get branchList(){
+        return this.branch_list;
     }
 
 }

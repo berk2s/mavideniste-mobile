@@ -20,6 +20,7 @@ import BasketStore from '../../../../store/BasketStore';
 import Snackbar from 'react-native-snackbar';
 
 import API from '../../../../api';
+import EmptyHeader from '../../../components/EmptyHeader';
 
 @inject('BasketStore', 'AuthStore', 'BranchStore')
 @observer
@@ -184,7 +185,9 @@ export default class ApplyOrder extends Component {
                 coupon: this.props.BasketStore.couponStatus != null ? this.props.BasketStore.getCoupon : null,
                 branch_id:this.props.BranchStore.branchID,
             }, {
-                'x-access-token': this.props.AuthStore.getToken
+                headers:{
+                    'x-access-token': this.props.AuthStore.getToken
+                }
             });
 
 
@@ -208,41 +211,46 @@ export default class ApplyOrder extends Component {
 
     render() {
     return (
-        <Container style={styles.container}>
-            <SafeAreaView transparent style={styles.header}>
-                <Left style={styles.leftArea}>
+        <SafeAreaView style={styles.container}>
 
-                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
+            <EmptyHeader style={{paddingHorizontal:5, paddingVertical:13, display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems: 'center'}}>
+                <View style={{marginRight:30,}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
                         <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                     </TouchableOpacity>
-                </Left>
-                <Body style={styles.body}>
-                    <Title style={styles.bodyTitleText}>Siparişi onayla </Title>
-                </Body>
-                <Right>
-                    <TouchableOpacity onPress={() => {
+                </View>
 
-                        if(this.props.BasketStore.hasCoupon){
-                            Snackbar.show({
-                                text: 'Sadece bir tane kupon uygulayabilirsiniz',
-                                duration: Snackbar.LENGTH_LONG,
-                                backgroundColor:'#FF9800',
-                                textColor:'white',
-                            });
-                        }else{
-                            this.setState({
-                                visibleCoupon:true,
-                            });
-                        }
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', flex:1, marginRight:6}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Siparişi onayla</Title>
+                    <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', alignItems:'flex-end'}}>
+                        <TouchableOpacity onPress={() => {
 
-                    }}>
-                        <Image
-                            source={CouponIMG}
-                            style={{width:35, height:30, marginTop:5, marginRight:10}}
-                        />
-                    </TouchableOpacity>
-                </Right>
-            </SafeAreaView>
+                            if(this.props.BasketStore.hasCoupon){
+                                Snackbar.show({
+                                    text: 'Sadece bir tane kupon uygulayabilirsiniz',
+                                    duration: Snackbar.LENGTH_LONG,
+                                    backgroundColor:'#FF9800',
+                                    textColor:'white',
+                                });
+                            }else{
+                                this.setState({
+                                    visibleCoupon:true,
+                                });
+                            }
+
+                        }}
+                            style={{display:'flex', }}
+                        >
+                            <Image
+                                source={CouponIMG}
+                                style={{width:35, height:30, marginRight:10}}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </EmptyHeader>
+
+
             <Content
                 style={{display:'flex', flex:1}}
                 padder
@@ -467,11 +475,9 @@ export default class ApplyOrder extends Component {
 
                                             <Textarea
                                                 onChangeText={(val) => {
-
                                                     this.setState({
                                                         orderNote:val,
                                                     });
-
                                                 }}
                                                 rowSpan={1}
                                                 style={[styles.input, styles.inputArea, {zIndex:9, height:50, color:'#304555', paddingTop:6, paddingRight:5}]}
@@ -549,7 +555,7 @@ export default class ApplyOrder extends Component {
                 </View>
 
             </Content>
-        </Container>
+        </SafeAreaView>
     );
   }
 }

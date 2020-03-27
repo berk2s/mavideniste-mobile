@@ -29,8 +29,7 @@ import CategoryCard from './components/CategoryCard';
 
 import FastImage from 'react-native-fast-image'
 import { NavigationEvents } from "react-navigation";
-import Switcher from '../switcher/Switcher';
-import SwitcherStore from '../../../store/SwitcherStore';
+
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import messaging from '@react-native-firebase/messaging';
@@ -50,7 +49,8 @@ import HeaderForFeed from '../../components/HeaderForFeed';
 import ProductCard from '../../components/ProductCard';
 import EmptyIMG from '../../../img/search_result.png';
 
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import Ripple from 'react-native-material-ripple';
 import Geolocation from '@react-native-community/geolocation';
 
@@ -80,17 +80,8 @@ export default class Feed extends Component {
     componentDidMount = async () => {
         try{
 
-            const branchies = await LocationAPI.get(`/api/branch`);
 
-            branchies.data.map(e => {
-                this.state.branchList.push({
-                    id: e.branch_id,
-                    branch_name:e.branch_name,
-                    branch_committee:e.branch_committee,
-                    branch_province:e.branch_province,
-                    branch_county:e.branch_county,
-                })
-            });
+            await this.props.BranchStore.fetchBranchList();
 
             if(Platform.OS == 'ios') {
                 Geolocation.requestAuthorization()
@@ -121,27 +112,6 @@ export default class Feed extends Component {
         }catch(e){
             console.log(e)
         }
-    }
-
-
-    _handleCurrierClick = () => {
-        this.setState({
-            loading:true,
-        });
-
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
     }
 
     _handleSearchChange = (val) => {
@@ -196,9 +166,9 @@ export default class Feed extends Component {
                 loading:true,
             });
 
-            const {id, branch_name, branch_province, branch_county, branch_committee} = item;
+            const {branch_id, branch_name, branch_province, branch_county, branch_committee} = item;
 
-            await this.props.BranchStore.changeBranch(id, branch_name, branch_province, branch_county, branch_committee);
+            await this.props.BranchStore.changeBranch(branch_id, branch_name, branch_province, branch_county, branch_committee);
 
             this.setState({
                 fetched:false,
@@ -233,16 +203,6 @@ export default class Feed extends Component {
                     <></>
             }
 
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._handleCurrierClick}
-                    />
-                    :
-                    <></>
-            }
-
             <Spinner
                 visible={this.state.loading}
                 animation={'fade'}
@@ -262,7 +222,7 @@ export default class Feed extends Component {
                     <View style={{height:200}}>
 
                         <FlatList
-                            data={this.state.branchList}
+                            data={this.props.BranchStore.branchList}
                             renderItem={({ item, index }) => (
 
                                 <Ripple onPress={() => this._handleBranchChange(item)} style={{width:'100%', display:'flex', flexDirection:'row', alignItems:'center', height:50, marginBottom:1}}>
@@ -514,13 +474,16 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
         flexWrap:'wrap',
-        //paddingTop: 25
+      //  alignContent:'space-between'
+        //paddingTop: 25,
+
     },
     card:{
         width:110,
         marginBottom:25,
-
-
+      //  alignSelf:'stretch'
+        flexGrow:1,
+        alignSelf:'flex-start',
     },
     cardWhiteArea:{
         backgroundColor: '#fff',

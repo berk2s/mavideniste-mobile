@@ -10,8 +10,6 @@ import CustomIcon from '../../font/CustomIcon';
 import {observer, inject} from 'mobx-react'
 import Spinner from 'react-native-loading-spinner-overlay';
 import {NavigationEvents} from 'react-navigation';
-import SwitcherStore from '../../store/SwitcherStore';
-import Switcher from '../bottomtab/switcher/Switcher';
 
 import ProductCard from '../components/ProductCard';
 import HeaderForProducts from '../components/HeaderForProducts';
@@ -53,25 +51,6 @@ export default class ProductList extends Component {
     }
 
 
-    _clickEvent = () => {
-        this.setState({
-            loading:true,
-        });
-
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
-    }
 
     _handleSearchChange = (val) => {
         this.setState({
@@ -174,15 +153,6 @@ export default class ProductList extends Component {
                     <></>
                 }
 
-                {
-                    SwitcherStore.isSwitcherClicked
-                        ?
-                        <Switcher
-                            clickEvent={this._clickEvent}
-                        />
-                        :
-                        <></>
-                }
                 <Content
                     style={{display:'flex', flex:1}}
                     padder>

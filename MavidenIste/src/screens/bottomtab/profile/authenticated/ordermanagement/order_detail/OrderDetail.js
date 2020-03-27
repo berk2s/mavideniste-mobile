@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Body, Container, Content, Header, Left, Title} from 'native-base';
 import CustomIcon from '../../../../../../font/CustomIcon';
-import SwitcherStore from '../../../../../../store/SwitcherStore';
-import Switcher from '../../../../switcher/Switcher';
 import Spinner from 'react-native-loading-spinner-overlay';
 import OrderWaiting from '../../../../../../img/waiting_order.png';
 import Ripple from 'react-native-material-ripple';
@@ -18,6 +16,8 @@ import ProfileAddress from '../../../../../../img/profile_address.png'
 import {IMAGE_URL} from '../../../../../../constants'
 
 import Timeline from 'react-native-timeline-flatlist'
+import EmptyHeader from '../../../../../components/EmptyHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export default class OrderDetail extends Component {
 
@@ -63,29 +63,19 @@ export default class OrderDetail extends Component {
   render() {
         const order = this.props.navigation.getParam('order')
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-            <Header transparent style={styles.header}>
-                <Left style={styles.leftArea}>
-
-                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
-                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
+            <EmptyHeader>
+                <View style={{marginRight:30}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                     </TouchableOpacity>
-                </Left>
-                <Body style={styles.body}>
-                    <Title style={styles.bodyTitleText}>Sipariş Detayı</Title>
-                </Body>
+                </View>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Sipariş bilgileri</Title>
+                </View>
+            </EmptyHeader>
 
-            </Header>
 
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._clickEvent}
-                    />
-                    :
-                    <></>
-            }
 
 
             <Spinner
@@ -203,7 +193,7 @@ export default class OrderDetail extends Component {
 
             </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

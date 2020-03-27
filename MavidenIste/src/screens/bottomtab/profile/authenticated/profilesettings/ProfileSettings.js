@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import {Animated, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Body, Card, CardItem, Container, Content, Header, Input, Item, Left, Switch, Title, ListItem, Right, Button} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
-import SwitcherStore from '../../../../../store/SwitcherStore';
-import Switcher from '../../../switcher/Switcher';
+
 import Spinner from 'react-native-loading-spinner-overlay';
 import {observer} from 'mobx-react';
 
 import ProfileSettingsForm from './ProfileSettingsForm';
 import AuthStore from '../../../../../store/AuthStore';
+import EmptyHeader from '../../../../components/EmptyHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 @observer
 export default class ProfileSettings extends Component {
@@ -18,51 +19,20 @@ export default class ProfileSettings extends Component {
     }
 
 
-    _clickEvent = () => {
-        this.setState({
-            loading:true,
-        });
-
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
-    }
 
   render() {
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-            <Header transparent style={styles.header}>
-                <Left style={styles.leftArea}>
-
-                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack()}>
-                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
+            <EmptyHeader>
+                <View style={{marginRight:30}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                     </TouchableOpacity>
-                </Left>
-                <Body style={styles.body}>
-                    <Title style={styles.bodyTitleText}>Profil Ayarlarım</Title>
-                </Body>
-
-            </Header>
-
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._clickEvent}
-                    />
-                    :
-                    <></>
-            }
+                </View>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Profil ayarlarım</Title>
+                </View>
+            </EmptyHeader>
 
             <Spinner
                 visible={this.state.loading}
@@ -97,7 +67,7 @@ export default class ProfileSettings extends Component {
 
             </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

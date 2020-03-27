@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Platform, StyleSheet, Text, View} from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {Formik} from 'formik';
 import validationSchema from './validations';
-import {Button, Input, Item} from 'native-base';
+import {Button, Input, Item, Textarea} from 'native-base';
 import CustomIcon from '../../../../../../font/CustomIcon';
 import RNPickerSelect from "react-native-picker-select";
 import LocationAPI from '../../../../../../locationapi';
 import AuthStore from '../../../../../../store/AuthStore';
 import API from '../../../../../../api';
+import BranchStore from '../../../../../../store/BranchStore';
+import Snackbar from 'react-native-snackbar';
 
 export default class EditAddressForm extends Component {
 
@@ -85,6 +87,35 @@ export default class EditAddressForm extends Component {
         try{
             const id = this.props.navigation.getParam('id')
             const  { title_address,address,desc_address,province,county } = values;
+
+            if(BranchStore.branchList.map(e => e.branch_province).indexOf(province.value) === -1){
+                Snackbar.show({
+                    text: 'Seçtiğiniz ilde bayimiz bulunmamaktadır ',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#FF9800',
+                    textColor:'white',
+                });
+                bag.setErrors('province', '!');
+                return false;
+            }
+
+            if(BranchStore.branchList.map(e => e.branch_county).indexOf(county.value) === -1){
+                Snackbar.show({
+                    text: 'Seçtiğiniz ilçede bayimiz bulunmamaktadır ',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#FF9800',
+                    textColor:'white',
+                });
+                bag.setErrors('county', '!');
+                return false;
+            }
+
+            let desc_address_ = null;
+
+            if(desc_address.trim() != '')
+                desc_address_ = desc_address;
+
+
             const userid = await AuthStore.getUserIdFromRepo();
             const postit = await API.put(`/api/user/address`, {id:id, address_title:title_address,address:address,address_direction:desc_address,address_province:province,address_county:county, user_id:userid}, {
                 headers:{
@@ -118,7 +149,7 @@ export default class EditAddressForm extends Component {
                 {({values, setFieldValue, handleChange, touched, setFieldTouched, errors, handleSubmit, isSubmitting}) => (
                     <View style={styles.inputFormArea}>
                         <View style={styles.inputs}>
-                            <Text style={styles.inputInfoArea}>Adres başlığı {(errors.title_address && touched.title_address) ? <Text style={{color:'red'}}>*</Text> : <></>} </Text>
+                            <Text style={styles.inputInfoArea}>Adres başlığı {(errors.title_address && touched.title_address) ? <Text style={{color:'red', fontSize:12}}>{errors.title_address}</Text> : <></>} </Text>
                             <Item
                                 style={styles.inputArea}>
                                 <Input
@@ -141,11 +172,30 @@ export default class EditAddressForm extends Component {
                         </View>
 
                         <View style={styles.inputs}>
-                            <Text style={styles.inputInfoArea}>İl {(!!errors.province) ? <Text style={{color:'red'}}>*</Text> : <></>}  </Text>
+                            <Text style={styles.inputInfoArea}>İl {(!!errors.province) ? <Text style={{color:'red', fontSize:12}}>{errors.province}</Text> : <></>}  </Text>
                             <Item
                                 style={styles.inputAreaForPicker}>
                                 <RNPickerSelect
-                                    onValueChange={(value) => {this.setState({selectedProvince:value.value,}); setFieldValue('province', value)}}
+                                    onValueChange={async (value) => {
+                                        if(Platform.OS === 'android'){
+                                            this.setState({
+                                                loading:true,
+                                            });
+
+                                            const pdone = await this._handleProvinceDone(value.value);
+
+                                            this.setState({selectedProvince:value.value,});
+                                            setFieldValue('province', value);
+
+                                            this.setState({
+                                                loading:false,
+                                            });
+
+                                        }else{
+                                            this.setState({selectedProvince:value.value,});
+                                            setFieldValue('province', value);
+                                        }
+                                    }}
                                     style={pickerStyle}
                                     value={values.province}
                                     items={this.state.provinces}
@@ -159,11 +209,16 @@ export default class EditAddressForm extends Component {
 
                         </View>
                         <View style={styles.inputs}>
-                            <Text style={styles.inputInfoArea}>İlçe {(!!errors.county) ? <Text style={{color:'red'}}>*</Text> : <></>}</Text>
+                            <Text style={styles.inputInfoArea}>İlçe {(!!errors.county) ? <Text style={{color:'red', fontSize:12}}>{errors.county}</Text> : <></>}</Text>
                             <Item
                                 style={styles.inputAreaForPicker}>
                                 <RNPickerSelect
-                                    onValueChange={(value) => {setFieldValue('county', value)}}
+                                    onValueChange={(value) => {
+                                        setFieldValue('county', value)
+                                        if(Platform.OS === 'android'){
+                                            this._handleCountyDone()
+                                        }
+                                    }}
                                     value={values.county}
                                     style={pickerStyle}
                                     items={this.state.counties}
@@ -177,43 +232,38 @@ export default class EditAddressForm extends Component {
                         </View>
 
                         <View style={styles.inputs}>
-                            <Text style={styles.inputInfoArea}>Adres {(errors.address && touched.address) ? <Text style={{color:'red'}}>*</Text> : <></>}</Text>
-                            <Item
-                                style={[styles.inputArea, {height:100}]}>
-                                <Input
-                                    style={[styles.input, {zIndex:9, height:100}]}
-                                    value={values.address}
-                                    onChangeText={handleChange('address')}
-                                    ref={ref => this.address = ref}
-                                    returnKeyType={'next'}
-                                    onBlur={() => setFieldTouched('address')}
-                                    onSubmitEditing={() => this.desc_address._root.focus()}
-                                />
-
-                            </Item>
+                            <Text style={styles.inputInfoArea}>Adres {(errors.address && touched.address) ? <Text style={{color:'red', fontSize:12}}>{errors.address}</Text> : <></>}</Text>
+                            <Textarea
+                                rowSpan={1}
+                                style={[styles.inputArea, {fontFamily:'Muli-Regular',fontSize:12, zIndex:9, height:100}]}
+                                value={values.address}
+                                onChangeText={handleChange('address')}
+                                returnKeyType={'next'}
+                                onBlur={() => setFieldTouched('address')}
+                                ref={ref => this.desc_address = ref}
+                            />
                         </View>
 
                         <View style={styles.inputs}>
-                            <Text style={styles.inputInfoArea}>Adres Tarifi  {(errors.desc_address && touched.desc_address) ? <Text style={{color:'red'}}>*</Text> : <></>}</Text>
-                            <Item
-                                style={[styles.inputArea, {height:100}]}>
-                                <Input
-                                    style={[styles.input, {zIndex:9, height:100}]}
-                                    value={values.desc_address}
-                                    onChangeText={handleChange('desc_address')}
-                                    returnKeyType={'go'}
-                                    onBlur={() => setFieldTouched('desc_address')}
-                                    ref={ref => this.desc_address = ref}
-                                />
+                            <Text style={styles.inputInfoArea}>Adres tarifi  {(errors.desc_address && touched.desc_address) ? <Text style={{color:'red', fontSize:12}}>{errors.desc_address}</Text> : <></>}</Text>
 
-                            </Item>
+                            <Textarea
+                                rowSpan={1}
+                                style={[styles.inputArea, {fontFamily:'Muli-Regular',fontSize:12,zIndex:9, height:100}]}
+                                value={values.desc_address}
+                                onChangeText={handleChange('desc_address')}
+                                returnKeyType={'go'}
+                                onBlur={() => setFieldTouched('desc_address')}
+                                ref={ref => this.desc_address = ref}
+                            />
+
 
                             <Button
                                 onPress={handleSubmit}
-                                style={{backgroundColor:'#003DFF', borderRadius:12, marginVertical:25}} full>
+                                style={{borderRadius:8, marginTop:20, marginBottom:10, height:38, backgroundColor:'#7FB7EA', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
 
                                 {isSubmitting && <ActivityIndicator /> }
-                                {!isSubmitting && <Text style={{fontFamily:'Muli-ExtraBold', color:'#fff'}}>Kaydet</Text> }
+                                {!isSubmitting && <Text style={{color:'#fff', fontFamily:'Muli-ExtraBold'}}>Değiştir</Text> }
 
                             </Button>
 

@@ -11,14 +11,13 @@ import {IMAGE_URL} from '../../../constants';
 
 import EmptyIMG from '../../../img/empty.png'
 import Spinner from 'react-native-loading-spinner-overlay';
-import SwitcherStore from '../../../store/SwitcherStore';
-import Switcher from '../switcher/Switcher';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import BasketStore from '../../../store/BasketStore';
 import Ripple from 'react-native-material-ripple';
 import API from '../../../api';
 import AuthStore from '../../../store/AuthStore';
+import EmptyHeader from '../../components/EmptyHeader';
 
 
 @inject('BasketStore', 'AuthStore')
@@ -147,25 +146,7 @@ export default class ShopingCard extends Component {
         }
     }
 
-    _handleCurrierClick = () => {
-        this.setState({
-            loading:true,
-        });
 
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
-    }
 
     _handleGoAheadClick = async () => {
         try{
@@ -191,48 +172,38 @@ export default class ShopingCard extends Component {
     render () {
 
     return (
-        <Container style={styles.container}>
-          <SafeAreaView transparent style={styles.header}>
-            <Left style={styles.leftArea}>
+        <SafeAreaView style={styles.container}>
 
+            <EmptyHeader style={{paddingHorizontal:5, paddingVertical:13, display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems: 'center'}}>
+                <View style={{marginRight:30,}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
+                    </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
-                  <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
-                </TouchableOpacity>
-
-
-            </Left>
-            <Body style={styles.body}>
-              <Title style={styles.bodyTitleText}>Sepetim</Title>
-            </Body>
-            <Right>
-                {
-                    this.state.fetched
-                        ?
-                            this.props.BasketStore.getProducts.length == 0
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', flex:1, marginRight:6}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Sepetim</Title>
+                    <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
+                        {
+                            this.state.fetched
                                 ?
-                                <></>
+                                this.props.BasketStore.getProducts.length == 0
+                                    ?
+                                    <></>
+                                    :
+                                    <TouchableOpacity onPress={() => this._handleBasketRemove()}>
+                                        <View style={styles.removeBox}>
+                                            <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
+                                            <CustomIcon name="trash" size={18} color={'#FF0000'} />
+                                        </View>
+                                    </TouchableOpacity>
                                 :
-                                <TouchableOpacity onPress={() => this._handleBasketRemove()}>
-                                    <View style={styles.removeBox}>
-                                        <Text style={styles.removeBoxText}>Sepeti Temizle</Text>
-                                        <CustomIcon name="trash" size={18} color={'#FF0000'} />
-                                    </View>
-                                </TouchableOpacity>
-                        :
-                        <></>
-                }
-            </Right>
-          </SafeAreaView>
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._handleCurrierClick}
-                    />
-                    :
-                    <></>
-            }
+                                <></>
+                        }
+                    </View>
+                </View>
+            </EmptyHeader>
+
 
           <Content
              style={{display:'flex', flex:1,}}
@@ -329,7 +300,7 @@ export default class ShopingCard extends Component {
 
           </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

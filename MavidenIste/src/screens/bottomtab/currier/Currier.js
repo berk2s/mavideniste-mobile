@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import {Alert, Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Body, Container, Content, Header, Left, Title} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
-import SwitcherStore from '../../../store/SwitcherStore';
-import Switcher from '../switcher/Switcher';
+
 import LoginIMG from '../../../img/login.png';
 import {observer} from 'mobx-react'
 
@@ -27,6 +26,8 @@ import AuthStore from '../../../store/AuthStore';
 import Snackbar from 'react-native-snackbar';
 import API from '../../../api';
 import BranchStore from '../../../store/BranchStore';
+import EmptyHeader from '../../components/EmptyHeader';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 @observer
 export default class Currier extends Component {
@@ -36,27 +37,7 @@ export default class Currier extends Component {
     visibleAddress:false
   }
 
-  _clickEvent = () => {
 
-    this.setState({
-      loading:true,
-    });
-
-
-    setTimeout(() => {
-      if(SwitcherStore.whichSwitcher == 0) {
-        this.props.navigation.navigate('Currier');
-        SwitcherStore.setWhichSwitcher(1);
-      }else {
-        this.props.navigation.navigate('Category');
-        SwitcherStore.setWhichSwitcher(0);
-      }
-      this.setState({
-        loading:false,
-      });
-
-    }, 300)
-  }
 
   _handlePress = () => {
 
@@ -107,7 +88,9 @@ export default class Currier extends Component {
                 coupon: null,
                 branch_id:BranchStore.branchID,
               }, {
-                'x-access-token': AuthStore.getToken
+                headers:{
+                  'x-access-token': AuthStore.getToken
+                }
               });
 
               Snackbar.show({
@@ -139,22 +122,18 @@ export default class Currier extends Component {
 
   render() {
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-          <Header transparent>
-            <Body style={styles.body}>
-              <Title style={styles.bodyTitleText}>mavi<Text style={{color:'#00CFFB'}}>kurye</Text></Title>
-            </Body>
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
 
-          </Header>
-          {
-            SwitcherStore.isSwitcherClicked
-                ?
-                <Switcher
-                    clickEvent={this._clickEvent}
-                />
-                :
-                <></>
-          }
+          <EmptyHeader>
+            <View style={{display:'flex', flexDirection:'row', justifyContent:'center', alignItems:'center', flex:1}}>
+              <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>
+                <Text style={{textAlign:'center'}}>
+                  <Text style={{color:'#003DFF'}}>mavi</Text><Text style={{color:'#00CFFF'}}>kuryem</Text>
+                </Text>
+              </Title>
+            </View>
+          </EmptyHeader>
+
           <Spinner
               visible={this.state.loading}
               animation={'fade'}
@@ -349,7 +328,7 @@ export default class Currier extends Component {
 
           </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

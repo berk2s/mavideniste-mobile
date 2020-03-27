@@ -7,8 +7,7 @@ import AuthStore from '../../../../store/AuthStore';
 
 import {Body, Container, Content, Header, Left, Title, Card, CardItem, Icon, Right} from 'native-base';
 import CustomIcon from '../../../../font/CustomIcon';
-import SwitcherStore from '../../../../store/SwitcherStore';
-import Switcher from '../../switcher/Switcher';
+
 import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../../img/login.png';
 import API from '../../../../api';
@@ -25,6 +24,7 @@ import ProfileKeyImg from '../../../../img/profile_key.png';
 import ProfileComplaintImg from '../../../../img/profile_complaint.png';
 import ProfileLogoutImg from '../../../../img/profile_logout.png';
 import RightArrow from '../../../../img/right-arrow.png'
+import EmptyHeader from '../../../components/EmptyHeader';
 
 @observer
 export default class Profile extends Component {
@@ -33,25 +33,6 @@ export default class Profile extends Component {
         loading:false
     }
 
-    _clickEvent = () => {
-        this.setState({
-            loading:true,
-        });
-
-        setTimeout(() => {
-            if(SwitcherStore.whichSwitcher == 0) {
-                this.props.navigation.navigate('Currier');
-                SwitcherStore.setWhichSwitcher(1);
-            }else {
-                this.props.navigation.navigate('Category');
-                SwitcherStore.setWhichSwitcher(0);
-            }
-            this.setState({
-                loading:false,
-            });
-
-        }, 300)
-    }
 
     _handleProfileSettingsClick = async () => {
         try{
@@ -130,8 +111,16 @@ export default class Profile extends Component {
             });
             //await AuthStore.deleteUser();
 
-            const openedOrders = await API.get(`/api/orders/user/open/${AuthStore.getUserID}`);
-            const historyOrders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`);
+            const openedOrders = await API.get(`/api/orders/user/open/${AuthStore.getUserID}`, {
+                headers: {
+                    'x-access-token': AuthStore.getToken
+                }
+            });
+            const historyOrders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`, {
+                headers: {
+                    'x-access-token': AuthStore.getToken
+                }
+            });
 
             this.setState({
                 loading:false,
@@ -151,7 +140,11 @@ export default class Profile extends Component {
                 loading:true,
             });
 
-            const orders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`);
+            const orders = await API.get(`/api/orders/user/history/${AuthStore.getUserID}`, {
+                headers: {
+                    'x-access-token': AuthStore.getToken
+                }
+            });
 
            // console.log(orders.data)
 
@@ -168,29 +161,19 @@ export default class Profile extends Component {
 
   render() {
     return (
-        <Container style={[styles.container, {backgroundColor:'#F6F6F6'}]}>
-            <SafeAreaView transparent style={styles.header}>
-                <Left style={styles.leftArea}>
+        <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
 
-                    <TouchableOpacity style={styles.backBtn} onPress={() => this.props.navigation.goBack(null)}>
-                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF'}} />
+            <EmptyHeader>
+                <View style={{marginRight:30}}>
+                    <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
+                        <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
                     </TouchableOpacity>
-                </Left>
-                <Body style={styles.body}>
-                    <Title style={styles.bodyTitleText}>Profilim</Title>
-                </Body>
+                </View>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                    <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Profilim</Title>
+                </View>
+            </EmptyHeader>
 
-            </SafeAreaView>
-
-            {
-                SwitcherStore.isSwitcherClicked
-                    ?
-                    <Switcher
-                        clickEvent={this._clickEvent}
-                    />
-                    :
-                    <></>
-            }
 
             <Spinner
                 visible={this.state.loading}
@@ -318,7 +301,7 @@ export default class Profile extends Component {
 
             </Content>
 
-        </Container>
+        </SafeAreaView>
     );
   }
 }

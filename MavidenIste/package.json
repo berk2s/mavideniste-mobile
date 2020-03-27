@@ -19,7 +19,7 @@
     "@react-native-firebase/messaging": "^6.3.4",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
-    "mobx": "^5.15.4",
+    "mobx": "^4.15.4",
     "mobx-react": "^6.1.8",
     "native-base": "^2.13.8",
     "react": "16.9.0",

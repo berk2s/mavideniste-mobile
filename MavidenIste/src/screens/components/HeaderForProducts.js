@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'flex-end',
         alignItems:'center',
-
+        marginRight:5
     },
     arrowBackArea:{
       marginRight: 25,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     headerArea:{
-        paddingHorizontal:10,
+        paddingHorizontal:5,
         paddingVertical:15,
         display:'flex',
         flexDirection:'row',
