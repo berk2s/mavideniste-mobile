@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Platform} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions, Platform, Animated} from 'react-native';
 import {Container, Header, Left, Body, Right, Button, Title, Content, Card} from 'native-base';
 import CustomIcon from '../../../font/CustomIcon';
 import FastImage from 'react-native-fast-image';
@@ -18,6 +18,7 @@ import Ripple from 'react-native-material-ripple';
 import API from '../../../api';
 import AuthStore from '../../../store/AuthStore';
 import EmptyHeader from '../../components/EmptyHeader';
+
 
 
 @inject('BasketStore', 'AuthStore')
@@ -207,6 +208,15 @@ export default class ShopingCard extends Component {
 
           <Content
              style={{display:'flex', flex:1,}}
+
+             scrollEventThrottle={16}
+             onScroll={Animated.event(
+                 [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+             )}
+
+             bounces={this.props.BasketStore.getProducts.length > 3}
+
+
              padder>
               <Spinner
                   visible={this.state.loading}

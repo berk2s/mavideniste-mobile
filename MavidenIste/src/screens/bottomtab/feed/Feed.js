@@ -10,6 +10,7 @@ import {
     ScrollView,
     FlatList,
     TouchableWithoutFeedback, BackHandler,
+    Animated
 } from 'react-native';
 import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
@@ -58,6 +59,16 @@ import ChangeIMG from '../../../img/changebranch.png'
 import BranchIMG from '../../../img/supermarket.png'
 import Modal, {ModalContent} from 'react-native-modals';
 
+const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 75
+const HEADER_MIN_HEIGHT=0
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
+
+
+const HEADER_MAX_HEIGHT1=0
+const HEADER_MIN_HEIGHT1=0
+const HEADER_SCROLL_DISTANCE1 = HEADER_MAX_HEIGHT1 - HEADER_MIN_HEIGHT1
+
+
 @inject('BasketStore', 'ProductStore', 'BranchStore', 'CategoryStore')
 @observer
 
@@ -73,7 +84,8 @@ export default class Feed extends Component {
         searchKey:null,
         searchResults:[],
         visibleBranchChange:false,
-        branchList:[]
+        branchList:[],
+        scrollY:new Animated.Value(0),
     }
 
 
@@ -191,14 +203,59 @@ export default class Feed extends Component {
     }
 
     render() {
+        let headerHeight;
+        let headerHeight1;
+        let inputHeight;
+        if(Platform.OS == 'ios'){
+            headerHeight = this.state.scrollY.interpolate({
+                inputRange: [0, HEADER_SCROLL_DISTANCE],
+                outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+                extrapolate: 'clamp',
+            });
+
+            headerHeight1 = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+
+            inputHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+        }else if(Platform.OS === 'android'){
+            headerHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 0],
+                outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT],
+                extrapolate: 'clamp',
+            });
+
+            headerHeight1 = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 1],
+                extrapolate: 'clamp',
+            });
+
+            inputHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+        }
+
     return (
         <SafeAreaView style={styles.container}>
             {this.state.fetched
                 ?
-                   <HeaderForFeed
-                       onChange={this._handleSearchChange}
-                       onBlur={this._handleOnBlur}
-                   />
+                    <Animated.View style={{transform:[{scaleY:headerHeight1}], height:headerHeight}}>
+                           <HeaderForFeed
+                               onChange={this._handleSearchChange}
+                               onBlur={this._handleOnBlur}
+                               style={inputHeight}
+                               style2={headerHeight}
+                           />
+                    </Animated.View>
                 :
                     <></>
             }
@@ -237,6 +294,13 @@ export default class Feed extends Component {
 
           <Content
               style={{display:'flex', flex:1, height:'100%'}}
+
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                  [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+
+              )}
+
               padder>
 
               <NavigationEvents

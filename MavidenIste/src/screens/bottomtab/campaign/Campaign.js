@@ -10,6 +10,7 @@ import {
   Platform,
   Button,
   ScrollView,
+    Animated
 } from 'react-native';
 import {NavigationEvents} from 'react-navigation';
 import {Body, Container, Content, Left, Title} from 'native-base';
@@ -30,13 +31,23 @@ import Image_ from '../../../img/up-arrow.png'
 
 import EmptyHeader from '../../components/EmptyHeader';
 
+const HEADER_MAX_HEIGHT=55
+const HEADER_MIN_HEIGHT=0
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
+
+const INPUT_MAX_HEIGHT=28
+const INPUT_MIN_HEIGHT=0
+const INPUT_SCROLL_DISTANCE = INPUT_MAX_HEIGHT - INPUT_MIN_HEIGHT
+
 @observer
 export default class Campaign extends Component {
 
   state ={
     loading:false,
     campaigns:[],
-    fetched:false
+    fetched:false,
+    scrollY:new Animated.Value(0),
+    prevY:0
   }
 
 
@@ -63,18 +74,35 @@ export default class Campaign extends Component {
 
 
   render() {
+    let headerHeight;
+    if(Platform.OS === 'ios'){
+      headerHeight = this.state.scrollY.interpolate({
+        inputRange: [0, HEADER_SCROLL_DISTANCE],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+        extrapolate: 'clamp',
+      });
+    }else{
+      headerHeight = this.state.scrollY.interpolate({
+        inputRange: [0, HEADER_SCROLL_DISTANCE],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT],
+        extrapolate: 'clamp',
+      });
+    }
     return (
         <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
-          <EmptyHeader>
-            <View style={{marginRight:30}}>
-              <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack()}>
-                <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
-              </TouchableOpacity>
-            </View>
-            <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
-              <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Kampanyalar</Title>
-            </View>
-          </EmptyHeader>
+          <Animated.View style={{height:headerHeight}}>
+            <EmptyHeader>
+              <View style={{marginRight:30}}>
+                <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack()}>
+                  <CustomIcon name="arrow-left" size={28} style={{color:'#003DFF', marginTop:2}} />
+                </TouchableOpacity>
+              </View>
+              <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center'}}>
+                <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Kampanyalar</Title>
+              </View>
+            </EmptyHeader>
+
+          </Animated.View>
 
           <Spinner
               visible={this.state.loading}
@@ -83,6 +111,15 @@ export default class Campaign extends Component {
           />
           <Content
               style={{display:'flex', flex:1, }}
+
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                  [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+              )}
+
+              bounces={this.state.campaigns.length > 3}
+
+
               padder>
 
             {

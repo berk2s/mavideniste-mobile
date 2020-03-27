@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, Dimensions, Image, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Body, Container, Content, Header, Left, Title} from 'native-base';
 import CustomIcon from '../../../../../font/CustomIcon';
 
@@ -17,11 +17,16 @@ import {min} from 'react-native-reanimated';
 import EmptyHeader from '../../../../components/EmptyHeader';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
+const HEADER_MAX_HEIGHT=55
+const HEADER_MIN_HEIGHT=0
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
+
 
 export default class OrderList extends Component {
 
   state = {
     loading:false,
+    scrollY:new Animated.Value(0),
     months:[
         {month: '01', text: 'Ocak'},
         {month: '02', text: 'Şubat'},
@@ -70,8 +75,24 @@ export default class OrderList extends Component {
   }
 
   render() {
+    let headerHeight;
+    if(Platform.OS === 'ios'){
+      headerHeight = this.state.scrollY.interpolate({
+        inputRange: [0, HEADER_SCROLL_DISTANCE],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+        extrapolate: 'clamp',
+      });
+    }else{
+      headerHeight = this.state.scrollY.interpolate({
+        inputRange: [0, HEADER_SCROLL_DISTANCE],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT],
+        extrapolate: 'clamp',
+      });
+    }
     return (
         <SafeAreaView style={[styles.container, {backgroundColor:'#F6F6F6', flex:1}]}>
+          <Animated.View style={{height:headerHeight}}>
+
           <EmptyHeader>
             <View style={{marginRight:30}}>
               <TouchableOpacity style={{display:'flex', justifyContent:'flex-end', alignItems:'flex-end'}} onPress={() => this.props.navigation.goBack(null)}>
@@ -82,6 +103,8 @@ export default class OrderList extends Component {
               <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>Siparişlerim</Title>
             </View>
           </EmptyHeader>
+
+          </Animated.View>
 
 
 
@@ -95,6 +118,16 @@ export default class OrderList extends Component {
 
           <Content
               style={{display:'flex', flex:1,}}
+
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                  [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+              )}
+
+              bounces={(this.props.navigation.getParam('opened_orders').data.length + this.props.navigation.getParam('history_orders').data.length) > 4}
+
+
+
               padder>
 
             <View style={styles.orderList}>

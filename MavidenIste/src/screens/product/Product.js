@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View, Image, ScrollView} from 'react-native';
+import {
+    Dimensions,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Image,
+    ScrollView,
+    Animated,
+    Platform,
+} from 'react-native';
 import HeaderWithSearch from '../components/HeaderWithSearch';
 import { Container, Header, Button, Content, } from "native-base";
 import API from '../../api';
@@ -19,6 +29,16 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Ripple from 'react-native-material-ripple';
 
 
+const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 75
+const HEADER_MIN_HEIGHT=0
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
+
+
+const HEADER_MAX_HEIGHT1=28
+const HEADER_MIN_HEIGHT1=0
+const HEADER_SCROLL_DISTANCE1 = HEADER_MAX_HEIGHT1 - HEADER_MIN_HEIGHT1
+
+
 @inject('BasketStore', 'ProductStore', 'BranchStore')
 @observer
 export default class ProductList extends Component {
@@ -33,7 +53,9 @@ export default class ProductList extends Component {
         searchKey:null,
         searchResults:[],
         filter:false,
-        filterSubIds:[]
+        filterSubIds:[],
+        scrollY:new Animated.Value(0),
+        bounces:true
     }
 
     componentDidMount = async () => {
@@ -43,8 +65,9 @@ export default class ProductList extends Component {
             setTimeout(() => {
                 this.setState({
                     fetched: true,
+                    bounces: this.props.ProductStore.getProducts.length > 6
                 });
-            }, 1000)
+            }, 1000);
         }catch(e){
             console.log(e);
         }
@@ -86,6 +109,11 @@ export default class ProductList extends Component {
                 const results = await API.get(`/api/product/search/${this.props.BranchStore.branchID}/${category_id}/${val.trim()}`);
 
                 this.state.searchResults = [...results.data.data]
+
+                this.setState({
+                    bounces: this.state.searchResults > 6,
+                });
+
 
                 this.setState({
                     loading:false,
@@ -139,22 +167,78 @@ export default class ProductList extends Component {
     }
 
     render() {
+        let headerHeight;
+        let headerHeight1;
+        let inputHeight;
+        if(Platform.OS == 'ios'){
+            headerHeight = this.state.scrollY.interpolate({
+                inputRange: [0, HEADER_SCROLL_DISTANCE],
+                outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+                extrapolate: 'clamp',
+            });
+
+            headerHeight1 = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+
+            inputHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+        }else if(Platform.OS === 'android'){
+            headerHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 0],
+                outputRange: [HEADER_MAX_HEIGHT, HEADER_MAX_HEIGHT],
+                extrapolate: 'clamp',
+            });
+
+            headerHeight1 = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 1],
+                extrapolate: 'clamp',
+            });
+
+            inputHeight = this.state.scrollY.interpolate({
+                inputRange: [0, 10],
+                outputRange: [1, 0],
+                extrapolate: 'clamp',
+            });
+        }
+
         return (
             <SafeAreaView style={styles.container}>
 
                 {this.state.fetched
                     ?
+                    <Animated.View style={{transform:[{scaleY:headerHeight1}], height:headerHeight}}>
                     <HeaderForProducts
                         onChange={this._handleSearchChange}
                         onBlur={this._handleOnBlur}
                         {...this.props}
                     />
+                    </Animated.View>
                     :
                     <></>
                 }
 
                 <Content
+                    ref={ref => this.content = ref}
                     style={{display:'flex', flex:1}}
+                    bounces={this.state.bounces}
+                    scrollEventThrottle={16}
+                    onScroll={Animated.event([
+                         {nativeEvent: {
+                                     contentOffset: {
+                                         y: this.state.scrollY
+                                     }
+                                 }
+                         }]
+                    )}
+
+
                     padder>
 
                     <View style={styles.content}>

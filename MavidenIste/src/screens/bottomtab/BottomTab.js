@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback,TouchableOpacity, Keyboard, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback,TouchableOpacity, Keyboard, BackHandler } from 'react-native';
 import CustomIcon from '../../font/CustomIcon';
 
 import Ripple from 'react-native-material-ripple';
 
 import NavigationService from '../../NavigationService';
+
+//import {useSafeArea} from 'react-native-safe-area-context';
+
+import SafeAreaView from 'react-native-safe-area-view';
 
 export default class BottomTab extends Component {
 
@@ -20,6 +24,7 @@ export default class BottomTab extends Component {
             'hardwareBackPress',
             this.handleBackButtonPressAndroid
         );
+      //  const insets = useSafeArea;
     }
 
     componentWillUnmount() {
@@ -62,8 +67,8 @@ export default class BottomTab extends Component {
         const { routes } = navigation.state;
 
             return (
-<View style={{maxHeight:55}}>
-                <SafeAreaView style={styles.tab}>
+<SafeAreaView style={styles.parentTab}>
+                <View style={styles.tab}>
 
                     <View style={styles.tabArea}>
                         {routes && routes.map((route, index) => {
@@ -143,7 +148,7 @@ export default class BottomTab extends Component {
                         })}
 
                     </View>
-                </SafeAreaView>
+                </View>
                     {this.state.isSwitcherClicked == true
                         ? this.state.whichSwitch == 0
                             ?
@@ -166,7 +171,7 @@ export default class BottomTab extends Component {
                                 </View>
                         : <></>
                     }
-        </View>
+        </SafeAreaView>
             );
     }
 }
@@ -254,21 +259,25 @@ const styles = StyleSheet.create({
         elevation:5,
     },
     tab:{
-        shadowColor: '#000',
-        shadowOpacity:0.15,
-        shadowRadius: 9,
-        shadowOffset: {
-            height: 0,
-        },
-        elevation:5,
-        backgroundColor: 'transparent',
-
         maxHeight:55,
 
         position:'relative',
 
         borderTopColor: 'transparent',
+
+    },
+    parentTab:{
         borderTopLeftRadius:20,
         borderTopRightRadius:20,
+        height:55,
+        shadowColor: '#000',
+        shadowOpacity:0.15,
+        shadowRadius: 10,
+        shadowOffset: {
+            height: 1,
+        },
+        elevation:5,
+        backgroundColor: '#fff',
+
     }
 });

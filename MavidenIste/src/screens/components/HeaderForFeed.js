@@ -50,22 +50,22 @@ export default class HeaderForFeed extends Component {
 
 
       return (
-        <View style={styles.headerArea}>
+        <Animated.View style={[styles.headerArea, ]}>
             <Animated.View
                 style={[styles.inputArea, inputStype]}>
 
                 <View>
-                    <Text style={styles.accIcon}>
+                    <Animated.View style={[styles.accIcon]}>
                         <CustomIcon
                             name="Path-222"
                             size={16}
                             style={{color: '#616D7B'}}
                         />
-                    </Text>
+                    </Animated.View>
                 </View>
 
                 <Input
-                    style={[styles.input, {zIndex:9}]}
+                    style={[styles.input]}
                     placeholder={'Arayın'}
                     value={this.state.text}
                     autoCapitalize={'none'}
@@ -104,7 +104,7 @@ export default class HeaderForFeed extends Component {
                     </TouchableOpacity>
                 }
             </View>
-        </View>
+        </Animated.View>
     );
   }
 }
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     accIcon:{
         marginLeft: 10,
         marginRight: 5,
-        marginTop:1
+       marginTop:2
     },
     input:{
         fontFamily:'Muli-SemiBold',
