@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback,TouchableOpacity, Keyboard, BackHandler } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableWithoutFeedback,
+    TouchableOpacity,
+    Keyboard,
+    BackHandler,
+    Platform,
+} from 'react-native';
 import CustomIcon from '../../font/CustomIcon';
 
 import Ripple from 'react-native-material-ripple';
@@ -63,11 +72,13 @@ export default class BottomTab extends Component {
 
 
     render() {
+        const styled = {maxHeight:55}
         const { navigation, renderIcon, activeTintColor, inactiveTintColor } = this.props;
         const { routes } = navigation.state;
 
             return (
-<SafeAreaView style={styles.parentTab}>
+                <View style={[Platform.OS === 'android' && styled ]}>
+<SafeAreaView style={[styles.parentTab]}>
                 <View style={styles.tab}>
 
                     <View style={styles.tabArea}>
@@ -148,30 +159,37 @@ export default class BottomTab extends Component {
                         })}
 
                     </View>
+
+
+
                 </View>
-                    {this.state.isSwitcherClicked == true
-                        ? this.state.whichSwitch == 0
-                            ?
-                                <View style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
-                                    <View style={styles.box}>
-                                        <Text style={styles.activeText}>mavideniste {this.state.isSwitcherClicked}</Text>
-                                    </View>
-                                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
-                                        <Text style={styles.text}>mavikurye</Text>
-                                    </Ripple>
-                                </View>
-                            :
-                                <View style={{display:'flex', flexDirection:'row', justifyContent:'center'}}>
-                                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
-                                        <Text style={styles.text}>mavideniste</Text>
-                                    </Ripple>
-                                    <View style={styles.box}>
-                                        <Text style={styles.activeText}>mavikurye</Text>
-                                    </View>
-                                </View>
-                        : <></>
-                    }
         </SafeAreaView>
+
+        {this.state.isSwitcherClicked == true
+            ? this.state.whichSwitch == 0
+                ?
+                <View style={{position:'absolute', left:'50%', right:'50%', display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                    <View style={styles.box}>
+                        <Text style={styles.activeText}>mavideniste {this.state.isSwitcherClicked}</Text>
+                    </View>
+                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
+                        <Text style={styles.text}>mavikurye</Text>
+                    </Ripple>
+                </View>
+                :
+                <View style={{position:'absolute', left:'50%', right:'50%', display:'flex', flexDirection:'row', justifyContent:'center'}}>
+                    <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
+                        <Text style={styles.text}>mavideniste</Text>
+                    </Ripple>
+                    <View style={styles.box}>
+                        <Text style={styles.activeText}>mavikurye</Text>
+                    </View>
+                </View>
+            : <></>
+        }
+        </View>
+
+
             );
     }
 }
@@ -200,8 +218,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 4,
-       // position:'absolute',
-        top:-95,
+        top:-45,
        // zIndex:9999
     },
     activeText:{
