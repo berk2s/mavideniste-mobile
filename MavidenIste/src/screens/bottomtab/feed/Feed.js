@@ -58,8 +58,33 @@ import Geolocation from '@react-native-community/geolocation';
 import ChangeIMG from '../../../img/changebranch.png'
 import BranchIMG from '../../../img/supermarket.png'
 import Modal, {ModalContent} from 'react-native-modals';
+import Swiper from 'react-native-swiper';
+import BagelImg from '../../../img/currier/bagel.png';
+import PastaImg from '../../../img/currier/cake.png';
+import ScaleImg from '../../../img/currier/scale.png';
+import PharmacyImg from '../../../img/currier/pharmacy.png';
+import Kargomg from '../../../img/currier/truck.png';
+import Cosmetic from '../../../img/currier/eye-makeup.png';
+import Soup from '../../../img/currier/soup.png';
+import Coffe from '../../../img/currier/food.png';
+import Burger from '../../../img/currier/burguer.png';
+import Pizza from '../../../img/currier/pizza.png';
+import Kebab from '../../../img/currier/kebab.png';
+import Waffle from '../../../img/currier/waffles.png';
+import Comp from '../../../img/currier/laptop.png';
+import Adapter from '../../../img/currier/adapter.png';
+import Cablo from '../../../img/currier/hdmi-cable.png';
+import Silicon from '../../../img/currier/silicone.png';
+import Terzi from '../../../img/currier/sew.png';
+import Petshop from '../../../img/currier/petshop.png';
+import Vitamin from '../../../img/currier/vitamins.png';
+import Sports from '../../../img/currier/sports.png';
+import Sexual from '../../../img/currier/sex.png';
+import Tahta from '../../../img/currier/clean.png';
+import Belge from '../../../img/currier/belge.png';
+import Doc from '../../../img/currier/doc.png';
 
-const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 75
+const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 55
 const HEADER_MIN_HEIGHT=0
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
 
@@ -359,6 +384,77 @@ export default class Feed extends Component {
                                                 />
                                             </TouchableOpacity>
                                         </View>
+
+
+
+                                        <View style={{display:'flex', flexDirection:'row', borderRadius:20, overflow:'hidden', marginBottom:20}}>
+                                            <Swiper autoplay={true} autoplayTimeout={2.5} showsPagination={true} style={{height:200}}>
+
+                                                <View style={{display:'flex', flex:1, }}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex',  flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://www.milesandsmilesgaranti.com/i/content/1714_1_1-migros.jpg'}}
+                                                        style={{ height:200}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+                                                <View style={{display:'flex', flex:1}}>
+                                                    <Image
+                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
+                                                        style={{flex:1}}
+                                                    />
+                                                </View>
+
+                                            </Swiper>
+                                        </View>
+
+
                                     <View style={styles.cardArea}>
                                         {
                                             this.props.CategoryStore.categoryList.map(e => {

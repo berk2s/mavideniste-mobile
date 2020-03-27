@@ -15,6 +15,7 @@ import VegetableIMG from '../../../img/vegetable.png'
 import LogoIMG from '../../../img/logo.png'
 import Spinner from 'react-native-loading-spinner-overlay';
 
+
 import Swiper from 'react-native-swiper'
 import Ripple from 'react-native-material-ripple';
 import Modal, {ModalContent} from 'react-native-modals';
@@ -29,6 +30,32 @@ import BranchStore from '../../../store/BranchStore';
 import EmptyHeader from '../../components/EmptyHeader';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
+import BagelImg from '../../../img/currier/bagel.png'
+import PastaImg from '../../../img/currier/cake.png'
+import ScaleImg from '../../../img/currier/scale.png'
+import PharmacyImg from '../../../img/currier/pharmacy.png'
+import Kargomg from '../../../img/currier/truck.png'
+import Cosmetic from '../../../img/currier/eye-makeup.png'
+import Soup from '../../../img/currier/soup.png'
+import Coffe from '../../../img/currier/food.png'
+import Burger from '../../../img/currier/burguer.png'
+import Pizza from '../../../img/currier/pizza.png'
+import Kebab from '../../../img/currier/kebab.png'
+import Waffle from '../../../img/currier/waffles.png'
+import Comp from '../../../img/currier/laptop.png'
+import Adapter from '../../../img/currier/adapter.png'
+import Cablo from '../../../img/currier/hdmi-cable.png'
+import Silicon from '../../../img/currier/silicone.png'
+import Terzi from '../../../img/currier/sew.png'
+import Petshop from '../../../img/currier/petshop.png'
+import Vitamin from '../../../img/currier/vitamins.png'
+import Sports from '../../../img/currier/sports.png'
+import Sexual from '../../../img/currier/sex.png'
+import Tahta from '../../../img/currier/clean.png'
+import Evesya from '../../../img/currier/evesya.png'
+import Belge from '../../../img/currier/belge.png'
+import Doc from '../../../img/currier/doc.png'
+
 @observer
 export default class Currier extends Component {
 
@@ -36,8 +63,6 @@ export default class Currier extends Component {
     loading:false,
     visibleAddress:false
   }
-
-
 
   _handlePress = () => {
 
@@ -109,7 +134,6 @@ export default class Currier extends Component {
           },
         ]
     );
-    alert(addressid)
   }
 
   componentDidMount() {
@@ -193,55 +217,61 @@ export default class Currier extends Component {
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                      source={BakeryIMG}
+                      source={BagelImg}
+                      style={{width:50, height:50}}
                       />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Fırın</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Taze sıcak</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                       <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                         <Image
-                          source={FishIMG}
+                          source={PastaImg}
+                          style={{width:50, height:50}}
                         />
                       </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Balık</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Pasta</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                     <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                       <Image
-                          source={CheeseIMG}
+                          source={ScaleImg}
+                          style={{width:50, height:50}}
                       />
                     </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Peynir</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Kasap</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                     <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                       <Image
-                          source={FruitIMG}
+                          source={PharmacyImg}
+                          style={{width:50, height:50}}
                       />
                     </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Meyve</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Eczane</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                       <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                         <Image
-                            source={MilkIMG}
+                            source={Kargomg}
+                            style={{width:50, height:50}}
                         />
                       </Ripple>
-                    <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Süt</Text>
+                    <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Kargo</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                     <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                       <Image
-                          source={VegetableIMG}
+                          source={Cosmetic}
+                          style={{width:50, height:50}}
                       />
                     </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Sebze</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Kozmetik</Text>
                 </View>
 
               </View>
@@ -251,58 +281,193 @@ export default class Currier extends Component {
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={BakeryIMG}
+                        source={Soup}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Fırın</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Çorba</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={FishIMG}
+                        source={Coffe}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Balık</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Kahve</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={CheeseIMG}
+                        source={Burger}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Peynir</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Hamburger</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={FruitIMG}
+                        source={Pizza}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Meyve</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Pizza</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={MilkIMG}
+                        source={Kebab}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Süt</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Dürüm</Text>
                 </View>
 
                 <View style={styles.circleTop}>
                   <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
                     <Image
-                        source={VegetableIMG}
+                        source={Waffle}
+                        style={{width:50, height:50}}
                     />
                   </Ripple>
-                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Sebze</Text>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Waffle</Text>
                 </View>
 
               </View>
+
+              <View style={styles.circleArea}>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Comp}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Bilgisayar</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Adapter}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', width:'100%',color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Telefon</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Cablo}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Kablo</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Silicon}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Nalbur</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Terzi}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Terzi</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Petshop}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Petshop</Text>
+                </View>
+
+              </View>
+
+              <View style={styles.circleArea}>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Vitamin}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Sağlık</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Sports}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Sporcu gıdası</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Sexual}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Cinsel ürünler</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Tahta}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Tahtakale</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Belge}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Belge</Text>
+                </View>
+
+                <View style={styles.circleTop}>
+                  <Ripple rippleContainerBorderRadius={50} style={styles.circle} onPress={this._handlePress}>
+                    <Image
+                        source={Doc}
+                        style={{width:50, height:50}}
+                    />
+                  </Ripple>
+                  <Text style={{fontFamily: 'Muli-ExtraBold', color:'#304555', fontSize:15, textAlign:'center', marginTop:7}}>Doküman</Text>
+                </View>
+
+              </View>
+
             </Swiper>
             </View>
 
