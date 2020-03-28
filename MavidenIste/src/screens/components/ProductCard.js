@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, Image, Platform} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import CustomIcon from '../../font/CustomIcon';
 import {IMAGE_URL} from '../../constants';
@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
        // position:'absolute',
         backgroundColor:'#fff',
         height:55,
-        borderBottomLeftRadius:20,
-        borderBottomRightRadius:20,
+    //    borderBottomLeftRadius:20,
+    //    borderBottomRightRadius:20,
         opacity:.89,
         bottom:0,
 
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
         elevation: 1,
         //borderTopLeftRadius:20,
         //borderTopRightRadius:20,
-        borderRadius:20,
+        borderRadius:Platform.OS === 'ios' ? 20 : 0,
         overflow:'hidden',
         height:163
     },

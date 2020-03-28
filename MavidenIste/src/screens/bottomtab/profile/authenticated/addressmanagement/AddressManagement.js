@@ -201,7 +201,7 @@ export default class AddresManagement extends Component {
                 size={'small'}
             />
 
-            <Ripple rippleSize={60} style={styles.fabAdd} onPress={this._handleAddLocationClick}>
+            <Ripple rippleCentered={true} rippleSize={60} style={styles.fabAdd} onPress={this._handleAddLocationClick}>
                 <Image
                     source={AddLocImg}
                     style={{width:28, height:28}}
@@ -241,7 +241,7 @@ export default class AddresManagement extends Component {
                                     <Image source={LocationIMG} style={{width:17, height:17}}/>
                                     <Text style={styles.infoText}>{e.address_title}</Text>
                                     <Text style={styles.infoText2}>({e.address_province.text}, {e.address_county.text})</Text>
-                                    <Ripple onPress={() => this._handleRemoveAddress(e._id)} style={{position:'absolute', right:-6, top:-8, zIndex:999}}>
+                                    <Ripple rippleCentered={true} onPress={() => this._handleRemoveAddress(e._id)} style={{position:'absolute', right:-6, top:-8, zIndex:999}}>
                                         <Image source={DeleteLocImg} style={{width:30, height:30}} />
                                     </Ripple>
                                 </View>
@@ -250,7 +250,7 @@ export default class AddresManagement extends Component {
                                         {e.address}
                                     </Text>
                                     <Text style={styles.descText}>
-                                        {e.address_direction.trim() != '' ? <Text>({e.address_direction})</Text>: <></>}
+                                        {e.address_direction != null ? <Text>({e.address_direction})</Text>: <></>}
                                     </Text>
                                 </View>
                             </TouchableOpacity>

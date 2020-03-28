@@ -15,7 +15,7 @@ import {
 import {NavigationEvents} from 'react-navigation';
 import {Body, Container, Content, Left, Title} from 'native-base';
 
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import CustomIcon from '../../../font/CustomIcon';
 import Spinner from 'react-native-loading-spinner-overlay';
 import LoginIMG from '../../../img/login.png';
@@ -39,6 +39,7 @@ const INPUT_MAX_HEIGHT=28
 const INPUT_MIN_HEIGHT=0
 const INPUT_SCROLL_DISTANCE = INPUT_MAX_HEIGHT - INPUT_MIN_HEIGHT
 
+@inject('CampaignStore')
 @observer
 export default class Campaign extends Component {
 
@@ -48,28 +49,6 @@ export default class Campaign extends Component {
     fetched:false,
     scrollY:new Animated.Value(0),
     prevY:0
-  }
-
-
-  componentDidMount = async () => {
-    try {
-      this.setState({
-        loading: true,
-      });
-
-      const campaigns = await API.get('/api/campaign');
-
-      this.state.campaigns = [...campaigns.data.data];
-
-      this.setState({
-        loading: false,
-        fetched:true
-      });
-
-    }catch(e){
-      console.log(e);
-    }
-
   }
 
 
@@ -123,8 +102,7 @@ export default class Campaign extends Component {
               padder>
 
             {
-              this.state.fetched &&
-                this.state.campaigns.map(e => {
+                this.props.CampaignStore.getCampaigns.map(e => {
                   const uri = IMAGE_URL+e.campaign_image;
                   return <View style={styles.campaignArea} key={e._id} onPress={() => {
                               if(e.campaign_type == 1){

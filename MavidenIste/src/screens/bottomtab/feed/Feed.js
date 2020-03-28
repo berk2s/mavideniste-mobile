@@ -10,7 +10,7 @@ import {
     ScrollView,
     FlatList,
     TouchableWithoutFeedback, BackHandler,
-    Animated
+    Animated, ActivityIndicator, Linking,
 } from 'react-native';
 import {Container, Header, Button, Content, Input, Item} from 'native-base';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
@@ -94,7 +94,7 @@ const HEADER_MIN_HEIGHT1=0
 const HEADER_SCROLL_DISTANCE1 = HEADER_MAX_HEIGHT1 - HEADER_MIN_HEIGHT1
 
 
-@inject('BasketStore', 'ProductStore', 'BranchStore', 'CategoryStore')
+@inject('BasketStore', 'ProductStore', 'BranchStore', 'CategoryStore', 'NewsStore', 'CampaignStore', 'VersionStore')
 @observer
 
 
@@ -111,18 +111,33 @@ export default class Feed extends Component {
         visibleBranchChange:false,
         branchList:[],
         scrollY:new Animated.Value(0),
+        isSearchFetched:false,
+        visibleUpdate:false
     }
 
 
     componentDidMount = async () => {
         try{
 
+            await this.props.VersionStore.checkVersion();
+
+            if(this.props.VersionStore.hasUpdate){
+
+                this.setState({
+                    visibleUpdate:true,
+                });
+
+                console.log(this.props.VersionStore.getIsRequired)
+            }
 
             await this.props.BranchStore.fetchBranchList();
 
             if(Platform.OS == 'ios') {
                 Geolocation.requestAuthorization()
             }
+
+            await this.props.NewsStore.fetchNews(this.props.BranchStore.branchID);
+            await this.props.CampaignStore.fetchCampaigns(this.props.BranchStore.branchID);
 
             await this.props.CategoryStore.fetchCategories();
 
@@ -169,7 +184,8 @@ export default class Feed extends Component {
                     this.setState({
                         loading: false,
                         headerSearch: false,
-                        searchResults:[]
+                        searchResults:[],
+                        isSearchFetched:false
                     });
 
                 }, 500)
@@ -188,6 +204,7 @@ export default class Feed extends Component {
 
                 this.setState({
                     loading:false,
+                    isSearchFetched:true
                 });
 
 
@@ -213,7 +230,8 @@ export default class Feed extends Component {
                 visibleBranchChange:false
             });
 
-
+            await this.props.NewsStore.fetchNews(this.props.BranchStore.branchID);
+            await this.props.CampaignStore.fetchCampaigns(this.props.BranchStore.branchID);
             await this.props.CategoryStore.fetchCategories();
             await this.props.BasketStore.clearBasket();
 
@@ -292,6 +310,48 @@ export default class Feed extends Component {
             />
 
             <Modal
+                visible={this.state.visibleUpdate}
+                onTouchOutside={(event) => {
+                    if(!this.props.VersionStore.getIsRequired) {
+                        this.setState({visibleUpdate: false});
+                    }
+                }}
+            >
+                <ModalContent style={{width:270, height:200, paddingTop:0, display:'flex', justifyContent:'space-between',}}>
+                    <View style={{display:'flex', justifyContent:'space-between', paddingVertical:10, height:205,}}>
+
+                        <Text style={{fontFamily:'Muli-Bold', fontSize:18, color:'#30455'}}>
+                            Yeni bir güncellememiz var
+                        </Text>
+
+                        <Text style={{fontFamily:'Muli-Regular', fontSize:14, color:'#30455', marginTop:5}}>
+                            Yazdığınız geri dönüşlerden yola çıkarak iyileştirmeler yaptık.
+                        </Text>
+
+                        <Text style={{fontFamily:'Muli-Regular', fontSize:14, color:'#30455', marginTop:5}}>
+                            Size daha iyi hizmet verebilmek için lütfen güncelleyin :)
+                        </Text>
+
+                        <Button
+                            onPress={() => {
+                                if(Platform.OS === 'android'){
+                                    Linking.openURL(this.props.VersionStore.getPlayStoreLink)
+                                }else{
+                                    Linking.openURL(this.props.VersionStore.getAppStoreLink)
+                                }
+                            }}
+                            style={{borderRadius:8, marginTop:20, marginBottom:10, height:38, backgroundColor:'#7FB7EA', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+
+                           <Text style={{color:'#fff', fontFamily:'Muli-ExtraBold'}}>Şimdi güncelle</Text>
+
+                        </Button>
+
+                    </View>
+                </ModalContent>
+            </Modal>
+
+
+            <Modal
                 visible={this.state.visibleBranchChange}
                 onTouchOutside={(event) => {
                     this.setState({ visibleBranchChange: false });
@@ -338,6 +398,7 @@ export default class Feed extends Component {
               <View style={[styles.content, {height:'100%'}]}>
                   {this.state.fetched
                       ?
+                        this.state.isSearchFetched &&
                         this.state.headerSearch
                             ?
                             <>
@@ -385,75 +446,32 @@ export default class Feed extends Component {
                                             </TouchableOpacity>
                                         </View>
 
+                                        {
+                                            this.state.fetched
+                                                ?
+                                                  this.props.NewsStore.getNews.length > 0
+                                                        ?
+                                                        <View style={{display:'flex', flexDirection:'row', borderRadius:20, overflow:'hidden', marginBottom:20}}>
+                                                            <Swiper autoplay={true} autoplayTimeout={2.5} showsPagination={true} style={{height:200}}>
 
+                                                                {this.props.NewsStore.getNews.map(e => {
+                                                                    const uri = IMAGE_URL+e.news_image;
+                                                                    return <View key={e._id} style={{display:'flex',  }}>
+                                                                        <Image
+                                                                            source={{uri: uri}}
+                                                                            style={{ height:200}}
+                                                                            resizeMode={'stretch'}
+                                                                        />
+                                                                    </View>
+                                                                })}
 
-                                        <View style={{display:'flex', flexDirection:'row', borderRadius:20, overflow:'hidden', marginBottom:20}}>
-                                            <Swiper autoplay={true} autoplayTimeout={2.5} showsPagination={true} style={{height:200}}>
-
-                                                <View style={{display:'flex', flex:1, }}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex',  flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://www.milesandsmilesgaranti.com/i/content/1714_1_1-migros.jpg'}}
-                                                        style={{ height:200}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-                                                <View style={{display:'flex', flex:1}}>
-                                                    <Image
-                                                        source={{uri: 'https://cdn.webrazzi.com/uploads/2019/01/getir-bi-mutluluk.jpg'}}
-                                                        style={{flex:1}}
-                                                    />
-                                                </View>
-
-                                            </Swiper>
-                                        </View>
-
+                                                            </Swiper>
+                                                        </View>
+                                                        :
+                                                        <></>
+                                                :
+                                                <></>
+                                        }
 
                                     <View style={styles.cardArea}>
                                         {

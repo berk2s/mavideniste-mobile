@@ -81,34 +81,38 @@ class BasketStore {
                         if(checkIndex === -1){
                             try{
                                 const product = await API.get(`/api/product/get/${product_id}`);
-                                const data = product.data.data;
 
-                                if(data.branch_id != BranchStore.branchID){
-                                    await this.clearBasket();
-                                    return false;
-                                }
+                                if(product.data.data != null) {
 
-                                runInAction(() => {
+                                    const data = product.data.data;
 
-                                    this.products.push({
-                                        id: data._id,
-                                        product_discount: data.product_discount == null ? null : parseFloat(data.product_discount),
-                                        product_discount_price: data.product_discount == null ? null : parseFloat(data.product_discount_price),
-                                        product_list_price: parseFloat(data.product_list_price),
-                                        product_name: data.product_name,
-                                        product_amount: data.product_amonut,
-                                        product_image: data.product_image,
-                                        product_category:data.category_id,
-                                        count: e.count > 0 ? e.count : 1,
-                                    });
-
-                                    if(data.product_discount != null) {
-                                        this.totalPrice += (parseFloat(data.product_discount_price) * parseInt(e.count));
-                                    }else {
-                                        this.totalPrice += (parseFloat(data.product_list_price) * parseInt(e.count));
+                                    if (data.branch_id != BranchStore.branchID) {
+                                        await this.clearBasket();
+                                        return false;
                                     }
 
-                                })
+                                    runInAction(() => {
+
+                                        this.products.push({
+                                            id: data._id,
+                                            product_discount: data.product_discount == null ? null : parseFloat(data.product_discount),
+                                            product_discount_price: data.product_discount == null ? null : parseFloat(data.product_discount_price),
+                                            product_list_price: parseFloat(data.product_list_price),
+                                            product_name: data.product_name,
+                                            product_amount: data.product_amonut,
+                                            product_image: data.product_image,
+                                            product_category: data.category_id,
+                                            count: e.count > 0 ? e.count : 1,
+                                        });
+
+                                        if (data.product_discount != null) {
+                                            this.totalPrice += (parseFloat(data.product_discount_price) * parseInt(e.count));
+                                        } else {
+                                            this.totalPrice += (parseFloat(data.product_list_price) * parseInt(e.count));
+                                        }
+
+                                    })
+                                }
                             }catch(e){
                                 alert(e);
                             }

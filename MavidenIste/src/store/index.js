@@ -5,6 +5,9 @@ import AuthStore from './AuthStore';
 import AddressStore from './AddressStore';
 import BranchStore from './BranchStore';
 import CategoryStore from './CategoryStore';
+import NewsStore from './NewsStore';
+import CampaignStore from './CampaignStore';
+import VersionStore from './VersionStore';
 export default {
     BasketStore,
     ProductStore,
@@ -12,5 +15,8 @@ export default {
     AuthStore,
     AddressStore,
     BranchStore,
-    CategoryStore
+    CategoryStore,
+    NewsStore,
+    CampaignStore,
+    VersionStore,
 }

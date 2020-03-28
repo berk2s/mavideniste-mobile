@@ -294,7 +294,9 @@ export default class Profile extends Component {
                                 </CardItem>
                             </TouchableOpacity>
                         </Card>
+                        <Text style={{fontFamily:'Muli-Regular',color:'#304555', fontSize:10, textAlign:'right', marginRight:10}}>v1.0 Hegel</Text>
                     </View>
+
 
 
                 </View>

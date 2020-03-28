@@ -28,8 +28,7 @@ import EmptyIMG from '../../img/search_result.png';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Ripple from 'react-native-material-ripple';
 
-
-const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 75
+const HEADER_MAX_HEIGHT=Platform.OS === 'android' ? 55 : 55
 const HEADER_MIN_HEIGHT=0
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT
 
@@ -55,7 +54,8 @@ export default class ProductList extends Component {
         filter:false,
         filterSubIds:[],
         scrollY:new Animated.Value(0),
-        bounces:true
+        bounces:true,
+        isSearchFetched:false
     }
 
     componentDidMount = async () => {
@@ -93,7 +93,8 @@ export default class ProductList extends Component {
                     this.setState({
                         loading: false,
                         headerSearch: false,
-                        searchResults:[]
+                        searchResults:[],
+                        isSearchFetched:false
                     });
 
                 }, 500)
@@ -117,6 +118,7 @@ export default class ProductList extends Component {
 
                 this.setState({
                     loading:false,
+                    isSearchFetched:true
                 });
 
 
@@ -250,6 +252,7 @@ export default class ProductList extends Component {
                         />
                         {this.state.fetched
                             ?
+                            this.state.isSearchFetched &&
                             this.state.headerSearch
                                 ?
                                 <>

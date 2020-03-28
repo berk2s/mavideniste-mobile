@@ -170,7 +170,7 @@ export default class BottomTab extends Component {
                 ?
                 <View style={{position:'absolute', left:'50%', right:'50%', display:'flex', flexDirection:'row', justifyContent:'center'}}>
                     <View style={styles.box}>
-                        <Text style={styles.activeText}>mavideniste {this.state.isSwitcherClicked}</Text>
+                        <Text style={styles.activeText}><Text style={{color:'#003DFF'}}>maviden</Text><Text style={{color:'#00CFFF'}}>iste</Text></Text>
                     </View>
                     <Ripple rippleCentered={true} rippleContainerBorderRadius={20} style={styles.box} onPress={this._handleSwitcherClick}>
                         <Text style={styles.text}>mavikurye</Text>
@@ -182,7 +182,7 @@ export default class BottomTab extends Component {
                         <Text style={styles.text}>mavideniste</Text>
                     </Ripple>
                     <View style={styles.box}>
-                        <Text style={styles.activeText}>mavikurye</Text>
+                        <Text style={styles.activeText}><Text style={{color:'#003DFF'}}>mavi</Text><Text style={{color:'#00CFFF'}}>kurye</Text></Text>
                     </View>
                 </View>
             : <></>
@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
         color:'#BCBCBC',
         fontFamily:'Muli-ExtraBold',
         fontSize:15,
+      //  marginLeft:1,
         height:20
     },
     box:{

@@ -152,7 +152,7 @@ export default class Currier extends Component {
             <View style={{display:'flex', flexDirection:'row', justifyContent:'center', alignItems:'center', flex:1}}>
               <Title style={{fontFamily:'Muli-ExtraBold', color:'#003DFF'}}>
                 <Text style={{textAlign:'center'}}>
-                  <Text style={{color:'#003DFF'}}>mavi</Text><Text style={{color:'#00CFFF'}}>kuryem</Text>
+                  <Text style={{color:'#003DFF'}}>mavi</Text><Text style={{color:'#00CFFF'}}>kurye</Text>
                 </Text>
               </Title>
             </View>
@@ -185,7 +185,7 @@ export default class Currier extends Component {
                         ?
                         <View style={{marginTop:10}}>
                             {AddressStore.getAddress.map(e => {
-                            return <Ripple style={{height:40, display:'flex', justifyContent:'center'}} onPress={() => this._handleAddressPress(e)}>
+                            return <Ripple key={e._id} style={{height:40, display:'flex', justifyContent:'center'}} onPress={() => this._handleAddressPress(e)}>
                               <Text style={styles.selectAddressTitle}>{e.address_title}</Text>
                             </Ripple> })}
                         </View>
