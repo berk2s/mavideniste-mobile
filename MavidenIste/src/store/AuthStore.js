@@ -92,6 +92,12 @@ class AuthStore {
                 await AddressStore.setAddress(data.data.data);
                 await BasketStore.updateSelectedAddress();
 
+                await API.put('/api/user/branch', {user_id: this.user_id, branch: BranchStore.branchID}, {
+                    headers:{
+                        'x-access-token': getToken
+                    }
+                });
+
                 NavigationService.navigate('authticatedBottomScreens');
             }else{
                 runInAction(() => {
