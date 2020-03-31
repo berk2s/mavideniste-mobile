@@ -171,11 +171,11 @@ class BasketStore {
     }
 
     @computed get getTotalPrice() {
-        return this.totalPrice
+        return parseFloat(this.totalPrice).toFixed(2)
     }
 
     @computed get getTotalPriceWithCommite(){
-        return (this.totalPriceWithCommitte)
+        return parseFloat(this.totalPriceWithCommitte).toFixed(2)
     }
 
     @action setTotalPriceWithCommitte = async (price) => {

@@ -96,7 +96,7 @@ class BranchStore{
     }
 
     @computed get branchCommittee(){
-        return this.branch_committee;
+        return parseFloat(this.branch_committee);
     }
 
     @computed get branchList(){

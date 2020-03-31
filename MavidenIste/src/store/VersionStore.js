@@ -22,13 +22,13 @@ class VersionStore {
             const appsettings = await LocationAPI.get(`/api/appsettings`);
 
 
-            if(appsettings.data[0].has_update){
+            if(appsettings.data[0].has_update == 1){
                 runInAction(() => {
                     this.hasUpdate = true;
                     this.isUpdateRequired = appsettings.data[0].is_update_required;
                     this.playStoreLink = appsettings.data[0].playstore_link;
                     this.appStoreLink = appsettings.data[0].appstore_link;
-                })
+                });
             }
 
         }catch(e){

@@ -310,7 +310,7 @@ export default class Feed extends Component {
             <Modal
                 visible={this.state.visibleUpdate}
                 onTouchOutside={(event) => {
-                    if(!this.props.VersionStore.getIsRequired) {
+                    if(this.props.VersionStore.getIsRequired == 0) {
                         this.setState({visibleUpdate: false});
                     }
                 }}

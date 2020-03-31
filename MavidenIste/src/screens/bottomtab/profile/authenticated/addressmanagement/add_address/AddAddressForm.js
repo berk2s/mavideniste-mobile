@@ -85,7 +85,8 @@ export default class AddAddressForm extends Component {
                 return false
             }
 
-            if(BranchStore.branchList.map(e => e.branch_province).indexOf(province.value) === -1){
+            console.log(BranchStore.branchList.map(e => e.branch_province))
+            if(BranchStore.branchList.map(e => e.branch_province).indexOf(''+province.value) === -1){
                 Snackbar.show({
                     text: 'Seçtiğiniz ilde bayimiz bulunmamaktadır ',
                     duration: Snackbar.LENGTH_LONG,
@@ -96,7 +97,7 @@ export default class AddAddressForm extends Component {
                 return false;
             }
 
-            if(BranchStore.branchList.map(e => e.branch_county).indexOf(county.value) === -1){
+            if(BranchStore.branchList.map(e => e.branch_county).indexOf(''+county.value) === -1){
                 Snackbar.show({
                     text: 'Seçtiğiniz ilçede bayimiz bulunmamaktadır ',
                     duration: Snackbar.LENGTH_LONG,

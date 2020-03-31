@@ -206,7 +206,7 @@ export default class ShopingCard extends Component {
 
 
           <Content
-             style={{display:'flex', flex:1,}}
+             style={{display:'flex', flex:1,  marginBottom:-30}}
 
              scrollEventThrottle={16}
              onScroll={Animated.event(
@@ -360,7 +360,8 @@ const styles = StyleSheet.create({
       flexDirection:'row',
       justifyContent:'space-between',
         width:'100%',
-        marginTop:52
+        marginTop:52,
+        paddingBottom:35
     },
     basketArea:{
        // minHeight:'80%'
