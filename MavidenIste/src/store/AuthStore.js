@@ -65,8 +65,6 @@ class AuthStore {
                     }
                 });
 
-                console.log(user_information.data)
-                console.log(Object.keys(user_information.data).length)
 
                 if(user_information.data.data !== null) {
 
@@ -95,6 +93,18 @@ class AuthStore {
                 await API.put('/api/user/branch', {user_id: this.user_id, branch: BranchStore.branchID}, {
                     headers:{
                         'x-access-token': getToken
+                    }
+                });
+
+
+                const notification_token = await AsyncStorage.getItem('token');
+
+                await API.put('/api/user/token', {
+                    token:notification_token,
+                    user_id: this.user_id
+                }, {
+                    headers:{
+                        'x-access-token': this.token
                     }
                 });
 

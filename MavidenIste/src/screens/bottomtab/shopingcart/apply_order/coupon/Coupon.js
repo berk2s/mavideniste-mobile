@@ -32,8 +32,6 @@ export default class Coupon extends Component {
             Keyboard.dismiss()
             const {coupon} = values;
 
-            console.log(BranchStore.branchID);
-
             const validateCoupon = await API.post('/api/coupon/validate',{
                 user_id: AuthStore.getUserID,
                 coupon_name:coupon,
@@ -101,7 +99,6 @@ export default class Coupon extends Component {
             }
 
         }catch(e){
-            alert(e)
             console.log(e);
         }
     }

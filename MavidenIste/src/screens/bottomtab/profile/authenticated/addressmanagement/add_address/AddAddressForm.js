@@ -65,12 +65,25 @@ export default class AddAddressForm extends Component {
     }
 
     _handleCountyDone = async () => {
-        this.address._root.focus()
+    //    this.address._root.focus()
     }
 
     _handleSubmit = async(values, bag) => {
         try{
             const  { title_address,address,desc_address,province,county } = values;
+
+            const indexOfTitle = AddressStore.getAddress.map(e => e.address_title.trim()).indexOf(title_address.trim())
+
+            if(indexOfTitle !== -1){
+                Snackbar.show({
+                    text: 'Aynı başlığa sahip adresiniz bulunmaktadır ',
+                    duration: Snackbar.LENGTH_LONG,
+                    backgroundColor:'#FF9800',
+                    textColor:'white',
+                });
+                bag.setErrors('title_address', '!');
+                return false
+            }
 
             if(BranchStore.branchList.map(e => e.branch_province).indexOf(province.value) === -1){
                 Snackbar.show({
@@ -161,23 +174,25 @@ export default class AddAddressForm extends Component {
                                     style={styles.inputAreaForPicker}>
                                         <RNPickerSelect
                                             onValueChange={async (value) => {
-                                                if(Platform.OS === 'android'){
-                                                    this.setState({
-                                                        loading:true,
-                                                    });
+                                                if(typeof value !== 'undefined') {
+                                                    if (Platform.OS === 'android') {
+                                                        this.setState({
+                                                            loading: true,
+                                                        });
 
-                                                    const pdone = await this._handleProvinceDone(value.value);
+                                                        setFieldValue('province', value);
 
-                                                    this.setState({selectedProvince:value.value,});
-                                                    setFieldValue('province', value);
+                                                        const pdone = await this._handleProvinceDone(value.value);
+                                                        this.setState({selectedProvince: value.value,});
 
-                                                    this.setState({
-                                                        loading:false,
-                                                    });
+                                                        this.setState({
+                                                            loading: false,
+                                                        });
 
-                                                }else{
-                                                    this.setState({selectedProvince:value.value,});
-                                                    setFieldValue('province', value);
+                                                    } else {
+                                                        this.setState({selectedProvince: value.value,});
+                                                        setFieldValue('province', value);
+                                                    }
                                                 }
                                             }}
                                             style={pickerStyle}
@@ -186,7 +201,6 @@ export default class AddAddressForm extends Component {
                                             placeholder={{label: 'Bir il seçin'}}
                                             doneText={'Tamam'}
                                             onDonePress={this._handleProvinceDone}
-                                            ref={ref => this.provinceSelect = ref}
                                         />
                                 </Item>
 
@@ -207,7 +221,6 @@ export default class AddAddressForm extends Component {
                                         items={this.state.counties}
                                         placeholder={{label: 'Bir ilçe seçin'}}
                                         onDonePress={this._handleCountyDone}
-                                        ref={ref => this.countySelect = ref}
                                     />
                                 </Item>
                             </View>

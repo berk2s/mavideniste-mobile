@@ -80,7 +80,7 @@ class BasketStore {
                         const checkIndex = this.products.map(e => e.id).indexOf(product_id);
                         if(checkIndex === -1){
                             try{
-                                const product = await API.get(`/api/product/get/${product_id}`);
+                                const product = await API.get(`/api/product/get/basket/${product_id}`);
 
                                 if(product.data.data != null) {
 

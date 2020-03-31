@@ -24,6 +24,7 @@ import {NavigationEvents} from 'react-navigation';
 import ProductCard from '../components/ProductCard';
 import HeaderForProducts from '../components/HeaderForProducts';
 import EmptyIMG from '../../img/search_result.png';
+import EmptyIMG2 from '../../img/sad.png';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Ripple from 'react-native-material-ripple';
@@ -228,7 +229,7 @@ export default class ProductList extends Component {
 
                 <Content
                     ref={ref => this.content = ref}
-                    style={{display:'flex', flex:1}}
+                    style={{display:'flex', flex:1, marginBottom:-30}}
                     bounces={this.state.bounces}
                     scrollEventThrottle={16}
                     onScroll={Animated.event([
@@ -321,12 +322,24 @@ export default class ProductList extends Component {
                                                         .filter(e => this.state.filterSubIds.indexOf(e.sub_category_id) !== -1)
                                                         .map(e => <ProductCard key={e._id} e={e} {...this.props} />)
                                                     :
-                                                    this.props.ProductStore.getProducts.map(e => {
-                                                        return <ProductCard key={e._id} e={e} {...this.props} />
-                                                    })
+                                                        this.props.ProductStore.getProducts.length > 0
+                                                            ?
+                                                                this.props.ProductStore.getProducts.map(e => {
+                                                                    return <ProductCard key={e._id} e={e} {...this.props} />
+                                                                })
+                                                            :
+                                                                <></>
                                             }
 
                                         </View>
+                                        {this.props.ProductStore.getProducts.length == 0
+                                        &&
+                                        <View style={{display:'flex', height:Dimensions.get('window').height-200, justifyContent:'center', alignItems:'center'}}>
+                                            <Image source={EmptyIMG2} style={{width:80, height:80}}/>
+                                            <Text style={{fontFamily:'Muli-ExtraBold', marginTop: 15, fontSize:20, color:'#304555'}}>Üzgünüz, ürün yok</Text>
+                                            <Text style={{fontFamily:'Muli-SemiBold', marginTop:5, fontSize:15, color:'#304555'}}>bu kategoride henüz ürün yok</Text>
+                                        </View>
+                                        }
                                     </>
                             :
                             <View style={[styles.loadingView, {height: this.state.loadingHeight}]}>

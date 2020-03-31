@@ -36,7 +36,6 @@ class BranchStore{
                 const branchDetails = await LocationAPI.get(`/api/branch/${branchID}`);
 
                 if(branchDetails.data.status == 'OK'){
-                    console.log(branchDetails.data)
                     await this.changeBranch(
                         branchID,
                         branchDetails.data.branch.branch_name,

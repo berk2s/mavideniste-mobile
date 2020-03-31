@@ -127,7 +127,6 @@ export default class Feed extends Component {
                     visibleUpdate:true,
                 });
 
-                console.log(this.props.VersionStore.getIsRequired)
             }
 
             await this.props.BranchStore.fetchBranchList();
@@ -200,7 +199,6 @@ export default class Feed extends Component {
 
                 this.state.searchResults = [...results.data.data]
 
-                console.log(results.data)
 
                 this.setState({
                     loading:false,
@@ -495,7 +493,7 @@ export default class Feed extends Component {
                                                             />
                                                         </Ripple>
                                                         <View style={styles.cardTextArea}>
-                                                            <Text style={styles.cardText}>{e.category_name}</Text>
+                                                            <Text style={[styles.cardText, {textAlign:'center'}]}>{e.category_name}</Text>
                                                         </View>
                                                     </View>
                                                 </View>
@@ -521,16 +519,15 @@ export default class Feed extends Component {
         if (granted) {
             const token = await messaging().getToken();
 
+            await AsyncStorage.setItem('token', token);
+
             const postToken = await API.post(`/api/notification/token`, {
                 token:token,
                 platform: Platform.OS
             });
 
-            await AsyncStorage.setItem('token', token);
-
-            console.log('User granted messaging permissions.! ' + token);
         } else {
-            console.log('User declined messaging permissions :(');
+
         }
     })
         .catch((e) => {
@@ -551,7 +548,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
     onRegister: function(token) {
-        console.log("TOKEN:", token);
     },
 
     // (required) Called when a remote or local notification is opened or received

@@ -131,6 +131,8 @@ export default class LoginForm extends Component {
                               returnKeyType={'go'}
                               secureTextEntry
 
+                              autoCapitalize={'none'}
+
                               value={values.password}
                               onChangeText={handleChange('password')}
                               onBlur={() => setFieldTouched('password')}
